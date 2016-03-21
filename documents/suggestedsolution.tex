@@ -1,0 +1,59 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{dsfont}
+\usepackage[strict]{changepage}
+\usepackage{float}
+\usepackage{parskip}
+\makeatletter
+\newcommand*{\transpose}{%
+  {\mathpalette\@transpose{}}%
+}
+\newcommand*{\@transpose}[2]{%
+  % #1: math style
+  % #2: unused
+  \raisebox{\depth}{$\m@th#1\intercal$}%
+}
+
+\author{Alexander Israelsson \texttt{israelsson.alexander@gmail.com} \and
+Adam Jalkemo \texttt{adam@jalkemo.se} \and
+Emil Westenius \texttt{emil@westenius.se} \and
+Jonathan Andersson \texttt{mat11ja1@student.lu.se}}
+\title{Adaptive Friction Compensation}
+\begin{document}
+\maketitle
+
+\section{Project background}
+In this project a Furuta pendulum process will be used. The pendulum will be stabilized in the inverted position using a swing up controller and a top controller. Further the friction will be considered and estimated using an adaptive method.
+
+\section{Controller}
+For the swing up a Lyapunov based controller will be used. In the top position a LQG controller will be used. The controllers will be implemented in Java.
+Models for Coulomb and viscous friction and additional models for asymmetric friction will be considered. 
+
+\section{Time plan}
+Start week 14, done week 15
+
+\section{Responsibilities}
+Theory
+	What estimators to use
+	What friction model
+Friction controller in MATLAB
+Controller in Java
+	Friction
+	Swingup
+	Top controller
+Program skeleton in java
+GUI
+Report
+Presentation
+
+
+
+
+\end{document}
+
