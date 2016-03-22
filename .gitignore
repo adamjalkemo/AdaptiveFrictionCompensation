@@ -1,3 +1,12 @@
+#maven
+Furuta-Controller/target/
+
+#tex
+*.aux
+*.log
+*.pdf
+*.synctex.gz
+
 #matlab
 *.autosave
 
