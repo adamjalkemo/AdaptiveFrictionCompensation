@@ -1,0 +1,4 @@
+When the arm is pointing away from the glass there may be some weird behaviors.
+The friction is position dependent
+There is 2 sensors for the angle of the pendulum arm. There are some offsets and scallings that needs to be considered. This can be found in the matlab model
+There are also velocity outputs for all angles (calculated internally, maybe at a higher sample rate. We don't know how good)
