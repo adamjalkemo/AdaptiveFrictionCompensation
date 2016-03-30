@@ -20,22 +20,57 @@
   \raisebox{\depth}{$\m@th#1\intercal$}%
 }
 
-\author{Alexander Israelsson \texttt{israelsson.alexander@gmail.com} \and
-Adam Jalkemo \texttt{adam@jalkemo.se} \and
+\author{Adam Jalkemo \texttt{adam@jalkemo.se} \and
+Alexander Israelsson \texttt{israelsson.alexander@gmail.com} \and
 Emil Westenius \texttt{emil@westenius.se} \and
 Jonathan Andersson \texttt{mat11ja1@student.lu.se}}
 \title{Adaptive Friction Compensation}
 \begin{document}
 \maketitle
 
-\section{Project background}
-In this project a Furuta pendulum process will be used. The pendulum will be stabilized in the inverted position using a swing up controller and a top controller. Further the friction will be considered and estimated using an adaptive method.
+\section{Introduction}
+In this project a Furuta pendulum process will be used. The pendulum will be stabilized in the inverted position using a swing up controller and a top controller. When controlling the pendulum in the top position limit cycles will occur due to friction. By compensating for the friction we aim to stabilize the pendulum, the friction will be estimated using an adaptive method. To do this a Java controller and interface will be implemented and run on a linux/macOSX computer.
+\section{Program structure}
+For our suggested solution we will need one thread for the GUI and one for the controller. To communicate with the Furuta process we will use the analog box normally used during the control labs at LTH. The realtime package from Automatic Control at LTH will be used for communication in the GUI and controller implementation. It will be important to synchronize the controller calculations with the user inputs. 
+%% MORe STUFFS??
 
-\section{Controller}
+%ToDo UML AND DESCRIPTION OF CLASSES AND PACKAGES
+
+\subsection{GUI}
+The operator should be able to change controller parameters for both types of controller, the top controller and the swing up controller, as well as change the parameters for the friction estimation. 
+
+The GUI will plot the outputs from the Furuta pendulum, the friction estimation, control signal, both uncompensated as well as the compensated signal. We aim to have different regressor modes for the friction compensation and the operator canl therefore change different parameters depending on the regressor chosen. 
+
+We aim to be able to change all paramters, except for the sampling period, on-line.
+
+There will also be a start and stop button, these will start and stop the process. In the top left corner we will have a big X this will close the application. If you press "Share" you can share your results on Facebook, Twitter, Instagram and google+. This will lead to more time on the process, otherwise you will have to pay for each minute above 20 minutes a day. 
+
+%Todo what parameters can be changed.
+
+\subsection{Controller}
 For the swing up a Lyapunov based controller will be used. In the top position a LQG controller will be used. The controllers will be implemented in Java.
 Models for Coulomb and viscous friction and additional models for asymmetric friction will be considered. 
 
 \section{Time plan}
+\begin{table}[]
+\centering
+\caption{lolol}
+\label{hoho}
+\begin{tabular}{|l|l|l|}
+\hline
+Week & Description & Main Responsibility \\ \hline
+13 & Hand in project plan & All members \\ \hline
+& Begin GUI implementation & Adam \\ \hline
+& Write Skeleton for report & Emil \\ \hline
+& Research on friction estimator and model & Jonathan \\ \hline
+& Begin implementation of Java controller & Alexander \\ \hline
+& Begin implementation of Matlab controller & Jonathan \\ \hline
+
+\end{tabular}
+\end{table}
+The initial plan is handed in.
+
+
 Start week 14, done week 15
 
 \section{Responsibilities}
