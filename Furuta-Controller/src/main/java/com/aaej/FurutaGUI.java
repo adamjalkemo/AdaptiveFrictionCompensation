@@ -8,47 +8,42 @@ import se.lth.control.*;
 import se.lth.control.plot.*;
 
 
-// TODO: add   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+// TODO: add frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 // 		according to http://www.control.lth.se/previouscourse/FRTN01/Exercise4_14/Exercise4.html
+//		although windowClosing used below might be enough.
 
 
-/** Class that creates and maintains a GUI for the Ball and Beam ---NOPE, FURUTA process. */
+
+//Class that creates and maintains a GUI for the FURUTA process.
 public class FurutaGUI {    
 
-	//private Regul regul;
-	//private PIParameters innerPar;
-	//private PIDParameters outerPar;
+	private Regul regul;
+	private ControllerParameters ctrlPar;
+	private RLSParameters rlsPar;
 	private int priority;
-	//private int mode;
 
-	// Declarartion of main frame.
+	// Declaration of main frame.
 	private JFrame frame;
 
-	// Declarartion of panels.
-	private BoxPanel guiPanel, 					// Main panel holds JPanels plotterPanel and rightPanel 
-					plotterPanel,				// Plot panel holds the PlotterPanels measPanel and ctrlPanel
-	 				rightPanel,					// Holds estimatorParameterPanel and other buttons.
-					ctrlParameterPanel,			// Holds parameters inputs for both controllers
-					estimatorParameterPanel;	// Holds estimator parameter inputs
-			BoxPanel lowerLeftPlotPanel, lowerRightPlotPanel, lowerPlotPanels;
-	private PlotterPanel measPanel,
-					ctrlPanel,
-					rlsPanel;
+	// Declaration of panels.
+	private BoxPanel 		guiPanel, plotterPanel, rightPanel, ctrlParameterPanel,estimatorParameterPanel,
+							lowerLeftPlotPanel, lowerRightPlotPanel, lowerPlotPanels, generalCtrlPanel, estimatorButtonsPanel,
+							estimatorGridPanel, regressorPanel, topCtrlPanel, swingCtrlPanel, buttonPanel;
+	private PlotterPanel 	measPanel, ctrlPanel, rlsPanel;
+	private JPanel 			qFieldPanel, rFieldPanel, swingLabelPanel, swingFieldPanel, generalLabelPanel,
+							generalFieldPanel, estimatorLabelPanel, estimatorFieldPanel;
 
-			int width =  20000;
+	// Declaration of buttons and fields
+	private JButton 		startButton, stopButton, resetEstimatorButton, saveEstimatorButton, saveCtrlButton;
+	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField,
+							lambdaField, p0Field, theta00Field, theta01Field;
+	private DoubleField[][] qArrayField, rArrayField;
+
+	// Width of right column. Real strange behaviour. However, this works for now.
+	int width =  20000;
 			
-
-	// Declaration of components.
-	/*private DoubleField innerParHField = new DoubleField(5,3);
-	private JButton innerApplyButton;*/
-
-/*	private JRadioButton offModeButton;
-	private JRadioButton beamModeButton;
-	private JRadioButton ballModeButton;*/
-	private JButton stopButton;
-
 	//private boolean hChanged = false;
-	//private boolean isInitialized = false;
+	private boolean isInitialized = false;
 
 	/** Constructor. */
 	public FurutaGUI(int plotterPriority) {
@@ -56,35 +51,32 @@ public class FurutaGUI {
 	}
 
 	/** Starts the threads. */
-	/*public void start() {
+	public void start() {
 		measPanel.start();
 		ctrlPanel.start();
-	}*/
+		rlsPanel.start();
+	}
 
 	/** Sets up a reference to Regul. Called by Main. */
-	/*public void setRegul(Regul r) {
+	public void setRegul(Regul r) {
 		regul = r;
-	}*/
-
-	private String formatLabel(String str, boolean bold, Integer size, String color) {
-		if (bold)
-			str = "<b>" + str + "</b>";
-		if ((size != null) || color !=null) {
-			str = "<font" + (size != null ? " size='" + size + "'" : "") + (color != null ? " color='" + color + "'" : "") + ">" + str + "</font>";
-		}
-
-		return "<html>" + str + "</html>";
-
-		//return <html><b><font color='#444444' size='2'>Top controller</font></b></html>
 	}
 
 	/** Creates the GUI. Called from Main. */
 	public void initializeGUI() {
+		
+		setRegul(new Regul()); // TODO Should be called from Main or similar.
+
+		// Get initial parameters from Regul
+		ctrlPar = regul.getControllerParameters();
+		rlsPar = regul.getRLSParameters();
+
 		// Create main frame.
 		frame = new JFrame("Furuta GUI");
 
-		// Create a panel for the plotters.
+		// -- Panel for the plotters --
 		plotterPanel = new BoxPanel(BoxPanel.VERTICAL);
+		plotterPanel.setPreferredSize(new Dimension(1000,1000));
 
 		// Create PlotterPanels.
 		measPanel = new PlotterPanel(2, priority);
@@ -121,23 +113,32 @@ public class FurutaGUI {
 		plotterPanel.add(lowerPlotPanels);
 		plotterPanel.addFixed(10);
 
+		// ----------------
+
 		// -- Panel for the controllers parameters --
 
 			// -- Top controller --
-		int qSize = 2; // TODO: Should be read form controller!!
-		int rSize = 2; // TODO: Should be read form controller!!
+		int qSize = ctrlPar.qMatrix.length;
+		int rSize = ctrlPar.rMatrix.length;
 
-		DoubleField[][] qArrayField = new DoubleField[qSize][qSize];
-		DoubleField[][] rArrayField = new DoubleField[qSize][qSize];
-
-		BoxPanel topCtrlPanel, swingCtrlPanel;
-		JPanel qFieldPanel, rFieldPanel;
+		qArrayField = new DoubleField[qSize][qSize];
+		rArrayField = new DoubleField[qSize][qSize];		
 		
 		qFieldPanel = new JPanel(new GridLayout(qSize,qSize));
 		qFieldPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		for (int i = 0; i < qSize; i++) {
 			for (int j = 0; j < qSize; j++) {
 				qArrayField[i][j] = new DoubleField(5,3);
+				qArrayField[i][j].setValue(ctrlPar.qMatrix[i][j]);
+				qArrayField[i][j].addActionListener(new ActionListener() {
+					int i,j;
+					public void actionPerformed(ActionEvent e) {
+						this.i = i;
+						this.j = j;
+						ctrlPar.qMatrix[i][j] = qArrayField[i][j].getValue();
+						saveCtrlButton.setEnabled(true);
+					}
+				});
 				qFieldPanel.add(qArrayField[i][j]);
 			};
 		}
@@ -147,6 +148,16 @@ public class FurutaGUI {
 		for (int i = 0; i < rSize; i++) {
 			for (int j = 0; j < rSize; j++) {
 				rArrayField[i][j] = new DoubleField(5,3);
+				rArrayField[i][j].setValue(ctrlPar.rMatrix[i][j]);
+				rArrayField[i][j].addActionListener(new ActionListener() {
+					int i,j;
+					public void actionPerformed(ActionEvent e) {
+						this.i = i;
+						this.j = j;
+						ctrlPar.rMatrix[i][j] = rArrayField[i][j].getValue();
+						saveCtrlButton.setEnabled(true);
+					}
+				});
 				rFieldPanel.add(rArrayField[i][j]);
 			};
 		}
@@ -163,8 +174,6 @@ public class FurutaGUI {
 
 			// -- Swing up controller--
 
-		JPanel swingLabelPanel, swingFieldPanel;
-
 		swingLabelPanel = new JPanel();
 		swingLabelPanel.setLayout(new GridLayout(0,1));
 		swingLabelPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -173,12 +182,39 @@ public class FurutaGUI {
 		swingLabelPanel.add(new JLabel("Limit"));
 		swingLabelPanel.add(new JLabel("Gain"));
 
-		DoubleField omega0Field, hField, radius1Field, radius2Field, limitField, gainField;
 
 		radius1Field = new DoubleField(5,3);
+		radius1Field.setValue(ctrlPar.ellipseRadius1);
+		radius1Field.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ctrlPar.ellipseRadius1 = radius1Field.getValue();
+				saveCtrlButton.setEnabled(true);
+			}
+		});
 		radius2Field = new DoubleField(5,3);
+		radius2Field.setValue(ctrlPar.ellipseRadius2);
+		radius2Field.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ctrlPar.ellipseRadius2 = radius2Field.getValue();
+				saveCtrlButton.setEnabled(true);
+			}
+		});
 		limitField = new DoubleField(5,3);
+		limitField.setValue(ctrlPar.limit);
+		limitField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ctrlPar.limit = limitField.getValue();
+				saveCtrlButton.setEnabled(true);
+			}
+		});
 		gainField = new DoubleField(5,3);
+		gainField.setValue(ctrlPar.gain);
+		gainField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ctrlPar.gain = gainField.getValue();
+				saveCtrlButton.setEnabled(true);
+			}
+		});
 
 		swingFieldPanel = new JPanel();
 		swingFieldPanel.setLayout(new GridLayout(0,1));
@@ -199,15 +235,26 @@ public class FurutaGUI {
 
 			// -- General controller --
 
-		BoxPanel generalCtrlPanel;
-		JPanel generalLabelPanel, generalFieldPanel;
-
 		generalLabelPanel = new JPanel(new GridLayout(0,1));
 		generalLabelPanel.add(new JLabel("Sampling time h"));
 		generalLabelPanel.add(new JLabel("ω0"));
 
 		omega0Field = new DoubleField(5,3);
+		omega0Field.setValue(ctrlPar.omega0);
+		omega0Field.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ctrlPar.omega0 = omega0Field.getValue();
+				saveCtrlButton.setEnabled(true);
+			}
+		});
 		hField = new DoubleField(5,3);
+		hField.setValue(ctrlPar.h);
+		hField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ctrlPar.h = hField.getValue();
+				saveCtrlButton.setEnabled(true);
+			}
+		});
 
 		generalFieldPanel = new JPanel(new GridLayout(0,1));
 		generalFieldPanel.add(hField);
@@ -222,10 +269,19 @@ public class FurutaGUI {
 
 		// --------------
 
-		JButton saveCtrlButton;
 
 		saveCtrlButton = new JButton("Save");
+		saveCtrlButton.setEnabled(false);
+		saveCtrlButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				regul.setControllerParameters(ctrlPar);
+				saveCtrlButton.setEnabled(false);
+			}
+		});
+
+
 		ctrlParameterPanel = new BoxPanel(BoxPanel.VERTICAL);
+		ctrlParameterPanel.setBorder(BorderFactory.createTitledBorder(formatLabel("Controller parameters", true, 4, "#000033")));
 		ctrlParameterPanel.add(new JLabel(formatLabel("Top controller", true, 2, "#444444")));
 		ctrlParameterPanel.add(topCtrlPanel);
 		ctrlParameterPanel.addFixed(5);
@@ -241,27 +297,23 @@ public class FurutaGUI {
 
 		// -- Panel for the estimator parameters --
 
-		DoubleField lambdaField, p0Field, theta0Field;
-
-		lambdaField = new DoubleField(5,3);
-		//lambdaField.setPreferredSize(new Dimension(sizex,sizey));
-		p0Field = new DoubleField(5,3);
-		//p0Field.setPreferredSize(new Dimension(sizex,sizey));
-		theta0Field = new DoubleField(5,3);
-		//theta0Field.setPreferredSize(new Dimension(sizex,sizey));
-
-		JPanel estimatorLabelPanel, estimatorFieldPanel;
-		BoxPanel estimatorButtonsPanel, estimatorGridPanel, regressorPanel;
-
 		String[] regressorModels = {"Coloumb friction [ sign(v) ]", "Viscous friction [ sign(v), v ]"};
 		JComboBox regressorCombo = new JComboBox(regressorModels);
-		regressorCombo.setSelectedIndex(1);
+		regressorCombo.setSelectedIndex(rlsPar.regressorModel);
 
 		regressorCombo.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
 		        JComboBox cb = (JComboBox)e.getSource();
-		        int petName = cb.getSelectedIndex();
-		        System.out.println(petName);
+		        int regressorModel = cb.getSelectedIndex();
+		        rlsPar.regressorModel = regressorModel;
+		        theta00Field.setValue(rlsPar.theta0[regressorModel][0]);
+		        if (regressorModel == 0)
+		        	theta01Field.setVisible(false);
+		        else {
+		        	theta01Field.setVisible(true);
+		        	theta01Field.setValue(rlsPar.theta0[regressorModel][1]);
+		        }
+		        saveEstimatorButton.setEnabled(true);
 		    }
 		});
 
@@ -279,25 +331,76 @@ public class FurutaGUI {
 		estimatorLabelPanel.add(new JLabel("P0: "));
 		estimatorLabelPanel.add(new JLabel("θ0: "));
 
+
+		lambdaField = new DoubleField(5,3);
+		lambdaField.setValue(rlsPar.lambda);
+		lambdaField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				rlsPar.lambda = lambdaField.getValue();
+				saveEstimatorButton.setEnabled(true);
+			}
+		});
+
+		p0Field = new DoubleField(5,3);
+		p0Field.setValue(rlsPar.p0);
+		p0Field.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				rlsPar.p0 = p0Field.getValue();
+				saveEstimatorButton.setEnabled(true);
+			}
+		});
+
+		BoxPanel theta0Panel;
+
+		theta00Field = new DoubleField(5,3);
+		theta00Field.setValue(rlsPar.theta0[rlsPar.regressorModel][0]);
+		theta00Field.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				rlsPar.theta0[rlsPar.regressorModel][0] = theta00Field.getValue();
+				saveEstimatorButton.setEnabled(true);
+			}
+		});
+
+		theta01Field = new DoubleField(5,3);
+		theta01Field.setValue(rlsPar.theta0[rlsPar.regressorModel][1]);
+		theta01Field.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				rlsPar.theta0[rlsPar.regressorModel][1] = theta01Field.getValue();
+				saveEstimatorButton.setEnabled(true);
+			}
+		});
+
+		theta0Panel = new BoxPanel(BoxPanel.HORIZONTAL);
+		theta0Panel.add(theta00Field);
+		theta0Panel.add(theta01Field);
+
 		estimatorFieldPanel = new JPanel();
-		//estimatorFieldPanel.setPreferredSize(new Dimension(100,100));
 		estimatorFieldPanel.setLayout(new GridLayout(0,1));
 		estimatorFieldPanel.add(lambdaField);
 		estimatorFieldPanel.add(p0Field);
-		estimatorFieldPanel.add(theta0Field);
+		estimatorFieldPanel.add(theta0Panel);
 
 		estimatorGridPanel = new BoxPanel(BoxPanel.HORIZONTAL);
-		//estimatorGridPanel.setPreferredSize(new Dimension(10,100));
-		//estimatorGridPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		estimatorGridPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
 		estimatorGridPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		estimatorGridPanel.add(estimatorLabelPanel);
-		//estimatorGridPanel.addGlue();
 		estimatorGridPanel.add(estimatorFieldPanel);
 
-		JButton resetEstimatorButton, saveEstimatorButton;
 		saveEstimatorButton = new JButton("Save");
-		resetEstimatorButton = new JButton("Reset");
+		saveEstimatorButton.setEnabled(false);
+		saveEstimatorButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				regul.setRLSParameters(rlsPar);
+				saveEstimatorButton.setEnabled(false);
+			}
+		});
+
+		resetEstimatorButton = new JButton("Reset estimation");
+		resetEstimatorButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				regul.resetEstimator();
+			}
+		});
 
 		estimatorButtonsPanel = new BoxPanel(BoxPanel.HORIZONTAL);
 		estimatorButtonsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -307,45 +410,55 @@ public class FurutaGUI {
 
 
 		estimatorParameterPanel = new BoxPanel(BoxPanel.VERTICAL);
+		estimatorParameterPanel.setBorder(BorderFactory.createTitledBorder(formatLabel("Estimator Parameters", true, 4, "#000033")));
 		estimatorParameterPanel.add(regressorPanel);
 		estimatorParameterPanel.add(estimatorGridPanel);
 		estimatorParameterPanel.add(estimatorButtonsPanel);
 		
-
-
 		// ------------
+
 
 		// -- Panel for start and stop buttons --
 
-		JButton startButton;
-		JPanel buttonPanel;
-
 		startButton = new JButton("START");
+		startButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				regul.regulatorActive(true);
+			}
+		});
+
 		stopButton = new JButton("STOP");
+		stopButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				regul.regulatorActive(false);
+			}
+		});
 
 		buttonPanel = new BoxPanel(BoxPanel.HORIZONTAL);
 		buttonPanel.add(startButton);
 		buttonPanel.add(stopButton);
 		buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		//startButton.setHorizontalAlignment(SwingConstants.LEFT);
 
 		// ------------
 
-
 		// Create panel holding everything but the plotters.
 		rightPanel = new BoxPanel(BoxPanel.VERTICAL);
-		//rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
-		rightPanel.addFixed(10);
-		rightPanel.add(new JLabel(formatLabel("Controller parameters", true, 4, "#000033")));
-		rightPanel.addFixed(3);
-		rightPanel.add(ctrlParameterPanel);//, BorderLayout.NORTH);
-		rightPanel.addFixed(10);
-		rightPanel.add(new JLabel(formatLabel("Estimator Parameters", true, 4, "#000033")));
-		rightPanel.add(estimatorParameterPanel);//, BorderLayout.CENTER);
-		rightPanel.addFixed(10);
-		rightPanel.add(buttonPanel);//, BorderLayout.SOUTH);
 		rightPanel.addFixed(10);
 
+		rightPanel.add(ctrlParameterPanel);
+		rightPanel.addFixed(10);
+		rightPanel.add(estimatorParameterPanel);
+		rightPanel.addFixed(10);
+		rightPanel.add(buttonPanel);
+		rightPanel.addFixed(10);
+
+
+		/* If the right panel does not fit, a scoll pane can be used. This messes with the layout though.
+		JScrollPane jScrollPane;
+		jScrollPane = new JScrollPane(rightPanel);
+		jScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		jScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		*/
 
 		// Create panel for the entire GUI.
 		guiPanel = new BoxPanel(BoxPanel.HORIZONTAL);
@@ -355,303 +468,24 @@ public class FurutaGUI {
 		guiPanel.add(rightPanel);
 		guiPanel.addFixed(10);
 
+
 		// Set guiPanel to be content pane of the frame.
 		frame.getContentPane().add(guiPanel, BorderLayout.CENTER);
 
 		// Pack the components of the window.
 		frame.pack();
 
-		/*
-		// Get initial parameters from Regul
-		innerPar = regul.getInnerParameters();
-		outerPar = regul.getOuterParameters();
-
-		// Create panels for the parameter fields and labels, add labels and fields 
-		innerParPanel = new BoxPanel(BoxPanel.HORIZONTAL);
-		innerParLabelPanel = new JPanel();
-		innerParLabelPanel.setLayout(new GridLayout(0,1));
-		innerParLabelPanel.add(new JLabel("K: "));
-		innerParLabelPanel.add(new JLabel("Ti: "));
-		innerParLabelPanel.add(new JLabel("Tr: "));
-		innerParLabelPanel.add(new JLabel("Beta: "));
-		innerParLabelPanel.add(new JLabel("h: "));
-		innerParFieldPanel = new JPanel();
-		innerParFieldPanel.setLayout(new GridLayout(0,1));
-		innerParFieldPanel.add(innerParKField); 
-		innerParFieldPanel.add(innerParTiField);
-		innerParFieldPanel.add(innerParTrField);
-		innerParFieldPanel.add(innerParBetaField);
-		innerParFieldPanel.add(innerParHField);
-
-		// Set initial parameter values of the fields
-		innerParKField.setValue(innerPar.K);
-		innerParTiField.setValue(innerPar.Ti);
-		innerParTiField.setMinimum(-eps);
-		innerParTrField.setValue(innerPar.Tr);
-		innerParTrField.setMinimum(-eps);
-		innerParBetaField.setValue(innerPar.Beta);
-		innerParBetaField.setMinimum(-eps);
-		innerParHField.setValue(innerPar.H);
-		innerParHField.setMinimum(-eps);
-		*/
-		// Add action listeners to the fields
-		/*innerParKField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				innerPar.K = innerParKField.getValue();
-				innerApplyButton.setEnabled(true);
-			}
-		});*/
-
-		/*
-		innerParTiField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				innerPar.Ti = innerParTiField.getValue();
-				if (innerPar.Ti < eps) {
-					innerPar.integratorOn = false;
-				}
-				else {
-					innerPar.integratorOn = true;
-				}
-				innerApplyButton.setEnabled(true);
-			}
-		});
-		innerParTrField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				innerPar.Tr = innerParTrField.getValue();
-				innerApplyButton.setEnabled(true);
-			}
-		});
-		innerParBetaField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				innerPar.Beta = innerParBetaField.getValue();
-				innerApplyButton.setEnabled(true);
-			}
-		});
-		innerParHField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				innerPar.H = innerParHField.getValue();
-				outerPar.H = innerPar.H;
-				outerParHField.setValue(innerPar.H);
-				innerApplyButton.setEnabled(true);
-				hChanged = true;
-			}
-		});
-
-		// Add label and field panels to parameter panel
-		innerParPanel.add(innerParLabelPanel);
-		innerParPanel.addGlue();
-		innerParPanel.add(innerParFieldPanel);
-		innerParPanel.addFixed(10);
-
-		// Create apply button and action listener.
-		innerApplyButton = new JButton("Apply");
-		innerApplyButton.setEnabled(false);
-		innerApplyButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				regul.setInnerParameters(innerPar);
-				if (hChanged) {
-					regul.setOuterParameters(outerPar);
-				}	
-				hChanged = false;
-				innerApplyButton.setEnabled(false);
-			}
-		});
-
-		// Create panel with border to hold apply button and parameter panel
-		BoxPanel innerParButtonPanel = new BoxPanel(BoxPanel.VERTICAL);
-		innerParButtonPanel.setBorder(BorderFactory.createTitledBorder("Inner Parameters"));
-		innerParButtonPanel.addFixed(10);
-		innerParButtonPanel.add(innerParPanel);
-		innerParButtonPanel.addFixed(10);
-		innerParButtonPanel.add(innerApplyButton);
-
-		// The same as above for the outer parameters
-		outerParPanel = new BoxPanel(BoxPanel.HORIZONTAL);
-		outerParLabelPanel = new JPanel();
-		outerParLabelPanel.setLayout(new GridLayout(0,1));
-		outerParLabelPanel.add(new JLabel("K: "));
-		outerParLabelPanel.add(new JLabel("Ti: "));
-		outerParLabelPanel.add(new JLabel("Td: "));
-		outerParLabelPanel.add(new JLabel("N: "));
-		outerParLabelPanel.add(new JLabel("Tr: "));
-		outerParLabelPanel.add(new JLabel("Beta: "));
-		outerParLabelPanel.add(new JLabel("h: "));
-
-		outerParFieldPanel = new JPanel();
-		outerParFieldPanel.setLayout(new GridLayout(0,1));
-		outerParFieldPanel.add(outerParKField); 
-		outerParFieldPanel.add(outerParTiField);
-		outerParFieldPanel.add(outerParTdField);
-		outerParFieldPanel.add(outerParNField);
-		outerParFieldPanel.add(outerParTrField);
-		outerParFieldPanel.add(outerParBetaField);
-		outerParFieldPanel.add(outerParHField);
-		outerParKField.setValue(outerPar.K);
-		outerParTiField.setValue(outerPar.Ti);
-		outerParTiField.setMinimum(-eps);
-		outerParTdField.setValue(outerPar.Td);
-		outerParTdField.setMinimum(-eps);
-		outerParNField.setValue(outerPar.N);
-		outerParTrField.setValue(outerPar.Tr);
-		outerParBetaField.setValue(outerPar.Beta);
-		outerParBetaField.setMinimum(-eps);
-		outerParHField.setValue(outerPar.H);
-		outerParHField.setMinimum(-eps);
-		outerParKField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				outerPar.K = outerParKField.getValue();
-				outerApplyButton.setEnabled(true);
-			}
-		});
-		outerParTiField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				outerPar.Ti = outerParTiField.getValue();
-				if (outerPar.Ti < eps) {
-					outerPar.integratorOn = false;
-				}
-				else {
-					outerPar.integratorOn = true;
-				}
-				outerApplyButton.setEnabled(true);
-			}
-		});
-		outerParTdField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				outerPar.Td = outerParTdField.getValue();
-				outerApplyButton.setEnabled(true);
-			}
-		});
-		outerParNField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				outerPar.N = outerParNField.getValue();
-				outerApplyButton.setEnabled(true);
-			}
-		});
-		outerParTrField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				outerPar.Tr = outerParTrField.getValue();
-				outerApplyButton.setEnabled(true);
-			}
-		});
-		outerParBetaField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				outerPar.Beta = outerParBetaField.getValue();
-				outerApplyButton.setEnabled(true);
-			}
-		});
-		outerParHField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				outerPar.H = outerParHField.getValue();
-				innerPar.H = outerPar.H;
-				innerParHField.setValue(outerPar.H);
-				outerApplyButton.setEnabled(true);
-				hChanged = true;
-			}
-		});
-
-		outerParPanel.add(outerParLabelPanel);
-		outerParPanel.addGlue();
-		outerParPanel.add(outerParFieldPanel);
-		outerParPanel.addFixed(10);
-
-		outerApplyButton = new JButton("Apply");
-		outerApplyButton.setEnabled(false);
-		outerApplyButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				regul.setOuterParameters(outerPar);
-				if (hChanged) {
-					regul.setInnerParameters(innerPar);
-				}	
-				hChanged = false;
-				outerApplyButton.setEnabled(false);
-			}
-		});
-
-		BoxPanel outerParButtonPanel = new BoxPanel(BoxPanel.VERTICAL);
-		outerParButtonPanel.setBorder(BorderFactory.createTitledBorder("Outer Parameters"));
-		outerParButtonPanel.addFixed(10);
-		outerParButtonPanel.add(outerParPanel);
-		outerParButtonPanel.addFixed(10);
-		outerParButtonPanel.add(outerApplyButton);
-
-		// Create panel for parameter fields, labels and apply buttons
-		parPanel = new BoxPanel(BoxPanel.HORIZONTAL);
-		parPanel.add(innerParButtonPanel);
-		parPanel.addGlue();
-		parPanel.add(outerParButtonPanel);
-
-		// Create panel for the radio buttons.
-		buttonPanel = new JPanel();
-		buttonPanel.setLayout(new FlowLayout());
-		buttonPanel.setBorder(BorderFactory.createEtchedBorder());
-		// Create the buttons.
-		offModeButton = new JRadioButton("OFF");
-		beamModeButton = new JRadioButton("BEAM");
-		ballModeButton = new JRadioButton("BALL");*/
 		
-		/*// Group the radio buttons.
-		ButtonGroup group = new ButtonGroup();
-		group.add(offModeButton);
-		group.add(beamModeButton);
-		group.add(ballModeButton);
-		// Button action listeners.
-		offModeButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				regul.setOFFMode();
-			}
-		});
-		beamModeButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				regul.setBEAMMode();
-			}
-		});
-		ballModeButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				regul.setBALLMode();
-			}
-		});
-		stopButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				regul.shutDown();
-				measPanel.stopThread();
-				ctrlPanel.stopThread();
-				System.exit(0);
-			}
-		});*/
-
-		/*// Add buttons to button panel.
-		buttonPanel.add(offModeButton, BorderLayout.NORTH);
-		buttonPanel.add(beamModeButton, BorderLayout.CENTER);
-		buttonPanel.add(ballModeButton, BorderLayout.SOUTH);*/
-
-
-
-		// Select initial mode.
-		/*mode = regul.getMode();
-		switch (mode) {
-		case OFF:
-			offModeButton.setSelected(true);
-			break;
-		case BEAM:
-			beamModeButton.setSelected(true);
-			break;
-		case BALL:
-			ballModeButton.setSelected(true);
-		}*/
-
-
-		
-		
-		/*
 		// WindowListener that exits the system if the main window is closed.
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				regul.shutDown();
-				measPanel.stopThread();
+				/*measPanel.stopThread(); // THIS CRASHES ??
 				ctrlPanel.stopThread();
+				rlsPanel.stopThread();*/
 				System.exit(0);
 			}
-		});*/
+		});
 		
 		/*
 
@@ -660,30 +494,50 @@ public class FurutaGUI {
 		Dimension fd = frame.getSize();
 		frame.setLocation((sd.width-fd.width)/2, (sd.height-fd.height)/2);
 		*/
+		
 		// Make the window visible.
 		frame.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
 		frame.setVisible(true);
 		
-		//isInitialized = true;
+		isInitialized = true;
+	}
+
+	private String formatLabel(String str, boolean bold, Integer size, String color) {
+		if (bold)
+			str = "<b>" + str + "</b>";
+		if ((size != null) || color !=null) {
+			str = "<font" + (size != null ? " size='" + size + "'" : "") + (color != null ? " color='" + color + "'" : "") + ">" + str + "</font>";
+		}
+
+		return "<html>" + str + "</html>";
 	}
 
 	/** Called by Regul to plot a control signal data point. */
-	/*public synchronized void putControlDataPoint(DoublePoint dp) {
+	public synchronized void putControlDataPoint(DoublePoint dp) { // Consider using a modified PlotData here.
 		if (isInitialized) {
 			ctrlPanel.putData(dp.x, dp.y);
 		} else {
-			DebugPrint("Note: GUI not yet initialized. Ignoring call to putControlDataPoint().");
+			debug("Note: GUI not yet initialized. Ignoring call to putControlDataPoint().");
 		}
-	}*/
+	}
+
+	/** Called by Regul to plot a rls data point. */
+	public synchronized void putRLSDataPoint(DoublePoint dp) { // Consider using a modified PlotData here.
+		if (isInitialized) {
+			rlsPanel.putData(dp.x, dp.y);
+		} else {
+			debug("Note: GUI not yet initialized. Ignoring call to putRLSDataPoint().");
+		}
+	}
 
 	/** Called by Regul to plot a measurement data point. */
-	/*public synchronized void putMeasurementDataPoint(PlotData pd) {
+	public synchronized void putMeasurementDataPoint(PlotData pd) {
 		if (isInitialized) {
 			measPanel.putData(pd.x, pd.yref, pd.y);
 		} else {
-			DebugPrint("Note: GUI not yet initialized. Ignoring call to putMeasurementDataPoint().");
+			debug("Note: GUI not yet initialized. Ignoring call to putMeasurementDataPoint().");
 		}
-	}*/
+	}
 	
 	public static void debug(String message) {
 		System.out.println(message);
