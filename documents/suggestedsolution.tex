@@ -31,7 +31,14 @@ Jonathan Andersson \texttt{mat11ja1@student.lu.se}}
 \section{Introduction}
 In this project a Furuta pendulum process will be used. The pendulum will be stabilized in the inverted position using a swing up controller and a top controller. When controlling the pendulum in the top position limit cycles will occur due to friction. By compensating for the friction we aim to stabilize the pendulum, the friction will be estimated using an adaptive method. To do this a Java controller and interface will be implemented and run on a linux/macOSX computer.
 \section{Program structure}
-For our suggested solution we will need one thread for the GUI and one for the controller. To communicate with the Furuta process we will use the analog box normally used during the control labs at LTH. The realtime package from Automatic Control at LTH will be used for communication in the GUI and controller implementation. It will be important to synchronize the controller calculations with the user inputs. 
+For our suggested solution we will need one thread for the GUI and one for the controller. To communicate with the Furuta process we will use the analog box normally used during the control labs at LTH. The realtime package from Automatic Control at LTH will be used for communication in the GUI and controller implementation. It will be important to synchronize the controller calculations with the user inputs. A general overview can be seen in \ref{fig:uml}.
+\begin{figure}
+\centerline{
+\includegraphics[scale=0.7]{umlfuruta.png}
+}
+\label{fig:uml}
+\caption{Overview of the program structure}
+\end{figure}
 %% MORe STUFFS??
 
 %ToDo UML AND DESCRIPTION OF CLASSES AND PACKAGES
@@ -65,11 +72,11 @@ Week & Description & Main Responsibility \\ \hline
 & Begin implementation of Matlab controller & Jonathan \\ \hline
 & Research on friction estimator and model & Jonathan \\ \hline
 14 & Working GUI implementation & Adam \\ \hline
-& Write Skeleton for report & Emil \\ \hline
+& Write skeleton for report & Emil \\ \hline
 & Working basic implementation of Java controller & Alexander \\ \hline
 & Working basic implementation of Matlab controller & Jonathan \\ \hline
-15 & & \\ \hline
-& Finished Matlab controller for tests & Jonathan \\ \hline
+15 & Finished Matlab controller for tests & Jonathan \\ \hline
+& & \\ \hline
 & & \\ \hline
 & & \\ \hline
 & & \\ \hline
