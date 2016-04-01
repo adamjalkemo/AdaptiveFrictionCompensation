@@ -3,6 +3,7 @@ package com.aaej;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+
 import se.lth.control.*;
 import se.lth.control.plot.*;
 
@@ -24,9 +25,14 @@ public class FurutaGUI {
 	private JFrame frame;
 
 	// Declarartion of panels.
-	private BoxPanel guiPanel, plotterPanel;
-	private JPanel parameterPanel, rightPanel;
-	private PlotterPanel measPanel, ctrlPanel;
+	private BoxPanel guiPanel, 					// Main panel holds JPanels plotterPanel and rightPanel 
+					plotterPanel,				// Plot panel holds the PlotterPanels measPanel and ctrlPanel
+	 				rightPanel,					// Holds estimatorParameterPanel and other buttons.
+					ctrlParameterPanel,			// Holds parameters inputs for both controllers
+					estimatorParameterPanel;	// Holds estimator parameter inputs
+
+	private PlotterPanel measPanel,
+					ctrlPanel;
 
 	// Declaration of components.
 	/*private DoubleField innerParHField = new DoubleField(5,3);
@@ -78,24 +84,177 @@ public class FurutaGUI {
 		plotterPanel.addFixed(10);
 		plotterPanel.add(ctrlPanel);
 
+		// -- Panel for the controllers parameters --
+
+			// -- Top controller --
+		int qSize = 2; // TODO: Should be read form controller!!
+		int rSize = 2; // TODO: Should be read form controller!!
+
+		DoubleField[][] qArrayField = new DoubleField[qSize][qSize];
+		DoubleField[][] rArrayField = new DoubleField[qSize][qSize];
+
+		BoxPanel topCtrlPanel, swingCtrlPanel;
+		JPanel qFieldPanel, rFieldPanel;
+		
+		qFieldPanel = new JPanel(new GridLayout(qSize,qSize));
+		qFieldPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		for (int i = 0; i < qSize; i++) {
+			for (int j = 0; j < qSize; j++) {
+				qArrayField[i][j] = new DoubleField(5,3);
+				qFieldPanel.add(qArrayField[i][j]);
+			};
+		}
+
+		rFieldPanel = new JPanel(new GridLayout(rSize,rSize));
+		rFieldPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		for (int i = 0; i < rSize; i++) {
+			for (int j = 0; j < rSize; j++) {
+				rArrayField[i][j] = new DoubleField(5,3);
+				rFieldPanel.add(rArrayField[i][j]);
+			};
+		}
+
+		topCtrlPanel = new BoxPanel(BoxPanel.VERTICAL);
+		topCtrlPanel.add(new JLabel("Q matrix"));
+		topCtrlPanel.add(qFieldPanel);
+		topCtrlPanel.add(new JLabel("R matrix"));
+		topCtrlPanel.add(rFieldPanel);
+		
+			// ---------------
+
+			// -- Swing up controller--
+
+		JPanel swingLabelPanel, swingFieldPanel;
+
+		swingLabelPanel = new JPanel();
+		swingLabelPanel.setLayout(new GridLayout(0,1));
+		swingLabelPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		swingLabelPanel.add(new JLabel("Ellipse radius 1"));
+		swingLabelPanel.add(new JLabel("Ellipse radius 2"));
+		swingLabelPanel.add(new JLabel("Limit"));
+		swingLabelPanel.add(new JLabel("Gain"));
+		swingLabelPanel.add(new JLabel("Omega0"));
+
+		DoubleField omega0Field, radius1Field, radius2Field, limitField, gainField;
+
+		omega0Field = new DoubleField(5,3);
+		radius1Field = new DoubleField(5,3);
+		radius2Field = new DoubleField(5,3);
+		limitField = new DoubleField(5,3);
+		gainField = new DoubleField(5,3);
+
+		swingFieldPanel = new JPanel();
+		swingFieldPanel.setLayout(new GridLayout(0,1));
+		swingFieldPanel.setAlignmentX(Component.LEFT_ALIGNMENT);		
+		swingFieldPanel.add(radius1Field);
+		swingFieldPanel.add(radius2Field);
+		swingFieldPanel.add(limitField);
+		swingFieldPanel.add(gainField);
+		swingFieldPanel.add(omega0Field);
+
+
+		swingCtrlPanel = new BoxPanel(BoxPanel.HORIZONTAL);
+		swingCtrlPanel.add(swingLabelPanel);
+		swingCtrlPanel.add(swingFieldPanel);
+
+			// ---------------
+
+		JButton saveCtrlButton;
+		saveCtrlButton = new JButton("Save");
+
+		ctrlParameterPanel = new BoxPanel(BoxPanel.VERTICAL);
+
+		JLabel tst = new JLabel("Top controller");
+		tst.setHorizontalAlignment(SwingConstants.CENTER);
+		ctrlParameterPanel.add(tst);
+		ctrlParameterPanel.add(topCtrlPanel);
+		ctrlParameterPanel.add(new JLabel("Swing up controller"));
+		ctrlParameterPanel.add(swingCtrlPanel);
+		ctrlParameterPanel.add(saveCtrlButton);
+
+		// ------------
+
+
+		// -- Panel for the estimator parameters --
+
+		DoubleField lambdaField, p0Field, theta0Field;
+
+		lambdaField = new DoubleField(5,3);
+		p0Field = new DoubleField(5,3);
+		theta0Field = new DoubleField(5,3);
+
+		JPanel estimatorLabelPanel, estimatorFieldPanel;
+		BoxPanel estimatorButtonsPanel, estimatorGridPanel;
+
+		estimatorLabelPanel = new JPanel();
+		estimatorLabelPanel.setLayout(new GridLayout(0,1));
+		estimatorLabelPanel.add(new JLabel("lambda: "));
+		estimatorLabelPanel.add(new JLabel("P0: "));
+		estimatorLabelPanel.add(new JLabel("Theta0: "));
+
+		estimatorFieldPanel = new JPanel();
+		estimatorFieldPanel.setLayout(new GridLayout(0,1));
+		estimatorFieldPanel.add(lambdaField);
+		estimatorFieldPanel.add(p0Field);
+		estimatorFieldPanel.add(theta0Field);
+
+		estimatorGridPanel = new BoxPanel(BoxPanel.HORIZONTAL);
+		estimatorGridPanel.add(estimatorLabelPanel);
+		estimatorGridPanel.addGlue();
+		estimatorGridPanel.add(estimatorFieldPanel);
+
+		JButton resetEstimatorButton, saveEstimatorButton;
+		saveEstimatorButton = new JButton("Save");
+		resetEstimatorButton = new JButton("Reset");
+
+		estimatorButtonsPanel = new BoxPanel(BoxPanel.HORIZONTAL);
+		estimatorButtonsPanel.add(resetEstimatorButton);
+		estimatorButtonsPanel.add(saveEstimatorButton);
+
+		estimatorParameterPanel = new BoxPanel(BoxPanel.VERTICAL);
+		estimatorParameterPanel.add(estimatorGridPanel);
+		estimatorParameterPanel.add(estimatorButtonsPanel);
+		
+
+
+		// ------------
+
+		// -- Panel for start and stop buttons --
+
+		JButton startButton;
+		JPanel buttonPanel;
+
+		startButton = new JButton("START");
 		stopButton = new JButton("STOP");
 
-		// Panel for parameter panel
-		parameterPanel = new JPanel();
-		parameterPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-		parameterPanel.add(stopButton);
+		buttonPanel = new BoxPanel(BoxPanel.HORIZONTAL);
+		buttonPanel.setBorder(BorderFactory.createCompoundBorder(
+		                   BorderFactory.createLineBorder(Color.red),
+		                   buttonPanel.getBorder()));
+
+		buttonPanel.add(startButton);
+		buttonPanel.add(stopButton);
+		startButton.setHorizontalAlignment(SwingConstants.LEFT);
+
+		// ------------
 
 
 		// Create panel holding everything but the plotters.
-		rightPanel = new JPanel();
-		rightPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-		rightPanel.add(parameterPanel, BorderLayout.CENTER);
+		rightPanel = new BoxPanel(BoxPanel.VERTICAL);
+		//rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+		rightPanel.add(new JLabel("Controller parameters"));
+		rightPanel.add(ctrlParameterPanel);//, BorderLayout.NORTH);
+		//rightPanel.addFixed(10);
+		rightPanel.add(new JLabel("Estimator Parameters"));
+		rightPanel.add(estimatorParameterPanel);//, BorderLayout.CENTER);
+		//rightPanel.addFixed(10);
+		rightPanel.add(buttonPanel);//, BorderLayout.SOUTH);
 
 
 		// Create panel for the entire GUI.
 		guiPanel = new BoxPanel(BoxPanel.HORIZONTAL);
 		guiPanel.add(plotterPanel);
-		guiPanel.addGlue();
+		//guiPanel.addGlue();
 		guiPanel.add(rightPanel);
 
 		// Set guiPanel to be content pane of the frame.
