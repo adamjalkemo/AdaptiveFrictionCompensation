@@ -30,9 +30,13 @@ public class FurutaGUI {
 	 				rightPanel,					// Holds estimatorParameterPanel and other buttons.
 					ctrlParameterPanel,			// Holds parameters inputs for both controllers
 					estimatorParameterPanel;	// Holds estimator parameter inputs
-
+			BoxPanel lowerLeftPlotPanel, lowerRightPlotPanel, lowerPlotPanels;
 	private PlotterPanel measPanel,
-					ctrlPanel;
+					ctrlPanel,
+					rlsPanel;
+
+			int width =  20000;
+			
 
 	// Declaration of components.
 	/*private DoubleField innerParHField = new DoubleField(5,3);
@@ -62,6 +66,18 @@ public class FurutaGUI {
 		regul = r;
 	}*/
 
+	private String formatLabel(String str, boolean bold, Integer size, String color) {
+		if (bold)
+			str = "<b>" + str + "</b>";
+		if ((size != null) || color !=null) {
+			str = "<font" + (size != null ? " size='" + size + "'" : "") + (color != null ? " color='" + color + "'" : "") + ">" + str + "</font>";
+		}
+
+		return "<html>" + str + "</html>";
+
+		//return <html><b><font color='#444444' size='2'>Top controller</font></b></html>
+	}
+
 	/** Creates the GUI. Called from Main. */
 	public void initializeGUI() {
 		// Create main frame.
@@ -75,14 +91,35 @@ public class FurutaGUI {
 		measPanel.setYAxis(20, -10, 2, 2);
 		measPanel.setXAxis(10, 5, 5);
 		measPanel.setUpdateFreq(10);
+
 		ctrlPanel = new PlotterPanel(1, priority);
 		ctrlPanel.setYAxis(20, -10, 2, 2);
 		ctrlPanel.setXAxis(10, 5, 5);
 		ctrlPanel.setUpdateFreq(10);
 
+		lowerLeftPlotPanel = new BoxPanel(BoxPanel.VERTICAL);
+		lowerLeftPlotPanel.add(new JLabel("u, f, u+f"));
+		lowerLeftPlotPanel.add(ctrlPanel);
+		
+		rlsPanel = new PlotterPanel(1, priority);
+		rlsPanel.setYAxis(20, -10, 2, 2);
+		rlsPanel.setXAxis(10, 5, 5);
+		rlsPanel.setUpdateFreq(10);
+
+		lowerRightPlotPanel = new BoxPanel(BoxPanel.VERTICAL);
+		lowerRightPlotPanel.add(new JLabel("RLS"));
+		lowerRightPlotPanel.add(rlsPanel);
+
+		lowerPlotPanels = new BoxPanel(BoxPanel.HORIZONTAL);
+		lowerPlotPanels.add(lowerLeftPlotPanel);
+		lowerPlotPanels.add(lowerRightPlotPanel);
+
+		plotterPanel.addFixed(10);
+		plotterPanel.add(new JLabel("y"));
 		plotterPanel.add(measPanel);
 		plotterPanel.addFixed(10);
-		plotterPanel.add(ctrlPanel);
+		plotterPanel.add(lowerPlotPanels);
+		plotterPanel.addFixed(10);
 
 		// -- Panel for the controllers parameters --
 
@@ -115,6 +152,8 @@ public class FurutaGUI {
 		}
 
 		topCtrlPanel = new BoxPanel(BoxPanel.VERTICAL);
+		topCtrlPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		topCtrlPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
 		topCtrlPanel.add(new JLabel("Q matrix"));
 		topCtrlPanel.add(qFieldPanel);
 		topCtrlPanel.add(new JLabel("R matrix"));
@@ -133,11 +172,9 @@ public class FurutaGUI {
 		swingLabelPanel.add(new JLabel("Ellipse radius 2"));
 		swingLabelPanel.add(new JLabel("Limit"));
 		swingLabelPanel.add(new JLabel("Gain"));
-		swingLabelPanel.add(new JLabel("Omega0"));
 
-		DoubleField omega0Field, radius1Field, radius2Field, limitField, gainField;
+		DoubleField omega0Field, hField, radius1Field, radius2Field, limitField, gainField;
 
-		omega0Field = new DoubleField(5,3);
 		radius1Field = new DoubleField(5,3);
 		radius2Field = new DoubleField(5,3);
 		limitField = new DoubleField(5,3);
@@ -150,26 +187,53 @@ public class FurutaGUI {
 		swingFieldPanel.add(radius2Field);
 		swingFieldPanel.add(limitField);
 		swingFieldPanel.add(gainField);
-		swingFieldPanel.add(omega0Field);
 
 
 		swingCtrlPanel = new BoxPanel(BoxPanel.HORIZONTAL);
+		swingCtrlPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
+		swingCtrlPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		swingCtrlPanel.add(swingLabelPanel);
 		swingCtrlPanel.add(swingFieldPanel);
 
 			// ---------------
 
+			// -- General controller --
+
+		BoxPanel generalCtrlPanel;
+		JPanel generalLabelPanel, generalFieldPanel;
+
+		generalLabelPanel = new JPanel(new GridLayout(0,1));
+		generalLabelPanel.add(new JLabel("Sampling time h"));
+		generalLabelPanel.add(new JLabel("ω0"));
+
+		omega0Field = new DoubleField(5,3);
+		hField = new DoubleField(5,3);
+
+		generalFieldPanel = new JPanel(new GridLayout(0,1));
+		generalFieldPanel.add(hField);
+		generalFieldPanel.add(omega0Field);
+
+		generalCtrlPanel = new BoxPanel(BoxPanel.HORIZONTAL);
+		generalCtrlPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
+		generalCtrlPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		generalCtrlPanel.add(generalLabelPanel);
+		generalCtrlPanel.add(generalFieldPanel);
+
+
+		// --------------
+
 		JButton saveCtrlButton;
+
 		saveCtrlButton = new JButton("Save");
-
 		ctrlParameterPanel = new BoxPanel(BoxPanel.VERTICAL);
-
-		JLabel tst = new JLabel("Top controller");
-		tst.setHorizontalAlignment(SwingConstants.CENTER);
-		ctrlParameterPanel.add(tst);
+		ctrlParameterPanel.add(new JLabel(formatLabel("Top controller", true, 2, "#444444")));
 		ctrlParameterPanel.add(topCtrlPanel);
-		ctrlParameterPanel.add(new JLabel("Swing up controller"));
+		ctrlParameterPanel.addFixed(5);
+		ctrlParameterPanel.add(new JLabel(formatLabel("Swing up controller", true, 2, "#444444")));
 		ctrlParameterPanel.add(swingCtrlPanel);
+		ctrlParameterPanel.addFixed(5);
+		ctrlParameterPanel.add(new JLabel(formatLabel("General controller settings", true, 2, "#444444")));
+		ctrlParameterPanel.add(generalCtrlPanel);
 		ctrlParameterPanel.add(saveCtrlButton);
 
 		// ------------
@@ -180,27 +244,55 @@ public class FurutaGUI {
 		DoubleField lambdaField, p0Field, theta0Field;
 
 		lambdaField = new DoubleField(5,3);
+		//lambdaField.setPreferredSize(new Dimension(sizex,sizey));
 		p0Field = new DoubleField(5,3);
+		//p0Field.setPreferredSize(new Dimension(sizex,sizey));
 		theta0Field = new DoubleField(5,3);
+		//theta0Field.setPreferredSize(new Dimension(sizex,sizey));
 
 		JPanel estimatorLabelPanel, estimatorFieldPanel;
-		BoxPanel estimatorButtonsPanel, estimatorGridPanel;
+		BoxPanel estimatorButtonsPanel, estimatorGridPanel, regressorPanel;
+
+		String[] regressorModels = {"Coloumb friction [ sign(v) ]", "Viscous friction [ sign(v), v ]"};
+		JComboBox regressorCombo = new JComboBox(regressorModels);
+		regressorCombo.setSelectedIndex(1);
+
+		regressorCombo.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		        JComboBox cb = (JComboBox)e.getSource();
+		        int petName = cb.getSelectedIndex();
+		        System.out.println(petName);
+		    }
+		});
+
+
+		regressorPanel = new BoxPanel(BoxPanel.HORIZONTAL);
+		regressorPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
+		regressorPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		regressorPanel.add(new JLabel("Model"));
+		regressorPanel.add(regressorCombo);
+
 
 		estimatorLabelPanel = new JPanel();
 		estimatorLabelPanel.setLayout(new GridLayout(0,1));
 		estimatorLabelPanel.add(new JLabel("lambda: "));
 		estimatorLabelPanel.add(new JLabel("P0: "));
-		estimatorLabelPanel.add(new JLabel("Theta0: "));
+		estimatorLabelPanel.add(new JLabel("θ0: "));
 
 		estimatorFieldPanel = new JPanel();
+		//estimatorFieldPanel.setPreferredSize(new Dimension(100,100));
 		estimatorFieldPanel.setLayout(new GridLayout(0,1));
 		estimatorFieldPanel.add(lambdaField);
 		estimatorFieldPanel.add(p0Field);
 		estimatorFieldPanel.add(theta0Field);
 
 		estimatorGridPanel = new BoxPanel(BoxPanel.HORIZONTAL);
+		//estimatorGridPanel.setPreferredSize(new Dimension(10,100));
+		//estimatorGridPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		estimatorGridPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
+		estimatorGridPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		estimatorGridPanel.add(estimatorLabelPanel);
-		estimatorGridPanel.addGlue();
+		//estimatorGridPanel.addGlue();
 		estimatorGridPanel.add(estimatorFieldPanel);
 
 		JButton resetEstimatorButton, saveEstimatorButton;
@@ -208,10 +300,14 @@ public class FurutaGUI {
 		resetEstimatorButton = new JButton("Reset");
 
 		estimatorButtonsPanel = new BoxPanel(BoxPanel.HORIZONTAL);
-		estimatorButtonsPanel.add(resetEstimatorButton);
+		estimatorButtonsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		estimatorButtonsPanel.add(saveEstimatorButton);
+		estimatorButtonsPanel.addFixed(5);
+		estimatorButtonsPanel.add(resetEstimatorButton);
+
 
 		estimatorParameterPanel = new BoxPanel(BoxPanel.VERTICAL);
+		estimatorParameterPanel.add(regressorPanel);
 		estimatorParameterPanel.add(estimatorGridPanel);
 		estimatorParameterPanel.add(estimatorButtonsPanel);
 		
@@ -228,13 +324,10 @@ public class FurutaGUI {
 		stopButton = new JButton("STOP");
 
 		buttonPanel = new BoxPanel(BoxPanel.HORIZONTAL);
-		buttonPanel.setBorder(BorderFactory.createCompoundBorder(
-		                   BorderFactory.createLineBorder(Color.red),
-		                   buttonPanel.getBorder()));
-
 		buttonPanel.add(startButton);
 		buttonPanel.add(stopButton);
-		startButton.setHorizontalAlignment(SwingConstants.LEFT);
+		buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		//startButton.setHorizontalAlignment(SwingConstants.LEFT);
 
 		// ------------
 
@@ -242,27 +335,31 @@ public class FurutaGUI {
 		// Create panel holding everything but the plotters.
 		rightPanel = new BoxPanel(BoxPanel.VERTICAL);
 		//rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
-		rightPanel.add(new JLabel("Controller parameters"));
+		rightPanel.addFixed(10);
+		rightPanel.add(new JLabel(formatLabel("Controller parameters", true, 4, "#000033")));
+		rightPanel.addFixed(3);
 		rightPanel.add(ctrlParameterPanel);//, BorderLayout.NORTH);
-		//rightPanel.addFixed(10);
-		rightPanel.add(new JLabel("Estimator Parameters"));
+		rightPanel.addFixed(10);
+		rightPanel.add(new JLabel(formatLabel("Estimator Parameters", true, 4, "#000033")));
 		rightPanel.add(estimatorParameterPanel);//, BorderLayout.CENTER);
-		//rightPanel.addFixed(10);
+		rightPanel.addFixed(10);
 		rightPanel.add(buttonPanel);//, BorderLayout.SOUTH);
+		rightPanel.addFixed(10);
 
 
 		// Create panel for the entire GUI.
 		guiPanel = new BoxPanel(BoxPanel.HORIZONTAL);
+		guiPanel.addFixed(10);
 		guiPanel.add(plotterPanel);
-		//guiPanel.addGlue();
+		guiPanel.addFixed(10);
 		guiPanel.add(rightPanel);
+		guiPanel.addFixed(10);
 
 		// Set guiPanel to be content pane of the frame.
 		frame.getContentPane().add(guiPanel, BorderLayout.CENTER);
 
 		// Pack the components of the window.
 		frame.pack();
-
 
 		/*
 		// Get initial parameters from Regul
