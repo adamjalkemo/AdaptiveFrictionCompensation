@@ -64,7 +64,7 @@ public class FurutaGUI {
 
 	/** Creates the GUI. Called from Main. */
 	public void initializeGUI() {
-		
+
 		setRegul(new Regul()); // TODO Should be called from Main or similar.
 
 		// Get initial parameters from Regul
@@ -251,7 +251,7 @@ public class FurutaGUI {
 		hField.setValue(ctrlPar.h);
 		hField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ctrlPar.h = hField.getValue();
+				ctrlPar.h = (long)hField.getValue();
 				saveCtrlButton.setEnabled(true);
 			}
 		});

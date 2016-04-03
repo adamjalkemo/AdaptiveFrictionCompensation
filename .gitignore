@@ -1,4 +1,6 @@
-
+#intellij
+.idea/
+*.iml
 #maven
 Furuta-Controller/target/
 
