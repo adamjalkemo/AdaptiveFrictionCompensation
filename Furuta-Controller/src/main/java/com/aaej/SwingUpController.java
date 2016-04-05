@@ -1,10 +1,26 @@
 package com.aaej;
 
-class SwingUpController {
-	public SwingUpController() {
-	}
+import javax.naming.ldap.Control;
 
-	public int calculateOutput(double pendAng, double pendAngVel) {
-		return 0;
-	}
+import static java.lang.Math.cos;
+import static java.lang.Math.pow;
+import static java.lang.Math.signum;
+
+class SwingUpController {
+    private ControllerParameters controllerParameters;
+
+    public SwingUpController() {
+    }
+
+    public synchronized double calculateOutput(double pendAng, double pendAngVel) {
+        double omegaSquared = controllerParameters.omega0 * controllerParameters.omega0;
+        double pendAngVelSquared = pendAngVel*pendAngVel;
+        double y = (cos(pendAng) * (pendAngVel * (cos(pendAng)) - 1 + pendAngVelSquared / (2 * omegaSquared)));
+        return signum(y);
+    }
+
+    public synchronized void setControllerParameters(ControllerParameters controllerParameters) {
+        this.controllerParameters = controllerParameters;
+    }
+
 }

@@ -16,17 +16,11 @@ class MainController extends Thread {
     private ControllerParameters controllerParameters;
     private TopController topController;
     private SwingUpController swingUpController;
-    //TODO decide if all analog input output is to be handled here
-    private AnalogOut AnalogU;
-    private AnalogIn analogPendAng;
-    private AnalogIn analogPendAngVel;
-    private AnalogIn analogPendAngTop;
-    private AnalogIn analogPendAngVelTop;
-    private AnalogIn analogBaseAng;
-    private AnalogIn analogBaseAngVel;
+    private CommunicationManager communicationManager;
 
 
-	public MainController() {
+	public MainController(CommunicationManager communicationManager) {
+        this.communicationManager = communicationManager;
         topController = new TopController();
         swingUpController = new SwingUpController();
 	}
@@ -53,18 +47,15 @@ class MainController extends Thread {
     }
 
     private void doControl() {
-        try {
-            double pendAng = analogPendAng.get();
-            double pendAngVel = analogPendAngVel.get();
-            if (chooseTopControl()) {
-                topController.calculateOutput();
-                topController.update();
-            } else {
-                swingUpController.calculateOutput(pendAng, pendAngVel);
-            }
-        } catch (IOChannelException e) {
-            e.printStackTrace();
+        communicationManager.readInput();
+        double u;
+        if (chooseTopControl()) {
+            u = topController.calculateOutput();
+            topController.update();
+        } else {
+            u = swingUpController.calculateOutput(communicationManager.pendAng, communicationManager.pendAngVel);
         }
+        communicationManager.writeOutput(u);
 
     }
 
@@ -76,5 +67,7 @@ class MainController extends Thread {
     public void setControllerParameters(ControllerParameters newParameters) {
         //TODO: decide what to synchronize on
         controllerParameters = (ControllerParameters)newParameters.clone();
+        swingUpController.setControllerParameters(controllerParameters);
+        topController.setControllerParameters(controllerParameters);
     }
 }

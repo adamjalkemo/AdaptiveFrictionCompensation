@@ -1,6 +1,7 @@
 package com.aaej;
 
 class TopController {
+	private ControllerParameters controllerParameters;
 	public TopController() {
 	}
 	public int calculateOutput() {
@@ -8,5 +9,8 @@ class TopController {
 	}
 	public void update() {
 
+	}
+	public synchronized void setControllerParameters(ControllerParameters controllerParameters) {
+		this.controllerParameters = controllerParameters;
 	}
 }
