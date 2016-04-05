@@ -2,6 +2,7 @@ package com.aaej;
 
 public class ControllerParameters implements Cloneable {
 	// TODO, these should not be initialized here
+	// TODO: Should we separate parameters used to calculate controller paramaters and the actual controller parameters?
 	public double[][] qMatrix = new double[][]{{1.0, 2.0},{3.0,4.0}}; 
 	public double[][] rMatrix = new double[][]{{5.0}}; 
 	public double ellipseRadius1 = 6.0;
