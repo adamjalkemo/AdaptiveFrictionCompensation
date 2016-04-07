@@ -18,7 +18,7 @@ import se.lth.control.plot.*;
 //Class that creates and maintains a GUI for the FURUTA process.
 public class FurutaGUI {
 	private final static Logger LOGGER = Logger.getLogger(FurutaGUI.class.getName());
-	private Regul regul;
+	private MainController controller;
 	private ControllerParameters ctrlPar;
 	private RLSParameters rlsPar;
 	private int priority;
@@ -58,19 +58,15 @@ public class FurutaGUI {
 		rlsPanel.start();
 	}
 
-	/** Sets up a reference to Regul. Called by Main. */
-	public void setRegul(Regul r) {
-		regul = r;
-	}
 
+	public void setController(MainController controller) {
+		this.controller = controller;
+	}
 	/** Creates the GUI. Called from Main. */
 	public void initializeGUI() {
-
-		setRegul(new Regul()); // TODO Should be called from Main or similar.
-
 		// Get initial parameters from Regul
-		ctrlPar = regul.getControllerParameters();
-		rlsPar = regul.getRLSParameters();
+		ctrlPar = controller.getControllerParameters();
+		rlsPar = controller.getRLSParameters();
 
 		// Create main frame.
 		frame = new JFrame("Furuta GUI");
@@ -275,7 +271,7 @@ public class FurutaGUI {
 		saveCtrlButton.setEnabled(false);
 		saveCtrlButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				regul.setControllerParameters(ctrlPar);
+				controller.setControllerParameters(ctrlPar);
 				saveCtrlButton.setEnabled(false);
 			}
 		});
@@ -391,7 +387,7 @@ public class FurutaGUI {
 		saveEstimatorButton.setEnabled(false);
 		saveEstimatorButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				regul.setRLSParameters(rlsPar);
+				controller.setRLSParameters(rlsPar);
 				saveEstimatorButton.setEnabled(false);
 			}
 		});
@@ -399,7 +395,7 @@ public class FurutaGUI {
 		resetEstimatorButton = new JButton("Reset estimation");
 		resetEstimatorButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				regul.resetEstimator();
+				controller.resetEstimator();
 			}
 		});
 
@@ -424,14 +420,14 @@ public class FurutaGUI {
 		startButton = new JButton("START");
 		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				regul.regulatorActive(true);
+				controller.regulatorActive(true);
 			}
 		});
 
 		stopButton = new JButton("STOP");
 		stopButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				regul.regulatorActive(false);
+				controller.regulatorActive(false);
 			}
 		});
 
@@ -480,7 +476,7 @@ public class FurutaGUI {
 		// WindowListener that exits the system if the main window is closed.
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				regul.shutDown();
+				controller.shutDown();
 				/*measPanel.stopThread(); // THIS CRASHES ??
 				ctrlPanel.stopThread();
 				rlsPanel.stopThread();*/

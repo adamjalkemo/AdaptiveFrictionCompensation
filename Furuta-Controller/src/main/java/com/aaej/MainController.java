@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 class MainController extends Thread {
     private final static Logger LOGGER = Logger.getLogger(MainController.class.getName());
     private ControllerParameters controllerParameters;
+    private RLSParameters rlsParameters;
     private TopController topController;
     private SwingUpController swingUpController;
     private CommunicationManager communicationManager;
@@ -23,6 +24,8 @@ class MainController extends Thread {
 	public MainController(int priority, CommunicationManager communicationManager) {
         setPriority(priority);
         this.communicationManager = communicationManager;
+        controllerParameters = new ControllerParameters();
+        rlsParameters = new RLSParameters();
         topController = new TopController();
         swingUpController = new SwingUpController();
         on = false;
@@ -74,5 +77,24 @@ class MainController extends Thread {
         controllerParameters = (ControllerParameters)newParameters.clone();
         swingUpController.setControllerParameters(controllerParameters);
         topController.setControllerParameters(controllerParameters);
+    }
+
+    public void shutDown() {
+        // Todo
+    }
+    public ControllerParameters getControllerParameters() {
+        return (ControllerParameters)controllerParameters.clone();
+    }
+    public RLSParameters getRLSParameters() {
+        return (RLSParameters)rlsParameters.clone();
+    }
+    public void setRLSParameters(RLSParameters rlsParameters) {
+        this.rlsParameters = (RLSParameters)rlsParameters.clone();
+    }
+    public void resetEstimator() {
+        //TODO
+    }
+    public void regulatorActive(boolean on) {
+        this.on = on;
     }
 }
