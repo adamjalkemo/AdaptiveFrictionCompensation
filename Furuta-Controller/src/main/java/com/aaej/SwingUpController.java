@@ -1,9 +1,7 @@
 package com.aaej;
 
-import javax.naming.ldap.Control;
 
 import static java.lang.Math.cos;
-import static java.lang.Math.pow;
 import static java.lang.Math.signum;
 
 class SwingUpController {

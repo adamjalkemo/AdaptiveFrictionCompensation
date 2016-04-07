@@ -17,12 +17,15 @@ class MainController extends Thread {
     private TopController topController;
     private SwingUpController swingUpController;
     private CommunicationManager communicationManager;
+    private boolean on;
 
 
-	public MainController(CommunicationManager communicationManager) {
+	public MainController(int priority, CommunicationManager communicationManager) {
+        setPriority(priority);
         this.communicationManager = communicationManager;
         topController = new TopController();
         swingUpController = new SwingUpController();
+        on = false;
 	}
 
     public void run() {
@@ -48,12 +51,14 @@ class MainController extends Thread {
 
     private void doControl() {
         communicationManager.readInput();
-        double u;
-        if (chooseTopControl()) {
-            u = topController.calculateOutput();
-            topController.update();
-        } else {
-            u = swingUpController.calculateOutput(communicationManager.pendAng, communicationManager.pendAngVel);
+        double u = 0;
+        if(on) {
+            if (chooseTopControl()) {
+                u = topController.calculateOutput();
+                topController.update();
+            } else {
+                u = swingUpController.calculateOutput(communicationManager.pendAng, communicationManager.pendAngVel);
+            }
         }
         communicationManager.writeOutput(u);
 

@@ -8,6 +8,9 @@ public class App
 {
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+        FurutaGUI gui = new FurutaGUI(5);
+        CommunicationManager cm = new CommunicationManager(gui);
+        MainController controller = new MainController(6,cm);
+
     }
 }

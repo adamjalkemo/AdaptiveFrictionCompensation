@@ -3,7 +3,8 @@ package com.aaej;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import se.lth.control.*;
 import se.lth.control.plot.*;
 
@@ -15,8 +16,8 @@ import se.lth.control.plot.*;
 
 
 //Class that creates and maintains a GUI for the FURUTA process.
-public class FurutaGUI {    
-
+public class FurutaGUI {
+	private final static Logger LOGGER = Logger.getLogger(FurutaGUI.class.getName());
 	private Regul regul;
 	private ControllerParameters ctrlPar;
 	private RLSParameters rlsPar;
@@ -513,11 +514,11 @@ public class FurutaGUI {
 	}
 
 	/** Called by Regul to plot a control signal data point. */
-	public synchronized void putControlDataPoint(DoublePoint dp) { // Consider using a modified PlotData here.
+	public synchronized void putControlDataPoint(double t, double u) { // Consider using a modified PlotData here.
 		if (isInitialized) {
-			ctrlPanel.putData(dp.x, dp.y);
+			ctrlPanel.putData(t, u);
 		} else {
-			debug("Note: GUI not yet initialized. Ignoring call to putControlDataPoint().");
+			LOGGER.log(Level.FINE, "Note: GUI not yet initialized. Ignoring call to putControlDataPoint().");
 		}
 	}
 
@@ -526,25 +527,22 @@ public class FurutaGUI {
 		if (isInitialized) {
 			rlsPanel.putData(dp.x, dp.y);
 		} else {
-			debug("Note: GUI not yet initialized. Ignoring call to putRLSDataPoint().");
+			LOGGER.log(Level.FINE,"Note: GUI not yet initialized. Ignoring call to putRLSDataPoint().");
 		}
 	}
 
 	/** Called by Regul to plot a measurement data point. */
-	public synchronized void putMeasurementDataPoint(PlotData pd) {
+	public synchronized void putMeasurementDataPoint(double t, double y) {
 		if (isInitialized) {
-			measPanel.putData(pd.x, pd.yref, pd.y);
+			measPanel.putData(t, y);
 		} else {
-			debug("Note: GUI not yet initialized. Ignoring call to putMeasurementDataPoint().");
+			LOGGER.log(Level.FINE, "Note: GUI not yet initialized. Ignoring call to putMeasurementDataPoint().");
 		}
 	}
 	
-	public static void debug(String message) {
-		System.out.println(message);
-	}
 
 	public static void main(String[] args) {
-        debug("Starting...");
+        LOGGER.log(Level.FINE, "Starting...");
         FurutaGUI furutaGUI = new FurutaGUI(5);
         furutaGUI.initializeGUI();
 	}
