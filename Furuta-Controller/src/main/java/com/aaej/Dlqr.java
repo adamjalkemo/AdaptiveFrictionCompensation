@@ -33,7 +33,7 @@ class Dlqr {
 	public static Matrix getL(Matrix A, Matrix B, Matrix Q, Matrix R) {
 		Matrix P = Q.copy();
 
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 1000; i++) {
 			// P = A'*P*A-(A'*P*B)/(R+B'*P*B)*(B'*P*A)+Q;
 			Matrix t1 = A.transpose().times(P).times(A);
 			
