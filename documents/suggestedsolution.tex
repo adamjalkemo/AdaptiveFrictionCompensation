@@ -46,7 +46,14 @@ For our suggested solution we will need one thread for the GUI and one for the c
 %Todo what parameters can be changed.
 
 \subsection{Controller}
-For the swing up a Lyapunov based controller will be used. In the top position a LQG controller will be used. The controllers will be implemented in Java.
+For the swing up a Lyapunov based controller will be used. To do this we will use the total energy of the pendulum (kinetic and potential) given in \ref{eq:energy}.
+\begin{equation}
+E= Mgl(cos\theta - 1)+\frac{J_p}{2}\dot\theta^2
+\label{eq:energy}
+\end{equation}
+We will then use the Lyaponov candidate $V(x,a)=E^2$. Then by taking the derivative we aim to find a controller $a=F(x)$ which will make $\dot V \leq 0$ for all $x$.
+
+In the top position a LQG controller will be used. To do this we will linearize the model in \ref{eq:model} around the top position with zero velocity for both the arm and the pendulum. The controllers will be implemented in Java.
 Models for Coulomb and viscous friction and additional models for asymmetric friction will be considered. The friction will be estimated using RLS. The regression model will depend on which friction model we choose to consider. 
 
 \subsection{GUI}
