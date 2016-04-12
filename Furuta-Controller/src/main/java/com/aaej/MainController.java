@@ -7,6 +7,7 @@ import se.lth.control.realtime.IOChannelException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.lang.Math.cos;
 /**
  * This class contains the thread for the controller and will decide which
  * controller to be used depending on the output from the process.
@@ -57,7 +58,7 @@ class MainController extends Thread {
         communicationManager.readInput();
         double u = 0;
         if(on) {
-            if (chooseTopControl()) {
+            if (chooseTopControl(communicationManager.pendAng,communicationManager.pendAngVel)) {
                 u = topController.calculateOutput(communicationManager.pendAng, communicationManager.pendAngVel, communicationManager.baseAng, communicationManager.baseAngVel);
                 topController.update();
             } else {
@@ -68,8 +69,14 @@ class MainController extends Thread {
 
     }
 
-    private boolean chooseTopControl() {
+    private boolean chooseTopControl(double pendAng, double pendAngVel) {
         //TODO: Test different switching schemes, parameters should be part of ControllerParameters
+	double omega0squared = controllerParameters.omega0*controllerParameters.omega0;
+	double E = Math.cos(pendAng) - 1 + 1/(2*omega0squared)*pendAngVel*pendAngVel;
+	if(E > 0) {
+            on = false;
+	    LOGGER.log(Level.INFO, "Switching to top controller");
+	}
         return false;
     }
 

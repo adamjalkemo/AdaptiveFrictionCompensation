@@ -44,7 +44,7 @@ public class CommunicationManager {
     private final double offsetPendAngVel = -0.022;
     private final double scalingPendAngVel = 3.76;
 
-    private final double offsetBaseAng = 0;
+    private final double offsetBaseAng = 0.5;//0;
     private final double scalingBaseAng = 1.28;//2.56;
 
     private final double offsetBaseAngVel = 0.0708;
