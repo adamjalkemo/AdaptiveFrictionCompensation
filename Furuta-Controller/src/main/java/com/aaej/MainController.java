@@ -57,7 +57,7 @@ class MainController extends Thread {
         double u = 0;
         if(on) {
             if (chooseTopControl()) {
-                u = topController.calculateOutput();
+                u = topController.calculateOutput(communicationManager.pendAng, communicationManager.pendAngVel, communicationManager.baseAng, communicationManager.baseAngVel);
                 topController.update();
             } else {
                 u = swingUpController.calculateOutput(communicationManager.pendAng, communicationManager.pendAngVel);
