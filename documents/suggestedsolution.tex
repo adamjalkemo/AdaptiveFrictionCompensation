@@ -49,21 +49,77 @@ Thanks to the non-linear dynamics of the rotating arm and pendulum the modelling
 $$(J_p + Ml^2)(\ddot{\theta} - \dot{\varphi} ^2sin\theta cos\theta )+Mrl\ddot{\varphi}cos\theta-gl(M+m/2)sin\theta = 0 $$
 \begin{equation}
 Mrl\ddot{\theta}cos\theta - Mrl\dot{\theta ^2}sin\theta + 2(J_p + ml^2 ) \dot{\theta} \dot{\varphi}sin\theta cos\theta + (J+mr^2 + Mr^2 + (J_p+ml^2)sin^2\theta)\ddot{\varphi}=u
+\label{eq:model}
 \end{equation}
-where $\theta$ is the angle of the pendulum, $\varphi$ is the angle of the arm and $u$ is the motor torque on the arm. The approximated coefficients are also taken from Lab2 and are given by:
+where $\theta$ is the angle of the pendulum, $\varphi$ is the angle of the arm and $u$ is the motor torque on the arm. The states $\theta$, $\dot{\theta}$, $\varphi$ and $\dot{\varphi}$ will all be measured from the process and $u$ will be our control signal. The approximated coefficients are also taken from Lab2 and are given by:
 $$l=0.413m \quad  r=0.235m$$
 $$M=0.01kg \quad J=0.05kgm^2$$
 $$J_p=0.0009kgm^2 \quad m=0.02kg$$
 $$ g=9.8$$
+Where $l$ is the length of the pendulum, $r$ is the length of the arm, $M$ is the mass of the weight, $J$ is moment of inertia  for pendulum, $J_p$ is the moment of inertia for the arm, $m$ is the mass of the pendulum and $g$ is the gravity constant.
+\subsubsection{Linearization}
+Linearization of \ref{eq:model} is done around
+\begin{equation}
+x =
+\begin{pmatrix}
+\theta & \dot\theta & \varphi & \dot\varphi
+\end{pmatrix} = 
+\begin{pmatrix}
+0 & 0 & 0 & 0
+\end{pmatrix}
+\end{equation}
+which yields \ref{eq:linear}.
+\begin{equation}
+\dot{x} = Ax + Bu =
+\begin{pmatrix}
+0 & 1 & 0  & 0 \\
+\frac{bd}{ab-c^2} & 0 & 0 & 0 \\
+0 & 0 & 0 & 1 \\
+\frac{-cd}{ab-c^2} & 0 & 0 & 0
+\end{pmatrix}x
++
+\begin{pmatrix}
+0 \\
+\frac{-cg}{ab-c^2} \\
+0 \\
+\frac{ag}{ab-c^2}
+\end{pmatrix}u
+\label{eq:linear}
+\end{equation}
+where 
+$$ a = J_p + M l^2 \qquad b = J + M r^2 + m r^2 $$
+$$ c = M r l  \qquad d = l g (M + m/2) $$
+This corresponds to the arm fixed with the pendulum fixed in the top or lower position.
+\subsubsection{Discretization}
+The linearized model will be discretized using matlabs build in command $c2d$. This yields
+\begin{equation}
+x_{k+1} = A_dx_k + B_du_k =\begin{pmatrix}
+ 1.0016 & 0.01 & 0 & 0 \\
+ 0.3133 & 1.0016 & 0 & 0 \\
+ 0 & 0 & 1 & 0.01 \\
+ -0.0059 & 0 & 0 & 1 
+\end{pmatrix}x_k + \begin{pmatrix}
+-0.0036\\
+-0.7127\\
+ 0.0096\\
+ 1.9125
+ \end{pmatrix}u_k
+ \label{eq:discrete}
+\end{equation}
+
+
+
+
 \subsection{Controller}
+\subsubsection{Swing up}
 For the swing up a Lyapunov based controller will be used. To do this we will use the total energy of the pendulum (kinetic and potential) given in \ref{eq:energy}.
 \begin{equation}
 E= Mgl(cos\theta - 1)+\frac{J_p}{2}\dot\theta^2
 \label{eq:energy}
 \end{equation}
 We will then use the Lyaponov candidate $V(x,a)=E^2$. Then by taking the derivative we aim to find a controller $a=F(x)$ which will make $\dot V \leq 0$ for all $x$.
-
-In the top position a LQR controller will be used. To do this we will linearize the model in \ref{eq:model} around the top position with zero velocity for both the arm and the pendulum. In order change the cost matrices Q and R online we must implement a way to calculate the state feedback gain vector L given by
+\subsubsection{Top controller}
+In the top position a LQR controller will be used. To do this we will use the linearized model in \ref{eq:linear} to calculate L. In order change the cost matrices Q and R online we must implement a way to calculate the state feedback gain vector L given by
 $$ L = (R+B^TPB)^{-1}(B^TPA) $$
 where P is calculated by iterating
 $$ P_{k-1} = A^TP_kA-(A^TP_kB)(R+B^TP_kB)^{-1}(B^TP_kA)+Q $$
@@ -71,7 +127,20 @@ backwards in time with $P_N = Q$. This solution for the Riccati problem will not
 
 There are six measurement signal available for the controller to use. Two for the position $ \theta $ and velocity $ \dot{\theta} $ of the pendulum each (one has higher resolution and is used at the top position) and one for the arm position $ \varphi $ and velocity $ \dot{\varphi} $. The quality of signals is not known at the moment and we might need to use a Kalman filter.
 
-The controllers will be implemented in Java.
+\subsubsection{Controller switch}
+In order to switch between the two controllers we need to find good conditions which enable the pendulum to be in a good position for when the top controller takes over. Since the model is linearized around 
+$$x =
+\begin{pmatrix}
+\theta & \dot\theta & \varphi & \dot\varphi
+\end{pmatrix} = 
+\begin{pmatrix}
+0 & 0 & 0 & 0
+\end{pmatrix}$$
+we need the pendulum to both have a low velocity and be close to the top for the top controller to work properly.
+This will as of now done by one of two options. The first one is to form an ellipsis from $\dot\theta$ and $\theta$ which will give good estimations of when to switch over. The other option is to calculate the energy of the pendulum and cease all control signals when the proper amount of energy is reached in the pendulum. This will allow the pendulum to come to rest close to the top which will enable the top controller to take over easily. The second option is different from the first since we aim to use a certain time interval where no control signal is sent and therefor the pendulum will have a lower velocity when it reaches the proper position.
+
+
+\subsection{Friction}
 To manage the friction we aim to estimate a simple friction model using RLS. The model will initially be a combination of Coulomb and viscous friction, i.e. the friction will be given by $$f=f_c\cdot sign(\dot{\varphi})+f_v\cdot \dot{\varphi}$$
 For this to work we will also use a dead-zone so that the noise from the process does not trigger the friction compensation. If there is time other friction models will be considered.
 The regression model for the initial friction model will take the for of \ref{eq:regressor}
@@ -80,13 +149,27 @@ The regression model for the initial friction model will take the for of \ref{eq
 \dot{\varphi} \\
 sign(\dot{\varphi})
 \end{bmatrix}, \beta = \begin{bmatrix}
-fc\\
-fv
+f_v\\
+f_c
 \end{bmatrix}
 \label{eq:regressor}
 \end{equation}
-By using measurements from different states we should be able to get different values on the friction. 
-%not done!
+Since we see the friction as an additional addon to all other signals in \ref{eq:discrete} we get the system
+$$x_{k+1} = A_dx_k + B_du_k + f$$
+To get the RLS to work we take all measurements one step back in time and try to estimate the parameters from \ref{eq:regressor}. We also aim to use the measurement from the arm velocity where we get values from both the pendulum position and the arm velocity, see the fourth state equation in \ref{eq:discrete}. After placing all known variables on the left hand side and get the following
+\begin{equation}
+\dot{\varphi}_k + 0.0059\theta_{k-1}-1.9125u_{k-1}-\dot{\varphi}_{k-1} = \begin{pmatrix}
+f_c & f_v
+\end{pmatrix}\begin{pmatrix}
+\dot{\varphi}_{k-1}\\
+sign(\dot{\varphi})
+\end{pmatrix}
+\label{eq:estim}
+\end{equation}
+Now we can apply the normal RLS algorithm.
+
+As we see in \ref{eq:discrete} we probably can get different results in the friction estimation by choosing different equations in the same form as in \label{eq:estim}. Initially we want to estimate the friction when the pendulum is hanging straight down and is moving with a constant speed so the pendulum wont move. However we want to try to estimate the friction in the top position and then the fourth equation might not be the one which yields the best result. More research will be put into this at a later stage.
+
 \subsection{GUI}
 The operator should be able to change controller parameters for both types of controller, the top controller and the swing up controller, as well as change the parameters for the friction estimation. 
 
