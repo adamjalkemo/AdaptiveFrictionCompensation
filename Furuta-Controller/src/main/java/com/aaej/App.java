@@ -13,9 +13,9 @@ public class App
         MainController controller = new MainController(6,cm);
         gui.setController(controller);
         gui.initializeGUI();
-
+        gui.start();
         // Start threads
         controller.run();
-        gui.start();
+        
     }
 }

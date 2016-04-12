@@ -76,10 +76,10 @@ public class FurutaGUI {
 		plotterPanel.setPreferredSize(new Dimension(1000,1000));
 
 		// Create PlotterPanels.
-		measPanel = new PlotterPanel(2, priority);
+		measPanel = new PlotterPanel(4, priority);
 		measPanel.setYAxis(20, -10, 2, 2);
 		measPanel.setXAxis(10, 5, 5);
-		measPanel.setUpdateFreq(10);
+		measPanel.setUpdateFreq(1);
 
 		ctrlPanel = new PlotterPanel(1, priority);
 		ctrlPanel.setYAxis(20, -10, 2, 2);
@@ -528,9 +528,9 @@ public class FurutaGUI {
 	}
 
 	/** Called by Regul to plot a measurement data point. */
-	public synchronized void putMeasurementDataPoint(double t, double y) {
+	public synchronized void putMeasurementDataPoint(double t, double y1, double y2, double y3, double y4) {
 		if (isInitialized) {
-			measPanel.putData(t, y);
+			measPanel.putData(t, y1, y2, y3, y4);
 		} else {
 			LOGGER.log(Level.FINE, "Note: GUI not yet initialized. Ignoring call to putMeasurementDataPoint().");
 		}

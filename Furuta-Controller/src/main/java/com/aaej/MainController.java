@@ -21,13 +21,14 @@ class MainController extends Thread {
     private boolean on;
 
 
-	public MainController(int priority, CommunicationManager communicationManager) {
+    public MainController(int priority, CommunicationManager communicationManager) {
         setPriority(priority);
         this.communicationManager = communicationManager;
-        controllerParameters = new ControllerParameters();
+        ControllerParameters newControllerParameters = new ControllerParameters();
         rlsParameters = new RLSParameters();
         topController = new TopController();
         swingUpController = new SwingUpController();
+	setControllerParameters(newControllerParameters);
         on = false;
 	}
 
@@ -76,7 +77,7 @@ class MainController extends Thread {
         //TODO: decide what to synchronize on
         controllerParameters = (ControllerParameters)newParameters.clone();
         swingUpController.setControllerParameters(controllerParameters);
-        topController.setControllerParameters(controllerParameters);
+        //topController.setControllerParameters(controllerParameters);
     }
 
     public void shutDown() {
