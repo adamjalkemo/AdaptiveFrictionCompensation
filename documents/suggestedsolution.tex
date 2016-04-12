@@ -53,7 +53,15 @@ E= Mgl(cos\theta - 1)+\frac{J_p}{2}\dot\theta^2
 \end{equation}
 We will then use the Lyaponov candidate $V(x,a)=E^2$. Then by taking the derivative we aim to find a controller $a=F(x)$ which will make $\dot V \leq 0$ for all $x$.
 
-In the top position a LQG controller will be used. To do this we will linearize the model in \ref{eq:model} around the top position with zero velocity for both the arm and the pendulum. The controllers will be implemented in Java.
+In the top position a LQR controller will be used. To do this we will linearize the model in \ref{eq:model} around the top position with zero velocity for both the arm and the pendulum. In order change the cost matrices Q and R online we must implement a way to calculate the state feedback gain vector L given by
+$$ L = (R+B^TPB)^{-1}(B^TPA) $$
+where P is calculated by iterating
+$$ P_{k-1} = A^TP_kA-(A^TP_kB)(R+B^TP_kB)^{-1}(B^TP_kA)+Q $$
+backwards in time with $P_N = Q$. This solution for the Riccati problem will not always work but in this case Fredrik Bagge verified that it should work.
+
+There are six measurement signal available for the controller to use. Two for the position $ \theta $ and velocity $ \dot{\theta} $ of the pendulum each (one has higher resolution and is used at the top position) and one for the arm position $ \varphi $ and velocity $ \dot{\varphi} $. The quality of signals is not known at the moment and we might need to use a Kalman filter.
+
+The controllers will be implemented in Java.
 Models for Coulomb and viscous friction and additional models for asymmetric friction will be considered. The friction will be estimated using RLS. The regression model will depend on which friction model we choose to consider. 
 
 \subsection{GUI}
