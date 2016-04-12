@@ -91,7 +91,7 @@ $$ a = J_p + M l^2 \qquad b = J + M r^2 + m r^2 $$
 $$ c = M r l  \qquad d = l g (M + m/2) $$
 This corresponds to the arm fixed with the pendulum fixed in the top or lower position.
 \subsubsection{Discretization}
-The linearized model will be discretized using matlabs build in command $c2d$. This yields
+The linearized model will be discretized using matlabs build in command $c2d$ with the sample time $h=0.01$. This yields
 \begin{equation}
 x_{k+1} = A_dx_k + B_du_k =\begin{pmatrix}
  1.0016 & 0.01 & 0 & 0 \\
@@ -107,9 +107,6 @@ x_{k+1} = A_dx_k + B_du_k =\begin{pmatrix}
  \label{eq:discrete}
 \end{equation}
 
-
-
-
 \subsection{Controller}
 \subsubsection{Swing up}
 For the swing up a Lyapunov based controller will be used. To do this we will use the total energy of the pendulum (kinetic and potential) given in \ref{eq:energy}.
@@ -117,7 +114,7 @@ For the swing up a Lyapunov based controller will be used. To do this we will us
 E= Mgl(cos\theta - 1)+\frac{J_p}{2}\dot\theta^2
 \label{eq:energy}
 \end{equation}
-We will then use the Lyaponov candidate $V(x,a)=E^2$. Then by taking the derivative we aim to find a controller $a=F(x)$ which will make $\dot V \leq 0$ for all $x$.
+We will use the Lyaponov candidate $V(x,a)=E^2$. Then by taking the derivative we aim to find a controller $a=F(x)$ which will make $\dot V \leq 0$ for all $x$. The controller will always output maximal control signal in order to minimize the lyaponov
 \subsubsection{Top controller}
 In the top position a LQR controller will be used. To do this we will use the linearized model in \ref{eq:linear} to calculate L. In order change the cost matrices Q and R online we must implement a way to calculate the state feedback gain vector L given by
 $$ L = (R+B^TPB)^{-1}(B^TPA) $$
@@ -138,12 +135,14 @@ $$x =
 \end{pmatrix}$$
 we need the pendulum to both have a low velocity and be close to the top for the top controller to work properly.
 This will as of now done by one of two options. The first one is to form an ellipsis from $\dot\theta$ and $\theta$ which will give good estimations of when to switch over. The other option is to calculate the energy of the pendulum and cease all control signals when the proper amount of energy is reached in the pendulum. This will allow the pendulum to come to rest close to the top which will enable the top controller to take over easily. The second option is different from the first since we aim to use a certain time interval where no control signal is sent and therefor the pendulum will have a lower velocity when it reaches the proper position.
+\subsubsection{Friction compensation}
+After the friction has been estimated, see \ref{sec:fricEst}, the value of the friction in each time step will be added to the control signal. This will only be used in the top controller since the swing up controller will always output maximal control signal. When the pendulum is close to the top position we will need to add a dead-zone in order to keep the noise from the measurements from making the friction compensation add control signal in the wrong direction.
 
-
-\subsection{Friction}
+\subsection{Friction estimation}
+\label{sec:fricEst}
 To manage the friction we aim to estimate a simple friction model using RLS. The model will initially be a combination of Coulomb and viscous friction, i.e. the friction will be given by $$f=f_c\cdot sign(\dot{\varphi})+f_v\cdot \dot{\varphi}$$
-For this to work we will also use a dead-zone so that the noise from the process does not trigger the friction compensation. If there is time other friction models will be considered.
-The regression model for the initial friction model will take the for of \ref{eq:regressor}
+For this to work we will also use a dead-zone so that the noise from the process does not trigger the friction compensation, this dead-zone will probably be implemented as a part of the controller and not a part of the friction model. If there is time other friction models will be considered.
+The regression model for the initial friction model will take the form of \ref{eq:regressor}.
 \begin{equation}
 \phi=\begin{bmatrix}
 \dot{\varphi} \\
