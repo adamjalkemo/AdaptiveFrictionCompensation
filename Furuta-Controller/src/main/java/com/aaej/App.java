@@ -12,6 +12,7 @@ public class App
         CommunicationManager cm = new CommunicationManager(gui);
         MainController controller = new MainController(6,cm);
         gui.setController(controller);
+	gui.setCommunicationManager(cm);
         gui.initializeGUI();
         gui.start();
         // Start threads

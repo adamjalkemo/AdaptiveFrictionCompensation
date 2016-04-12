@@ -74,7 +74,7 @@ class MainController extends Thread {
 	double omega0squared = controllerParameters.omega0*controllerParameters.omega0;
 	double E = Math.cos(pendAng) - 1 + 1/(2*omega0squared)*pendAngVel*pendAngVel;
 	if(E > 0) {
-            on = false;
+            //on = false;
 	    LOGGER.log(Level.INFO, "Switching to top controller");
 	}
         return false;

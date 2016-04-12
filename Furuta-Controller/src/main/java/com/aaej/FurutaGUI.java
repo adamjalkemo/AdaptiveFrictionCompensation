@@ -19,6 +19,7 @@ import se.lth.control.plot.*;
 public class FurutaGUI {
 	private final static Logger LOGGER = Logger.getLogger(FurutaGUI.class.getName());
 	private MainController controller;
+	private CommunicationManager communicationManager;
 	private ControllerParameters ctrlPar;
 	private RLSParameters rlsPar;
 	private int priority;
@@ -36,6 +37,7 @@ public class FurutaGUI {
 
 	// Declaration of buttons and fields
 	private JButton 		startButton, stopButton, resetEstimatorButton, saveEstimatorButton, saveCtrlButton;
+	private JButton resetOffsetButton;
 	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField,
 							lambdaField, p0Field, theta00Field, theta01Field;
 	private DoubleField[][] qArrayField, rArrayField;
@@ -62,6 +64,9 @@ public class FurutaGUI {
 	public void setController(MainController controller) {
 		this.controller = controller;
 	}
+	public void setCommunicationManager(CommunicationManager communicationManager) {
+		this.communicationManager = communicationManager;
+	}
 	/** Creates the GUI. Called from Main. */
 	public void initializeGUI() {
 		// Get initial parameters from Regul
@@ -77,7 +82,7 @@ public class FurutaGUI {
 
 		// Create PlotterPanels.
 		measPanel = new PlotterPanel(4, priority);
-		measPanel.setYAxis(20, -10, 2, 2);
+		measPanel.setYAxis(10, -5, 2, 2);
 		measPanel.setXAxis(10, 5, 5);
 		measPanel.setUpdateFreq(1);
 
@@ -277,6 +282,7 @@ public class FurutaGUI {
 		});
 
 
+
 		ctrlParameterPanel = new BoxPanel(BoxPanel.VERTICAL);
 		ctrlParameterPanel.setBorder(BorderFactory.createTitledBorder(formatLabel("Controller parameters", true, 4, "#000033")));
 		ctrlParameterPanel.add(new JLabel(formatLabel("Top controller", true, 2, "#444444")));
@@ -424,6 +430,12 @@ public class FurutaGUI {
 			}
 		});
 
+		resetOffsetButton = new JButton("Reset Offset");
+		resetOffsetButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				communicationManager.resetOffsets();
+			}
+		});
 		stopButton = new JButton("STOP");
 		stopButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -434,7 +446,9 @@ public class FurutaGUI {
 		buttonPanel = new BoxPanel(BoxPanel.HORIZONTAL);
 		buttonPanel.add(startButton);
 		buttonPanel.add(stopButton);
+		buttonPanel.add(resetOffsetButton);
 		buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
 
 		// ------------
 
@@ -537,9 +551,5 @@ public class FurutaGUI {
 	}
 	
 
-	public static void main(String[] args) {
-        LOGGER.log(Level.FINE, "Starting...");
-        FurutaGUI furutaGUI = new FurutaGUI(5);
-        furutaGUI.initializeGUI();
-	}
+
 }

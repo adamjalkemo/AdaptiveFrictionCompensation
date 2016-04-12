@@ -7,6 +7,8 @@ import se.lth.control.realtime.IOChannelException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
+import java.lang.Math;
+
 /**
  * Created by alexander on 4/5/16.
  */
@@ -32,25 +34,25 @@ public class CommunicationManager {
     private long t;
     private long startTime;
 
-    private final double offsetPendAngTop = 0.7792;
-    private final double scalingPendAngTop = 0.058;
+    private double offsetPendAngTop = 0.7792;
+    private double scalingPendAngTop = 0.058;
 
-    private final double offsetPendAngVelTop = 0;
-    private final double scalingPendAngVelTop = 0.68;
+    private double offsetPendAngVelTop = 0;
+    private double scalingPendAngVelTop = 0.68;
 
-    private final double offsetPendAng = 5.1763;
-    private final double scalingPendAng = 0.3091;
+    private double offsetPendAng = 5.1763;
+    private double scalingPendAng = 0.3091;
 
-    private final double offsetPendAngVel = -0.022;
-    private final double scalingPendAngVel = 3.76;
+    private double offsetPendAngVel = -0.022;
+    private double scalingPendAngVel = 3.76;
 
-    private final double offsetBaseAng = 0.5;//0;
-    private final double scalingBaseAng = 1.28;//2.56;
+    private double offsetBaseAng = 0.5;//0;
+    private double scalingBaseAng = 1.28;//2.56;
 
-    private final double offsetBaseAngVel = 0.0708;
-    private final double scalingBaseAngVel = 2;
+    private double offsetBaseAngVel = 0.0708;
+    private double scalingBaseAngVel = 2;
 
-    private final double scalingOutput = -1.40;
+    private double scalingOutput = -1.40;
 
 
     public CommunicationManager(FurutaGUI gui) {
@@ -109,5 +111,15 @@ public class CommunicationManager {
 	//Top and 360 sensor seems to really follow each other
         //gui.putMeasurementDataPoint(t,pendAng,pendAngVel,pendAngTop,pendAngVelTop);
         gui.putControlDataPoint(t,u);
+    }
+
+    public synchronized void resetOffsets() {
+        try {
+            offsetPendAng = -(analogPendAng.get()*scalingPendAng - Math.PI)/scalingPendAng;
+	    offsetPendAngVel = -analogPendAngVel.get();
+	    offsetBaseAngVel = -analogBaseAngVel.get();
+        } catch (IOChannelException e) {
+            e.printStackTrace();
+        }
     }
 }

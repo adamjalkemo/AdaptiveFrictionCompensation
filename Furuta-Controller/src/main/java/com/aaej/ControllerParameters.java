@@ -8,9 +8,10 @@ public class ControllerParameters implements Cloneable {
 	public double ellipseRadius1 = 6.0;
 	public double ellipseRadius2 = 7.0;
 	public double limit = 8.0;
-	public double gain = 9.0;
+	public double gain = 0.8;
 	public long h = 100;
-	public double omega0 = 11.0;
+	public double omega0 = 5.6561;
+
 	public double[] L = new double[]{-8.83491466316015, -1.58036477625261, -0.220472707928114, -0.304872980032455};
 	
 	public Object clone() {

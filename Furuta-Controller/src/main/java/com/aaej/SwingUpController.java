@@ -14,7 +14,7 @@ class SwingUpController {
         double omegaSquared = controllerParameters.omega0 * controllerParameters.omega0;
         double pendAngVelSquared = pendAngVel*pendAngVel;
         double y = (cos(pendAng) * (pendAngVel * (cos(pendAng)) - 1 + pendAngVelSquared / (2 * omegaSquared)));
-        return signum(y);
+        return controllerParameters.gain*signum(y);
     }
 
     public synchronized void setControllerParameters(ControllerParameters controllerParameters) {
