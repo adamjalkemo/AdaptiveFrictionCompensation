@@ -29,7 +29,7 @@ Jonathan Andersson \texttt{mat11ja1@student.lu.se}}
 \maketitle
 
 \section{Introduction}
-In this project a Furuta pendulum process will be used. The pendulum will be stabilized in the inverted position using a swing up controller and a top controller. When controlling the pendulum in the top position limit cycles will occur due to friction. By compensating for the friction we aim to stabilize the pendulum, the friction will be estimated using an adaptive method. To do this a Java controller and interface will be implemented and run on a linux computer.
+In this project a Furuta pendulum process will be used. The Furuta pendulum consists of a pendulum, that is free to rotate in the vertical plane, attached to the end of an horizontally rotating arm that can be controlled. The pendulum will be stabilized in the inverted position using a swing up controller and a top controller. When controlling the pendulum in the top position limit cycles will occur due to friction. By compensating for the friction we aim to stabilize the pendulum, the friction will be estimated using an adaptive method. To do this a Java controller and interface will be implemented and run on a linux.
 \section{Program structure}
 For our suggested solution we will need one thread for the GUI and one for the controller. To communicate with the Furuta process we will use the analog box normally used during the control labs at LTH. The realtime package from Automatic Control at LTH will be used for communication in the GUI and controller implementation. It will be important to synchronize the controller calculations with the user inputs. A general overview can be seen in figure \ref{fig:uml}.
 \begin{figure}[H]
@@ -44,11 +44,49 @@ For our suggested solution we will need one thread for the GUI and one for the c
 
 
 %Todo what parameters can be changed.
-
+\subsection{System model}
+Thanks to the non-linear dynamics of the rotating arm and pendulum the modelling of the process becomes complicated. We have used the model given in Lab2 in "Non-linear control" where the model have been simplified with the help of Lagrange theory. The dynamics of the model is then given by:
+$$(J_p + Ml^2)(\ddot{\theta} - \dot{\varphi} ^2sin\theta cos\theta )+Mrl\ddot{\varphi}cos\theta-gl(M+m/2)sin\theta = 0 $$
+\begin{equation}
+Mrl\ddot{\theta}cos\theta - Mrl\dot{\theta ^2}sin\theta + 2(J_p + ml^2 ) \dot{\theta} \dot{\varphi}sin\theta cos\theta + (J+mr^2 + Mr^2 + (J_p+ml^2)sin^2\theta)\ddot{\varphi}=u
+\end{equation}
+where $\theta$ is the angle of the pendulum, $\varphi$ is the angle of the arm and $u$ is the motor torque on the arm. The approximated coefficients are also taken from Lab2 and are given by:
+$$l=0.413m \quad  r=0.235m$$
+$$M=0.01kg \quad J=0.05kgm^2$$
+$$J_p=0.0009kgm^2 \quad m=0.02kg$$
+$$ g=9.8$$
 \subsection{Controller}
-For the swing up a Lyapunov based controller will be used. In the top position a LQG controller will be used. The controllers will be implemented in Java.
-Models for Coulomb and viscous friction and additional models for asymmetric friction will be considered. The friction will be estimated using RLS. The regression model will depend on which friction model we choose to consider. 
+For the swing up a Lyapunov based controller will be used. To do this we will use the total energy of the pendulum (kinetic and potential) given in \ref{eq:energy}.
+\begin{equation}
+E= Mgl(cos\theta - 1)+\frac{J_p}{2}\dot\theta^2
+\label{eq:energy}
+\end{equation}
+We will then use the Lyaponov candidate $V(x,a)=E^2$. Then by taking the derivative we aim to find a controller $a=F(x)$ which will make $\dot V \leq 0$ for all $x$.
 
+In the top position a LQR controller will be used. To do this we will linearize the model in \ref{eq:model} around the top position with zero velocity for both the arm and the pendulum. In order change the cost matrices Q and R online we must implement a way to calculate the state feedback gain vector L given by
+$$ L = (R+B^TPB)^{-1}(B^TPA) $$
+where P is calculated by iterating
+$$ P_{k-1} = A^TP_kA-(A^TP_kB)(R+B^TP_kB)^{-1}(B^TP_kA)+Q $$
+backwards in time with $P_N = Q$. This solution for the Riccati problem will not always work but in this case Fredrik Bagge verified that it should work.
+
+There are six measurement signal available for the controller to use. Two for the position $ \theta $ and velocity $ \dot{\theta} $ of the pendulum each (one has higher resolution and is used at the top position) and one for the arm position $ \varphi $ and velocity $ \dot{\varphi} $. The quality of signals is not known at the moment and we might need to use a Kalman filter.
+
+The controllers will be implemented in Java.
+To manage the friction we aim to estimate a simple friction model using RLS. The model will initially be a combination of Coulomb and viscous friction, i.e. the friction will be given by $$f=f_c\cdot sign(\dot{\varphi})+f_v\cdot \dot{\varphi}$$
+For this to work we will also use a dead-zone so that the noise from the process does not trigger the friction compensation. If there is time other friction models will be considered.
+The regression model for the initial friction model will take the for of \ref{eq:regressor}
+\begin{equation}
+\phi=\begin{bmatrix}
+\dot{\varphi} \\
+sign(\dot{\varphi})
+\end{bmatrix}, \beta = \begin{bmatrix}
+fc\\
+fv
+\end{bmatrix}
+\label{eq:regressor}
+\end{equation}
+By using measurements from different states we should be able to get different values on the friction. 
+%not done!
 \subsection{GUI}
 The operator should be able to change controller parameters for both types of controller, the top controller and the swing up controller, as well as change the parameters for the friction estimation. 
 

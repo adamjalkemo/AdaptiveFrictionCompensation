@@ -7,16 +7,20 @@ class TopController {
 	private ControllerParameters controllerParameters;
 	public TopController() {
 	}
-	public int calculateOutput() {
-		return 0;
+	public double calculateOutput(double pendAng, double pendAngVel, double baseAng, double baseAngVel) {
+		// x = (theta thetavel phi phivel)
+		double[] L = controllerParameters.L;
+		double u = - (L[0] * pendAng + L[1] * pendAngVel + L[2] * baseAng + L[3] * baseAngVel);
+		return u;
 	}
+	
+	// If states due to for instance Kalman filter is used!
 	public void update() {
 
 	}
 	public synchronized void setControllerParameters(ControllerParameters controllerParameters) {
 		this.controllerParameters = controllerParameters;
 
-		// TODO: THESE SHOULD BE READ FROM CONTROLLER PARAMETERS
 		Matrix Q = new Matrix(controllerParameters.qMatrix); 
 		Matrix R = new Matrix(controllerParameters.rMatrix[0],controllerParameters.rMatrix[0].length);;
 
