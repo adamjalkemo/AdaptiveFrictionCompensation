@@ -16,7 +16,7 @@ public class App
         gui.initializeGUI();
         // Start threads
         gui.start();
-        controller.run();
+        controller.start();
         
     }
 }
