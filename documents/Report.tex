@@ -39,10 +39,12 @@ In this project a Furuta pendulum process will be used. The pendulum will be sta
 \item RLS
 \item Chosen regressor and chosen equation
 \item top position/bottom position
+\item in top position, when and why do we turn off estimation
 \item Aternatives to RLS
 \end{itemize}
 \subsection{Compensation}
 just straight adding friction? other way?
+in top position, when and why do we turn off compensation
 \subsection{Real-time implementation}
 \section{Program Structure}
 For our suggested solution we will need one thread for the GUI and one for the controller. To communicate with the Furuta process we will use the analog box normally used during the control labs at LTH. The realtime package from Automatic Control at LTH will be used for communication in the GUI and controller implementation. It will be important to synchronize the controller calculations with the user inputs. A general overview can be seen in figure \ref{fig:uml}.
@@ -61,8 +63,19 @@ We aim to be able to change all parameters on-line.
 For the swing up a Lyapunov based controller will be used. In the top position a LQG controller will be used. The controllers will be implemented in Java.
 Models for Coulomb and viscous friction and additional models for asymmetric friction will be considered. The friction will be estimated using RLS. The regression model will depend on which friction model we choose to consider. 
 \subsubsection{Swing-up}
+\begin{itemize}
+\item Lyaponov
+\item Catching area
+\end{itemize}
 \subsubsection{Top Controller}
+
 \section{Results}
+\begin{itemize}
+\item Different equations for RLS gives different friction estimations
+\item Different P results
+\item other estimation tools? differences?
+\item 
+\end{itemize}
 \section{Discussion}
 \section{Conclusions}
 
