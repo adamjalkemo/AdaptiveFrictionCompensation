@@ -165,17 +165,21 @@ sign(\dot{\varphi})
 \end{pmatrix}
 \label{eq:estim}
 \end{equation}
-Now we can apply the normal RLS algorithm.
+Now we can apply the normal RLS algorithm with some forgetting factor $\lambda$.
 
 As we see in \ref{eq:discrete} we probably can get different results in the friction estimation by choosing different equations in the same form as in \label{eq:estim}. Initially we want to estimate the friction when the pendulum is hanging straight down and is moving with a constant speed so the pendulum wont move. However we want to try to estimate the friction in the top position and then the fourth equation might not be the one which yields the best result. More research will be put into this at a later stage.
 
 \subsection{GUI}
-The operator should be able to change controller parameters for both types of controller, the top controller and the swing up controller, as well as change the parameters for the friction estimation. 
+The operator should be able to change controller parameters for both types of controller and for the friction estimator. For the top controller, the $Q$ and $R$ matrices. For the swing up controller, the switching area and its limit and the gain. Other general parameters for the controller such as sampling time $h$, and $\omega _0$. And for the friction estimation the forgetting factor $\lambda$ and the initial values $P_0$ and $\omega _0$.
 
 The GUI will plot the outputs from the Furuta pendulum, the friction estimation, control signal, both uncompensated as well as the compensated signal. We aim to have different regressor modes for the friction compensation and the operator can therefore change different parameters depending on the regressor chosen. 
 
 We aim to be able to change all parameters on-line.
-
+\begin{figure}[H]
+\centerline{\includegraphics[scale=0.7]{gui.png}}
+\caption{Suggested design for the GUI}
+\label{fig:uml}
+\end{figure}
 \section{Time plan}
 \begin{table}[H]
 \centering
