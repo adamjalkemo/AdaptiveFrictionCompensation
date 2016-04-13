@@ -70,7 +70,7 @@ public class CommunicationManager {
             e.printStackTrace();
         } catch (UnsatisfiedLinkError e) {
             LOGGER.log(Level.SEVERE, "Couldn't connect to analogbox");
-            //System.exit(1);
+            System.exit(1);
         }
     }
 

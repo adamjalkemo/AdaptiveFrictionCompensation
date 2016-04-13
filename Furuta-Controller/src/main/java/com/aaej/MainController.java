@@ -84,8 +84,10 @@ class MainController extends Thread {
 	if(E > 0) {
             //on = false;
 	    LOGGER.log(Level.INFO, "Switching to top controller");
+	    return true;
+	} else {
+            return false;
 	}
-        return false;
     }
 
     public void setControllerParameters(ControllerParameters newParameters) {
@@ -94,7 +96,7 @@ class MainController extends Thread {
             controllerParameters = (ControllerParameters) newParameters.clone();
         }
         swingUpController.setControllerParameters(controllerParameters);
-        //topController.setControllerParameters(controllerParameters);
+        topController.setControllerParameters(controllerParameters);
     }
 
     public void shutDown() {
