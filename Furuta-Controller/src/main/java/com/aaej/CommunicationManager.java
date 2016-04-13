@@ -23,13 +23,13 @@ public class CommunicationManager {
     private AnalogIn analogBaseAng;
     private AnalogIn analogBaseAngVel;
 
-    public double u;
-    public double pendAng;
-    public double pendAngVel;
-    public double pendAngTop;
-    public double pendAngVelTop;
-    public double baseAng;
-    public double baseAngVel;
+    private double u;
+    private double pendAng;
+    private double pendAngVel;
+    private double pendAngTop;
+    private double pendAngVelTop;
+    private double baseAng;
+    private double baseAngVel;
 
     private long t;
     private long startTime;
@@ -58,7 +58,6 @@ public class CommunicationManager {
     public CommunicationManager(FurutaGUI gui) {
         this.gui = gui;
 	startTime = System.currentTimeMillis();
-        //TODO check which signal is which acutally (only guesses now)
         try {
             analogU = new AnalogOut(0);
             analogPendAng = new AnalogIn(6);
@@ -75,9 +74,8 @@ public class CommunicationManager {
         }
     }
 
-    public void readInput() {
+    public synchronized void readInput() {
         try {
-            //TODO: Fix scaling and offset
             pendAng = (analogPendAng.get()+offsetPendAng)*scalingPendAng;
             pendAngVel = (analogPendAngVel.get()+offsetPendAngVel)*scalingPendAngVel;
             pendAngTop = (analogPendAngTop.get()+offsetPendAngTop)*scalingPendAngTop;
@@ -121,5 +119,28 @@ public class CommunicationManager {
         } catch (IOChannelException e) {
             e.printStackTrace();
         }
+    }
+    public synchronized double getPendAngVel() {
+        return pendAngVel;
+    }
+
+    public synchronized double getPendAngTop() {
+        return pendAngTop;
+    }
+
+    public synchronized double getPendAngVelTop() {
+        return pendAngVelTop;
+    }
+
+    public synchronized double getBaseAng() {
+        return baseAng;
+    }
+
+    public synchronized double getBaseAngVel() {
+        return baseAngVel;
+    }
+
+    public double getPendAng() {
+        return pendAng;
     }
 }

@@ -20,6 +20,7 @@ class MainController extends Thread {
     private SwingUpController swingUpController;
     private CommunicationManager communicationManager;
     private boolean on;
+    private Object controllerParametersLock = new Object();
 
 
     public MainController(int priority, CommunicationManager communicationManager) {
@@ -56,13 +57,17 @@ class MainController extends Thread {
 
     private void doControl() {
         communicationManager.readInput();
+        double pendAng = communicationManager.getPendAng();
+        double pendAngVel = communicationManager.getPendAngVel();
+        double baseAng = communicationManager.getBaseAng();
+        double baseAngVel = communicationManager.getBaseAngVel();
         double u = 0;
         if(on) {
-            if (chooseTopControl(communicationManager.pendAng,communicationManager.pendAngVel)) {
-                u = topController.calculateOutput(communicationManager.pendAng, communicationManager.pendAngVel, communicationManager.baseAng, communicationManager.baseAngVel);
+            if (chooseTopControl(pendAng,pendAngVel)) {
+                u = topController.calculateOutput(pendAng, pendAngVel, baseAng, baseAngVel);
                 topController.update();
             } else {
-                u = swingUpController.calculateOutput(communicationManager.pendAng, communicationManager.pendAngVel);
+                u = swingUpController.calculateOutput(pendAng, pendAngVel);
             }
         }
         communicationManager.writeOutput(u);
@@ -71,7 +76,10 @@ class MainController extends Thread {
 
     private boolean chooseTopControl(double pendAng, double pendAngVel) {
         //TODO: Test different switching schemes, parameters should be part of ControllerParameters
-	double omega0squared = controllerParameters.omega0*controllerParameters.omega0;
+        double omega0squared;
+        synchronized (controllerParametersLock) {
+            omega0squared = controllerParameters.omega0 * controllerParameters.omega0;
+        }
 	double E = Math.cos(pendAng) - 1 + 1/(2*omega0squared)*pendAngVel*pendAngVel;
 	if(E > 0) {
             //on = false;
@@ -82,7 +90,9 @@ class MainController extends Thread {
 
     public void setControllerParameters(ControllerParameters newParameters) {
         //TODO: decide what to synchronize on
-        controllerParameters = (ControllerParameters)newParameters.clone();
+        synchronized(controllerParametersLock) {
+            controllerParameters = (ControllerParameters) newParameters.clone();
+        }
         swingUpController.setControllerParameters(controllerParameters);
         //topController.setControllerParameters(controllerParameters);
     }

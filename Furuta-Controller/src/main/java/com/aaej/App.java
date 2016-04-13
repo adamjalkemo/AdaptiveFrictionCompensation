@@ -14,8 +14,8 @@ public class App
         gui.setController(controller);
 	gui.setCommunicationManager(cm);
         gui.initializeGUI();
-        gui.start();
         // Start threads
+        gui.start();
         controller.run();
         
     }

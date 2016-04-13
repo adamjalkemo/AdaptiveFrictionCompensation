@@ -5,9 +5,10 @@ import java.util.*;
 
 class TopController {
 	private ControllerParameters controllerParameters;
+	private double[] L;
 	public TopController() {
 	}
-	public double calculateOutput(double pendAng, double pendAngVel, double baseAng, double baseAngVel) {
+	public synchronized double calculateOutput(double pendAng, double pendAngVel, double baseAng, double baseAngVel) {
 		// x = (theta thetavel phi phivel)
 		double[] L = controllerParameters.L;
 		double u = - (L[0] * pendAng + L[1] * pendAngVel + L[2] * baseAng + L[3] * baseAngVel);
@@ -15,20 +16,22 @@ class TopController {
 	}
 	
 	// If states due to for instance Kalman filter is used!
-	public void update() {
+	public synchronized void update() {
 
 	}
-	public synchronized void setControllerParameters(ControllerParameters controllerParameters) {
-		this.controllerParameters = controllerParameters;
-
-		Matrix Q = new Matrix(controllerParameters.qMatrix); 
+	public void setControllerParameters(ControllerParameters controllerParameters) {
+		Matrix Q = new Matrix(controllerParameters.qMatrix);
 		Matrix R = new Matrix(controllerParameters.rMatrix[0],controllerParameters.rMatrix[0].length);;
 
 		Matrix LMatrix = calculateLMatrix(Q,R);
-		controllerParameters.L = calculateLMatrix(Q, R).getArray()[0];
+		synchronized (this) {
+			this.controllerParameters = controllerParameters;
+			this.L = calculateLMatrix(Q, R).getArray()[0];
+		}
+
 	}
 
-	public Matrix calculateLMatrix(Matrix Q, Matrix R) {
+	private Matrix calculateLMatrix(Matrix Q, Matrix R) {
 		Matrix A = new Matrix(new double[][]{{1.00156624468639, 0.0100052202706862, 0},{0.313330682422588, 1.00156624468639, 0},{-0.00588699625557634, 0.0000294273019572104, 1}});
 		Matrix B = new Matrix(new double[]{-0.00356262735559447, -0.712711411086724, 1.91246491620224},3);
 
