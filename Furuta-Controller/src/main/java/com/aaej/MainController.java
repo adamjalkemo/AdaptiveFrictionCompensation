@@ -99,9 +99,6 @@ class MainController extends Thread {
         topController.setControllerParameters(controllerParameters);
     }
 
-    public void shutDown() {
-        // Todo
-    }
     public ControllerParameters getControllerParameters() {
         return (ControllerParameters)controllerParameters.clone();
     }
