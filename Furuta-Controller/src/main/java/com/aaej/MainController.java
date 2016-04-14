@@ -8,6 +8,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
+import static java.lang.Math.atan;
+
 /**
  * This class contains the thread for the controller and will decide which
  * controller to be used depending on the output from the process.
@@ -69,7 +73,7 @@ class MainController extends Thread {
         double baseAngVel = communicationManager.getBaseAngVel();
         double u = 0;
         if(on) {
-            activeController = chooseTopControl(pendAng,pendAngVel);
+            activeController = chooseController(pendAng,pendAngVel);
             if(activeController == Controller.TOP) {
                 u = topController.calculateOutput(pendAng, pendAngVel, baseAng, baseAngVel);
                 topController.update();
@@ -83,23 +87,52 @@ class MainController extends Thread {
 
     }
 
-    private Controller chooseTopControl(double pendAng, double pendAngVel) {
+    private Controller chooseController(double pendAng, double pendAngVel) {
         //TODO: Test different switching schemes, parameters should be part of ControllerParameters
-        double omega0squared;
+        Catcher catcher;
         synchronized (controllerParametersLock) {
-            omega0squared = controllerParameters.omega0 * controllerParameters.omega0;
+            catcher = controllerParameters.catcher;
         }
-        double E = Math.cos(pendAng) - 1 + 1/(2*omega0squared)*pendAngVel*pendAngVel;
-        if(E > 0) {
-            if(activeController != Controller.TOP) {
-                LOGGER.log(Level.INFO, "Switching to top controller");
+        if(catcher == Catcher.ELLIPSE) {
+            double ar=sqrt(0.62*0.62+9.4*9.4);
+            ar=ar*0.2;
+            double br=sqrt(0.19*0.19+2.5*2.5);
+            br=br*0.2;
+            double alfar=atan(9.4/0.62);
+            double X = pendAng;
+            double Y = pendAngVel;
+            double term1 = X*cos(alfar)+Y*sin(alfar);
+            double term2 = -X*sin(alfar) + Y*cos(alfar);
+            if((term1*term1/(ar*ar) + term2*term2/(br*br)) < 1.5) {
+                return Controller.TOP;
+            } else {
+                return Controller.SWINGUP;
             }
-            return Controller.TOP;
+        } else if(catcher == Catcher.REASONABLEANGLE) {
+            if ((Math.abs(pendAng) + Math.abs(pendAngVel)) < 0.8) {
+                return Controller.TOP;
+            } else {
+                return Controller.SWINGUP;
+            }
+        } else if(catcher == Catcher.ENERGY) {
+            double omega0squared;
+            synchronized (controllerParametersLock) {
+                omega0squared = controllerParameters.omega0 * controllerParameters.omega0;
+            }
+            double E = Math.cos(pendAng) - 1 + 1 / (2 * omega0squared) * pendAngVel * pendAngVel;
+            if (E > 0) {
+                if (activeController != Controller.TOP) {
+                    LOGGER.log(Level.INFO, "Switching to top controller");
+                }
+                return Controller.TOP;
+            } else {
+                if (activeController != Controller.SWINGUP) {
+                    LOGGER.log(Level.INFO, "Switching to swingup controller");
+                }
+                return Controller.SWINGUP;
+            }
         } else {
-            if(activeController != Controller.SWINGUP) {
-                LOGGER.log(Level.INFO, "Switching to swingup controller");
-            }
-            return Controller.SWINGUP;
+            return Controller.NONE;
         }
     }
 

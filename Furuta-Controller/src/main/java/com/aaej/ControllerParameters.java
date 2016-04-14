@@ -13,6 +13,8 @@ public class ControllerParameters implements Cloneable {
 	public double omega0 = 5.6561;
 
 	public double[] L = new double[]{-8.83491466316015, -1.58036477625261, -0.220472707928114, -0.304872980032455};
+
+	public Catcher catcher = Catcher.ELLIPSE;
 	
 	public Object clone() {
 		try {
