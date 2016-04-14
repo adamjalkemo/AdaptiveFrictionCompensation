@@ -21,6 +21,7 @@ class MainController extends Thread {
     private CommunicationManager communicationManager;
     private boolean on;
     private Object controllerParametersLock = new Object();
+    private boolean shutDown;
 
 
     public MainController(int priority, CommunicationManager communicationManager) {
@@ -32,13 +33,14 @@ class MainController extends Thread {
         swingUpController = new SwingUpController();
 	setControllerParameters(newControllerParameters);
         on = false;
+        shutDown = false;
 	}
 
     public void run() {
         long duration;
         long t = System.currentTimeMillis();
 
-        while(true) {
+        while(!shutDown) {
             doControl();
             //TODO: Synchronization needed?
             t = t + controllerParameters.h;
@@ -99,6 +101,9 @@ class MainController extends Thread {
         topController.setControllerParameters(controllerParameters);
     }
 
+    public void shutDown() {
+        shutDown = true;
+    }
     public ControllerParameters getControllerParameters() {
         return (ControllerParameters)controllerParameters.clone();
     }
