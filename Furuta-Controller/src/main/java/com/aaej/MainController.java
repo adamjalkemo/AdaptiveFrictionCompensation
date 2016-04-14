@@ -13,6 +13,9 @@ import static java.lang.Math.cos;
  * controller to be used depending on the output from the process.
  */
 class MainController extends Thread {
+    private enum Controller {
+        TOP,SWINGUP,NONE;
+    };
     private final static Logger LOGGER = Logger.getLogger(MainController.class.getName());
     private ControllerParameters controllerParameters;
     private RLSParameters rlsParameters;
@@ -22,7 +25,7 @@ class MainController extends Thread {
     private boolean on;
     private Object controllerParametersLock = new Object();
     private boolean shutDown;
-
+    private Controller activeController = Controller.NONE;
 
     public MainController(int priority, CommunicationManager communicationManager) {
         setPriority(priority);
@@ -66,18 +69,21 @@ class MainController extends Thread {
         double baseAngVel = communicationManager.getBaseAngVel();
         double u = 0;
         if(on) {
-            if (chooseTopControl(pendAng,pendAngVel)) {
+            activeController = chooseTopControl(pendAng,pendAngVel);
+            if(activeController == Controller.TOP) {
                 u = topController.calculateOutput(pendAng, pendAngVel, baseAng, baseAngVel);
                 topController.update();
-            } else {
+            } else if(activeController == Controller.SWINGUP) {
                 u = swingUpController.calculateOutput(pendAng, pendAngVel);
+            } else {
+                //Keep u as 0
             }
         }
         communicationManager.writeOutput(u);
 
     }
 
-    private boolean chooseTopControl(double pendAng, double pendAngVel) {
+    private Controller chooseTopControl(double pendAng, double pendAngVel) {
         //TODO: Test different switching schemes, parameters should be part of ControllerParameters
         double omega0squared;
         synchronized (controllerParametersLock) {
@@ -85,11 +91,15 @@ class MainController extends Thread {
         }
         double E = Math.cos(pendAng) - 1 + 1/(2*omega0squared)*pendAngVel*pendAngVel;
         if(E > 0) {
-            //on = false;
-            LOGGER.log(Level.INFO, "Switching to top controller");
-            return true;
+            if(activeController != Controller.TOP) {
+                LOGGER.log(Level.INFO, "Switching to top controller");
+            }
+            return Controller.TOP;
         } else {
-            return false;
+            if(activeController != Controller.SWINGUP) {
+                LOGGER.log(Level.INFO, "Switching to swingup controller");
+            }
+            return Controller.SWINGUP;
         }
     }
 
