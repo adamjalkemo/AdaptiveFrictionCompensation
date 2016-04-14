@@ -63,6 +63,7 @@ class MainController extends Thread {
                 LOGGER.log(Level.WARNING, "Missed Deadline");
             }
         }
+	communicationManager.writeOutput(0);
     }
 
     private void doControl() {
@@ -104,14 +105,26 @@ class MainController extends Thread {
             double term1 = X*cos(alfar)+Y*sin(alfar);
             double term2 = -X*sin(alfar) + Y*cos(alfar);
             if((term1*term1/(ar*ar) + term2*term2/(br*br)) < 1.5) {
+                if (activeController != Controller.TOP) {
+                    LOGGER.log(Level.INFO, "Switching to top controller");
+                }
                 return Controller.TOP;
             } else {
+                if (activeController != Controller.SWINGUP) {
+                    LOGGER.log(Level.INFO, "Switching to swingup controller");
+                }
                 return Controller.SWINGUP;
             }
         } else if(catcher == Catcher.REASONABLEANGLE) {
             if ((Math.abs(pendAng) + Math.abs(pendAngVel)) < 0.8) {
+                if (activeController != Controller.SWINGUP) {
+                    LOGGER.log(Level.INFO, "Switching to top controller");
+                }
                 return Controller.TOP;
             } else {
+                if (activeController != Controller.SWINGUP) {
+                    LOGGER.log(Level.INFO, "Switching to swingup controller");
+                }
                 return Controller.SWINGUP;
             }
         } else if(catcher == Catcher.ENERGY) {
