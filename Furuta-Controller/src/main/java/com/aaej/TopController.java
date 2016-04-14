@@ -5,11 +5,11 @@ import java.util.*;
 
 class TopController {
 	private ControllerParameters controllerParameters;
-	private double[] L;
 	public TopController() {
 	}
 	public synchronized double calculateOutput(double pendAng, double pendAngVel, double baseAng, double baseAngVel) {
 		// x = (theta thetavel phi phivel)
+		double[] L = controllerParameters.L;
 		double u = - (L[0] * pendAng + L[1] * pendAngVel + L[2] * baseAng + L[3] * baseAngVel);
 		return u;
 	}
@@ -26,11 +26,10 @@ class TopController {
 		Matrix Bc = new Matrix(new double[]{0, -71.2339550559284, 0 ,191.245792952122},4);
 		Matrix AdAndBd[] = Dlqr.c2d(Ac,Bc,controllerParameters.h);
 
-		double L[] = calculateLMatrix(AdAndBd[0], AdAndBd[1], Q, R).getArray()[0];
+		controllerParameters.L = calculateLMatrix(AdAndBd[0], AdAndBd[1], Q, R).getArray()[0];
 
 		synchronized (this) {
 			this.controllerParameters = controllerParameters;
-			this.L = L;
 		}
 
 	}
