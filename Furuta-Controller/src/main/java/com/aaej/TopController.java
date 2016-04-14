@@ -10,7 +10,6 @@ class TopController {
 	}
 	public synchronized double calculateOutput(double pendAng, double pendAngVel, double baseAng, double baseAngVel) {
 		// x = (theta thetavel phi phivel)
-		double[] L = controllerParameters.L;
 		double u = - (L[0] * pendAng + L[1] * pendAngVel + L[2] * baseAng + L[3] * baseAngVel);
 		return u;
 	}

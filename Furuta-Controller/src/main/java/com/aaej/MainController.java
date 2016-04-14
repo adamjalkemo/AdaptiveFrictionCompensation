@@ -31,7 +31,7 @@ class MainController extends Thread {
         rlsParameters = new RLSParameters();
         topController = new TopController();
         swingUpController = new SwingUpController();
-	setControllerParameters(newControllerParameters);
+        setControllerParameters(newControllerParameters);
         on = false;
         shutDown = false;
 	}
@@ -42,8 +42,9 @@ class MainController extends Thread {
 
         while(!shutDown) {
             doControl();
-            //TODO: Synchronization needed?
-            t = t + controllerParameters.h;
+            synchronized (controllerParametersLock) {
+                t = t + controllerParameters.h;
+            }
             duration = t-System.currentTimeMillis();
             if(duration > 0) {
                 try {
@@ -82,18 +83,17 @@ class MainController extends Thread {
         synchronized (controllerParametersLock) {
             omega0squared = controllerParameters.omega0 * controllerParameters.omega0;
         }
-	double E = Math.cos(pendAng) - 1 + 1/(2*omega0squared)*pendAngVel*pendAngVel;
-	if(E > 0) {
+        double E = Math.cos(pendAng) - 1 + 1/(2*omega0squared)*pendAngVel*pendAngVel;
+        if(E > 0) {
             //on = false;
-	    LOGGER.log(Level.INFO, "Switching to top controller");
-	    return true;
-	} else {
+            LOGGER.log(Level.INFO, "Switching to top controller");
+            return true;
+        } else {
             return false;
-	}
+        }
     }
 
     public void setControllerParameters(ControllerParameters newParameters) {
-        //TODO: decide what to synchronize on
         synchronized(controllerParametersLock) {
             controllerParameters = (ControllerParameters) newParameters.clone();
         }
@@ -105,6 +105,7 @@ class MainController extends Thread {
         shutDown = true;
     }
     public ControllerParameters getControllerParameters() {
+        //TODO should this be synchronized?
         return (ControllerParameters)controllerParameters.clone();
     }
     public RLSParameters getRLSParameters() {
