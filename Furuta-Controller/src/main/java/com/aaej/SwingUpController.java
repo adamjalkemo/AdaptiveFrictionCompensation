@@ -15,11 +15,17 @@ class SwingUpController {
         double pendAngVelSquared = pendAngVel*pendAngVel;
         //double y = (cos(pendAng) * (pendAngVel * (cos(pendAng)) - 1 + pendAngVelSquared / (2 * omegaSquared)));
         double y = cos(pendAng) * pendAngVel * (cos(pendAng) - 1 + pendAngVelSquared / (2 * omegaSquared));
-        return controllerParameters.gain*signum(y);
+        //return controllerParameters.gain*signum(y);
+        return saturate(y, controllerParameters.gain);
     }
 
     public synchronized void setControllerParameters(ControllerParameters controllerParameters) {
         this.controllerParameters = controllerParameters;
     }
 
+    private double saturate(double u, double gain) {
+        u = (u > gain ? gain : u);
+        u = (u < -gain ? -gain : u);
+        return u;
+    }
 }
