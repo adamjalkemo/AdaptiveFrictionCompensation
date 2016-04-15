@@ -32,6 +32,8 @@ class TopController {
 			this.controllerParameters = controllerParameters;
 		}
 
+		//System.out.println(Arrays.toString(this.controllerParameters.L));
+
 	}
 
 	private Matrix calculateLMatrix(Matrix Ad, Matrix Bd, Matrix Q, Matrix R) {

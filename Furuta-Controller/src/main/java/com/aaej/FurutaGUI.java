@@ -36,7 +36,7 @@ public class FurutaGUI {
 							generalFieldPanel, estimatorLabelPanel, estimatorFieldPanel;
 
 	// Declaration of buttons and fields
-	private JButton 		startButton, stopButton, resetEstimatorButton, saveEstimatorButton, saveCtrlButton;
+	private JButton 		startButton, stopButton, resetEstimatorButton, saveEstimatorButton, saveCtrlButton, brakeButton;
 	private JButton resetOffsetButton;
 	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField,
 							lambdaField, p0Field, theta00Field, theta01Field;
@@ -430,12 +430,6 @@ public class FurutaGUI {
 			}
 		});
 
-		resetOffsetButton = new JButton("Reset Offset");
-		resetOffsetButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				communicationManager.resetOffsets();
-			}
-		});
 		stopButton = new JButton("STOP");
 		stopButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -443,10 +437,25 @@ public class FurutaGUI {
 			}
 		});
 
+		resetOffsetButton = new JButton("Reset Offset");
+		resetOffsetButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				communicationManager.resetOffsets();
+			}
+		});
+
+		brakeButton = new JButton("Brake");
+		brakeButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				controller.toggleBrakePendulum();
+			}
+		});
+
 		buttonPanel = new BoxPanel(BoxPanel.HORIZONTAL);
 		buttonPanel.add(startButton);
 		buttonPanel.add(stopButton);
 		buttonPanel.add(resetOffsetButton);
+		//buttonPanel.add(brakeButton);
 		buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 

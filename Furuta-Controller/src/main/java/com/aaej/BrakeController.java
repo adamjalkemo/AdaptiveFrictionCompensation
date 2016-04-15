@@ -1,10 +1,10 @@
 package com.aaej;
 
 
-class BreakController {
+class BrakeController {
     private ControllerParameters controllerParameters;
     private PID pid;
-    public BreakController() {
+    public BrakeController() {
         pid = new PID();
     }
 
@@ -18,7 +18,11 @@ class BreakController {
 
     public synchronized void setControllerParameters(ControllerParameters controllerParameters) {
         this.controllerParameters = controllerParameters;
-        pid.updateParameters(0.2, 1000, 0.02, 1, 0.5, 1000, controllerParameters.h);
+        pid.updateParameters(0.002, 1000, 0.02, 1, 0.5, 1000, controllerParameters.h);
+    }
+
+    public void reset() {
+        pid.reset();
     }
 
     class PID {
@@ -78,7 +82,7 @@ class BreakController {
             //yOld = y;
         }
 
-        public void resetDandI() {
+        public void reset() {
             I = 0;
             D = 0;
             yOld = 0;

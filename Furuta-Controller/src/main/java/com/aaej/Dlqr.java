@@ -72,8 +72,8 @@ class Dlqr {
 		    // h converted to seconds below!
 		    Matrix Ad = Matrix.identity(m,m).plus(Ac.times(0.5*h/1000)).times((Matrix.identity(m,m).minus(Ac.times(0.5*h/1000))).inverse());
 		    Matrix Bd = Bc.times((double) h / 1000);
-		    System.out.println(Arrays.deepToString(Ad.getArray()));
-		    System.out.println(Arrays.deepToString(Bd.getArray()));
+		    //System.out.println(Arrays.deepToString(Ad.getArray()));
+		    //System.out.println(Arrays.deepToString(Bd.getArray()));
 		    return new Matrix[]{Ad, Bd};
 	}
 
