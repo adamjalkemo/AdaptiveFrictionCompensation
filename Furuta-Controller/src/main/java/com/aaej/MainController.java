@@ -11,6 +11,7 @@ import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 import static java.lang.Math.atan;
+import static java.lang.Math.PI;
 
 /**
  * This class contains the thread for the controller and will decide which
@@ -25,9 +26,8 @@ class MainController extends Thread {
     private RLSParameters rlsParameters;
     private TopController topController;
     private SwingUpController swingUpController;
-    private BrakeController brakeController;
     private CommunicationManager communicationManager;
-    private boolean on, brakePendulum;
+    private boolean on;
     private Object controllerParametersLock = new Object();
     private boolean shutDown;
     private Controller activeController = Controller.NONE;
@@ -41,10 +41,8 @@ class MainController extends Thread {
         topController = new TopController();
         swingUpController = new SwingUpController();
         setControllerParameters(newControllerParameters);
-        brakeController = new BrakeController();
         on = false;
         shutDown = false;
-        brakePendulum = false;
 	}
 
     public void run() {
@@ -94,13 +92,8 @@ class MainController extends Thread {
             } else {
                 //Keep u as 0
             }
-        } else if (brakePendulum) {
-            u = brakeController.calculateOutput(baseAng);
         }
-
         communicationManager.writeOutput(u);
-
-        if(brakePendulum) brakeController.updateState(u);
     }
 
     private Controller chooseController(double pendAng, double pendAngVel) {
@@ -110,26 +103,29 @@ class MainController extends Thread {
             catcher = controllerParameters.catcher;
         }
         if(catcher == Catcher.ELLIPSE) {
-            double ar=sqrt(0.62*0.62+9.4*9.4);
-            ar=ar*0.2;
-            //double ar = controllerParameters.ellipseRadius1;
-            double br=sqrt(0.19*0.19+2.5*2.5);
-            br=br*0.2;
-            //double br = controllerParameters.ellipseRadius2;
+            //double ar=sqrt(0.62*0.62+9.4*9.4);
+            //ar=ar*0.2;
+            double ar = controllerParameters.ellipseRadius1;
+            //double br=sqrt(0.19*0.19+2.5*2.5);
+            //br=br*0.2;
+            double br = controllerParameters.ellipseRadius2;
             double alfar=atan(9.4/0.62); // Could add this to GUI
             double X = pendAng;
             double Y = pendAngVel;
             double term1 = X*cos(alfar)+Y*sin(alfar);
             double term2 = -X*sin(alfar) + Y*cos(alfar);
-            if((term1*term1/(ar*ar) + term2*term2/(br*br)) < 1.5) { // controllerParameters.limit
+            if((term1*term1/(ar*ar) + term2*term2/(br*br)) < controllerParameters.limit) { // 
                 if (activeController != Controller.TOP) {
                     LOGGER.log(Level.INFO, "Switching to top controller");
-                    sleepAfterFall = (int) (((long) 2000)/controllerParameters.h); // Corresponds to 2s rest
+
+                    // To decrease irratic behavior
+                    sleepAfterFall = (int) (((long) 4000)/controllerParameters.h); // Corresponds to 4s rest
                 }
                 return Controller.TOP;
             } else {
                 if (activeController != Controller.SWINGUP) {
                     LOGGER.log(Level.INFO, "Switching to swingup controller");
+
                 }
                 return Controller.SWINGUP;
             }
@@ -192,12 +188,6 @@ class MainController extends Thread {
         //TODO
     }
     public void regulatorActive(boolean on) {
-        this.brakePendulum = false;
         this.on = on;
-    }
-    public void toggleBrakePendulum() {
-        this.on = false;
-        this.brakePendulum = true;
-        brakeController.reset();
     }
 }

@@ -1,5 +1,6 @@
 package com.aaej;
 
+import static java.lang.Math.PI;
 
 class BrakeController {
     private ControllerParameters controllerParameters;
@@ -8,8 +9,8 @@ class BrakeController {
         pid = new PID();
     }
 
-    public synchronized double calculateOutput(double baseAng) {
-        return pid.calculateOutput(baseAng);
+    public synchronized double calculateOutput(double pendAngVel) {
+        return pid.calculateOutput(pendAngVel);
     }
 
     public synchronized void updateState(double u) {
@@ -18,7 +19,7 @@ class BrakeController {
 
     public synchronized void setControllerParameters(ControllerParameters controllerParameters) {
         this.controllerParameters = controllerParameters;
-        pid.updateParameters(0.002, 1000, 0.02, 1, 0.5, 1000, controllerParameters.h);
+        pid.updateParameters(0.5, 10000000, 0.2, 1, 0.5, 0.1, controllerParameters.h);
     }
 
     public void reset() {
@@ -32,7 +33,7 @@ class BrakeController {
         private double ad, bd;
         private double D, I, yOld;
 
-        private double yref = 0;
+        private double yref = Math.PI;
 
         public PID() {
 
@@ -71,11 +72,6 @@ class BrakeController {
             return v;
         }
 
-        private double saturate(double u) {
-            u = (u > 0.6 ? 0.6 : u);
-            u = (u < -0.6 ? -0.6 : u);
-            return u;
-        }
 
         public void updateState(double u) {
             I = I + (K*h/Ti)*e + (h/Tr)*(u-v);

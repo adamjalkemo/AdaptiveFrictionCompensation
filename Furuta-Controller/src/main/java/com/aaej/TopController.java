@@ -27,12 +27,10 @@ class TopController {
 		Matrix AdAndBd[] = Dlqr.c2d(Ac,Bc,controllerParameters.h);
 
 		controllerParameters.L = calculateLMatrix(AdAndBd[0], AdAndBd[1], Q, R).getArray()[0];
-
+		//System.out.println(Arrays.deepToString(Q.getArray()));
 		synchronized (this) {
 			this.controllerParameters = controllerParameters;
 		}
-
-		//System.out.println(Arrays.toString(this.controllerParameters.L));
 
 	}
 

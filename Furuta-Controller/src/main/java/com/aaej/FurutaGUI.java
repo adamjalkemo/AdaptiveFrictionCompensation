@@ -37,10 +37,13 @@ public class FurutaGUI {
 
 	// Declaration of buttons and fields
 	private JButton 		startButton, stopButton, resetEstimatorButton, saveEstimatorButton, saveCtrlButton, brakeButton;
-	private JButton resetOffsetButton;
+	private JButton			resetOffsetButton, resetOffsetOnTopButton;
 	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField,
 							lambdaField, p0Field, theta00Field, theta01Field;
 	private DoubleField[][] qArrayField, rArrayField;
+
+	DoubleField offsetBaseAngField, offsetBaseAngVelField, offsetPendAngField, offsetPendAngVelField;
+	BoxPanel offsetPanel;
 
 	// Width of right column. Real strange behaviour. However, this works for now.
 	int width =  20000;
@@ -130,13 +133,14 @@ public class FurutaGUI {
 		qFieldPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		for (int i = 0; i < qSize; i++) {
 			for (int j = 0; j < qSize; j++) {
-				qArrayField[i][j] = new DoubleField(5,3);
+				qArrayField[i][j] = new DoubleField(10,6);
 				qArrayField[i][j].setValue(ctrlPar.qMatrix[i][j]);
+				qArrayField[i][j].putClientProperty("i", (Integer) i);
+				qArrayField[i][j].putClientProperty("j", (Integer) j);
 				qArrayField[i][j].addActionListener(new ActionListener() {
-					int i,j;
 					public void actionPerformed(ActionEvent e) {
-						this.i = i;
-						this.j = j;
+						int i = (Integer)((DoubleField)e.getSource()).getClientProperty("i");
+						int j = (Integer)((DoubleField)e.getSource()).getClientProperty("j");
 						ctrlPar.qMatrix[i][j] = qArrayField[i][j].getValue();
 						saveCtrlButton.setEnabled(true);
 					}
@@ -149,7 +153,7 @@ public class FurutaGUI {
 		rFieldPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		for (int i = 0; i < rSize; i++) {
 			for (int j = 0; j < rSize; j++) {
-				rArrayField[i][j] = new DoubleField(5,3);
+				rArrayField[i][j] = new DoubleField(10,6);
 				rArrayField[i][j].setValue(ctrlPar.rMatrix[i][j]);
 				rArrayField[i][j].addActionListener(new ActionListener() {
 					int i,j;
@@ -185,7 +189,7 @@ public class FurutaGUI {
 		swingLabelPanel.add(new JLabel("Gain"));
 
 
-		radius1Field = new DoubleField(5,3);
+		radius1Field = new DoubleField(10,6);
 		radius1Field.setValue(ctrlPar.ellipseRadius1);
 		radius1Field.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -193,7 +197,7 @@ public class FurutaGUI {
 				saveCtrlButton.setEnabled(true);
 			}
 		});
-		radius2Field = new DoubleField(5,3);
+		radius2Field = new DoubleField(10,6);
 		radius2Field.setValue(ctrlPar.ellipseRadius2);
 		radius2Field.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -201,7 +205,7 @@ public class FurutaGUI {
 				saveCtrlButton.setEnabled(true);
 			}
 		});
-		limitField = new DoubleField(5,3);
+		limitField = new DoubleField(10,6);
 		limitField.setValue(ctrlPar.limit);
 		limitField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -209,7 +213,7 @@ public class FurutaGUI {
 				saveCtrlButton.setEnabled(true);
 			}
 		});
-		gainField = new DoubleField(5,3);
+		gainField = new DoubleField(10,6);
 		gainField.setValue(ctrlPar.gain);
 		gainField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -241,7 +245,7 @@ public class FurutaGUI {
 		generalLabelPanel.add(new JLabel("Sampling time h"));
 		generalLabelPanel.add(new JLabel("ω0"));
 
-		omega0Field = new DoubleField(5,3);
+		omega0Field = new DoubleField(10,6);
 		omega0Field.setValue(ctrlPar.omega0);
 		omega0Field.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -249,7 +253,7 @@ public class FurutaGUI {
 				saveCtrlButton.setEnabled(true);
 			}
 		});
-		hField = new DoubleField(5,3);
+		hField = new DoubleField(10,6);
 		hField.setValue(ctrlPar.h);
 		hField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -270,6 +274,60 @@ public class FurutaGUI {
 
 
 		// --------------
+
+		// --- Offsets ---
+
+
+
+		offsetBaseAngField = new DoubleField(7,5);
+		offsetBaseAngField.setValue(communicationManager.getOffsetBaseAng());
+		offsetBaseAngField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				communicationManager.setOffsetBaseAng(offsetBaseAngField.getValue());
+			}
+		});
+
+		offsetBaseAngVelField = new DoubleField(7,5);
+		offsetBaseAngVelField.setValue(communicationManager.getOffsetBaseAngVel());
+		offsetBaseAngVelField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				communicationManager.setOffsetBaseAngVel(offsetBaseAngVelField.getValue());
+			}
+		});
+
+		offsetPendAngField = new DoubleField(7,5);
+		offsetPendAngField.setValue(communicationManager.getOffsetPendAng());
+		offsetPendAngField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				communicationManager.setOffsetPendAng(offsetPendAngField.getValue());
+			}
+		});
+
+		offsetPendAngVelField = new DoubleField(7,5);
+		offsetPendAngVelField.setValue(communicationManager.getOffsetPendAngVel());
+		offsetPendAngVelField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				communicationManager.setOffsetPendAngVel(offsetPendAngVelField.getValue());
+			}
+		});
+
+		offsetPanel = new BoxPanel(BoxPanel.HORIZONTAL);
+		offsetPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		offsetPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
+		offsetPanel.add(offsetPendAngField);
+		offsetPanel.addFixed(5);
+		offsetPanel.add(offsetPendAngVelField);
+		offsetPanel.addFixed(5);
+		offsetPanel.add(offsetBaseAngField);
+		offsetPanel.addFixed(5);
+		offsetPanel.add(offsetBaseAngVelField);
+		offsetPanel.addFixed(5);
+
+
+
+
+
+		// -------------
 
 
 		saveCtrlButton = new JButton("Save");
@@ -335,7 +393,7 @@ public class FurutaGUI {
 		estimatorLabelPanel.add(new JLabel("θ0: "));
 
 
-		lambdaField = new DoubleField(5,3);
+		lambdaField = new DoubleField(10,6);
 		lambdaField.setValue(rlsPar.lambda);
 		lambdaField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -344,7 +402,7 @@ public class FurutaGUI {
 			}
 		});
 
-		p0Field = new DoubleField(5,3);
+		p0Field = new DoubleField(10,6);
 		p0Field.setValue(rlsPar.p0);
 		p0Field.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -355,7 +413,7 @@ public class FurutaGUI {
 
 		BoxPanel theta0Panel;
 
-		theta00Field = new DoubleField(5,3);
+		theta00Field = new DoubleField(10,6);
 		theta00Field.setValue(rlsPar.theta0[rlsPar.regressorModel][0]);
 		theta00Field.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -364,7 +422,7 @@ public class FurutaGUI {
 			}
 		});
 
-		theta01Field = new DoubleField(5,3);
+		theta01Field = new DoubleField(10,6);
 		theta01Field.setValue(rlsPar.theta0[rlsPar.regressorModel][1]);
 		theta01Field.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -440,21 +498,37 @@ public class FurutaGUI {
 		resetOffsetButton = new JButton("Reset Offset");
 		resetOffsetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				communicationManager.resetOffsets();
+				communicationManager.resetOffsets(false);
+				offsetBaseAngField.setValue(communicationManager.getOffsetBaseAng());
+				offsetBaseAngVelField.setValue(communicationManager.getOffsetBaseAngVel());
+				offsetPendAngField.setValue(communicationManager.getOffsetPendAng());
+				offsetPendAngVelField.setValue(communicationManager.getOffsetPendAngVel());
 			}
 		});
 
-		brakeButton = new JButton("Brake");
+		resetOffsetOnTopButton = new JButton("Reset Offset On Top");
+		resetOffsetOnTopButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				communicationManager.resetOffsets(true);
+				offsetBaseAngField.setValue(communicationManager.getOffsetBaseAng());
+				offsetBaseAngVelField.setValue(communicationManager.getOffsetBaseAngVel());
+				offsetPendAngField.setValue(communicationManager.getOffsetPendAng());
+				offsetPendAngVelField.setValue(communicationManager.getOffsetPendAngVel());
+			}
+		});
+
+		/*brakeButton = new JButton("Brake");
 		brakeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				controller.toggleBrakePendulum();
 			}
-		});
+		});*/
 
 		buttonPanel = new BoxPanel(BoxPanel.HORIZONTAL);
 		buttonPanel.add(startButton);
 		buttonPanel.add(stopButton);
 		buttonPanel.add(resetOffsetButton);
+		buttonPanel.add(resetOffsetOnTopButton);
 		//buttonPanel.add(brakeButton);
 		buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -468,6 +542,9 @@ public class FurutaGUI {
 		rightPanel.add(ctrlParameterPanel);
 		rightPanel.addFixed(10);
 		rightPanel.add(estimatorParameterPanel);
+		rightPanel.addFixed(10);
+		rightPanel.add(new JLabel("Offsets (theta thetavel phi phivel)"));
+		rightPanel.add(offsetPanel);
 		rightPanel.addFixed(10);
 		rightPanel.add(buttonPanel);
 		rightPanel.addFixed(10);

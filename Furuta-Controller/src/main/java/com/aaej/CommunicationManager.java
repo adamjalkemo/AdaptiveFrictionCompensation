@@ -34,10 +34,10 @@ public class CommunicationManager {
     private long t;
     private long startTime;
 
-    private double offsetPendAngTop = 0.7792;
+    private double offsetPendAngTop = -2.8670;//0.7792;
     private double scalingPendAngTop = 0.058;
 
-    private double offsetPendAngVelTop = 0;
+    private double offsetPendAngVelTop =  0.1790;//0;
     private double scalingPendAngVelTop = 0.68;
 
     private double offsetPendAng = 5.1763;
@@ -89,11 +89,14 @@ public class CommunicationManager {
     }
     public void writeOutput(double u) {
         try {
-	    if(u > 2) {
-		    u = 2;
-	    } else if(u < -2) {
-		    u = -2;
-	    }
+    	    if(u > 1) {
+    		    u = 1;
+    	    } else if(u < -1) {
+    		    u = -1;
+    	    }
+
+            u = Double.isNaN(u) ? 0 : u;
+
             analogU.set(u*scalingOutput);
         } catch (IOChannelException e) {
             e.printStackTrace();
@@ -111,15 +114,57 @@ public class CommunicationManager {
         gui.putControlDataPoint(t,u);
     }
 
-    public synchronized void resetOffsets() {
+    public synchronized void resetOffsets(boolean onTop) {
         try {
-            offsetPendAng = -(analogPendAng.get()*scalingPendAng - Math.PI)/scalingPendAng;
-	    offsetPendAngVel = -analogPendAngVel.get();
-	    offsetBaseAngVel = -analogBaseAngVel.get();
+            double comp = onTop ? 0 : Math.PI;
+            offsetPendAng = -(analogPendAng.get()*scalingPendAng - comp)/scalingPendAng;
+    	    offsetPendAngVel = -analogPendAngVel.get();
+            offsetBaseAng = -analogBaseAng.get();
+    	    offsetBaseAngVel = -analogBaseAngVel.get();
         } catch (IOChannelException e) {
             e.printStackTrace();
         }
     }
+
+
+    public synchronized void setOffsetBaseAng(double offsetBaseAng) {
+        this.offsetBaseAng = offsetBaseAng;
+    }
+
+    public synchronized double getOffsetBaseAng() {
+        return offsetBaseAng;
+    }
+
+    public synchronized void setOffsetPendAng(double offsetPendAng) {
+        this.offsetPendAng = offsetPendAng;
+    }
+
+    public synchronized double getOffsetPendAng() {
+        return offsetPendAng;
+    }
+
+
+
+    public synchronized void setOffsetBaseAngVel(double offsetBaseAngVel) {
+        this.offsetBaseAngVel = offsetBaseAngVel;
+    }
+
+    public synchronized double getOffsetBaseAngVel() {
+        return offsetBaseAngVel;
+    }
+
+    public synchronized void setOffsetPendAngVel(double offsetPendAngVel) {
+        this.offsetPendAngVel = offsetPendAngVel;
+    }
+
+    public synchronized double getOffsetPendAngVel() {
+        return offsetPendAngVel;
+    }
+
+
+
+
+
     public synchronized double getPendAngVel() {
         return pendAngVel;
     }
