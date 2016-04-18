@@ -8,6 +8,9 @@ import java.util.logging.Level;
 import se.lth.control.*;
 import se.lth.control.plot.*;
 
+import java.util.Observer;
+import java.util.Observable;
+
 
 // TODO: add frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 // 		according to http://www.control.lth.se/previouscourse/FRTN01/Exercise4_14/Exercise4.html
@@ -16,7 +19,7 @@ import se.lth.control.plot.*;
 
 
 //Class that creates and maintains a GUI for the FURUTA process.
-public class FurutaGUI {
+public class FurutaGUI implements Observer {
 	private final static Logger LOGGER = Logger.getLogger(FurutaGUI.class.getName());
 	private MainController controller;
 	private CommunicationManager communicationManager;
@@ -41,6 +44,7 @@ public class FurutaGUI {
 	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField,
 							lambdaField, p0Field, theta00Field, theta01Field;
 	private DoubleField[][] qArrayField, rArrayField;
+	private JLabel currentController;
 
 	DoubleField offsetBaseAngField, offsetBaseAngVelField, offsetPendAngField, offsetPendAngVelField;
 	BoxPanel offsetPanel;
@@ -535,6 +539,12 @@ public class FurutaGUI {
 
 		// ------------
 
+		// --- Controller in use label --
+
+		currentController = new JLabel("NO CONTROLLER");
+
+		// -------------
+
 		// Create panel holding everything but the plotters.
 		rightPanel = new BoxPanel(BoxPanel.VERTICAL);
 		rightPanel.addFixed(10);
@@ -545,6 +555,8 @@ public class FurutaGUI {
 		rightPanel.addFixed(10);
 		rightPanel.add(new JLabel("Offsets (theta thetavel phi phivel)"));
 		rightPanel.add(offsetPanel);
+		rightPanel.addFixed(10);
+		rightPanel.add(currentController);
 		rightPanel.addFixed(10);
 		rightPanel.add(buttonPanel);
 		rightPanel.addFixed(10);
@@ -564,6 +576,8 @@ public class FurutaGUI {
 		guiPanel.addFixed(10);
 		guiPanel.add(rightPanel);
 		guiPanel.addFixed(10);
+
+		controller.registerObserver(this);
 
 
 		// Set guiPanel to be content pane of the frame.
@@ -636,6 +650,10 @@ public class FurutaGUI {
 		}
 	}
 	
-
+	public void update(Observable o, Object arg) { // For updates about which controller being used
+	    if (arg instanceof String) {
+	        currentController.setText((String) arg);
+	    }
+	}
 
 }

@@ -13,6 +13,10 @@ import static java.lang.Math.sqrt;
 import static java.lang.Math.atan;
 import static java.lang.Math.PI;
 
+import java.util.Observer;
+import java.util.Observable;
+import java.util.ArrayList;
+
 /**
  * This class contains the thread for the controller and will decide which
  * controller to be used depending on the output from the process.
@@ -32,6 +36,7 @@ class MainController extends Thread {
     private boolean shutDown;
     private Controller activeController = Controller.NONE;
     private int sleepAfterFall = 0;
+    private ArrayList<Observer> observerList;
 
     public MainController(int priority, CommunicationManager communicationManager) {
         setPriority(priority);
@@ -41,6 +46,7 @@ class MainController extends Thread {
         topController = new TopController();
         swingUpController = new SwingUpController();
         setControllerParameters(newControllerParameters);
+        observerList = new ArrayList<Observer>();
         on = false;
         shutDown = false;
 	}
@@ -163,6 +169,10 @@ class MainController extends Thread {
         }
     }
 
+    private void logChangeController() {
+        //adam
+    }
+
     public void setControllerParameters(ControllerParameters newParameters) {
         synchronized(controllerParametersLock) {
             controllerParameters = (ControllerParameters) newParameters.clone();
@@ -189,5 +199,14 @@ class MainController extends Thread {
     }
     public void regulatorActive(boolean on) {
         this.on = on;
+    }
+
+    // For updates about which controller being used
+    public void registerObserver(Observer o) {
+        observerList.add(o);
+    }
+    public void notifyObservers() {
+        for (Observer o : observerList)
+            o.update(null, activeController.name());
     }
 }
