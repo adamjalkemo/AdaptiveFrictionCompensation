@@ -1,5 +1,6 @@
 package com.aaej;
 
+import Jama.Matrix;
 import se.lth.control.realtime.AnalogIn;
 import se.lth.control.realtime.AnalogOut;
 import se.lth.control.realtime.IOChannelException;
@@ -188,6 +189,10 @@ class MainController extends Thread {
         }
         swingUpController.setControllerParameters(controllerParameters);
         topController.setControllerParameters(controllerParameters);
+
+        //Also update friction compensator (it doesn't have its own copy of controller parameters, just need the A and B matrix
+        Matrix AandB[] = Discretizer.c2d(controllerParameters.h);
+        frictionCompensator.newAB(AandB[0], AandB[1]);
     }
 
     public void shutDown() {

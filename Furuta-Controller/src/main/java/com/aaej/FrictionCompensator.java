@@ -17,6 +17,9 @@ public class FrictionCompensator {
     private double control_old = 0;
 
     public FrictionCompensator() {
+        phi = new Matrix(2,1);
+        P_old = new Matrix(2,2);
+        theta_old = new Matrix(2,1);
     }
 
     public synchronized double[] rls(double baseAngVel) {
@@ -31,6 +34,7 @@ public class FrictionCompensator {
 
     }
     public synchronized void updateStates(double baseAngVel, double pendAng, double control) {
+
         phi.set(0, 0, baseAngVel);
         phi.set(1, 0, signum(baseAngVel));
         pendAng_old = pendAng;

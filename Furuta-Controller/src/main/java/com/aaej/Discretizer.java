@@ -24,9 +24,9 @@ dlqr(A,B,Q,R)
 
 
 
-class Dlqr {
+class Discretizer {
 
-	public Dlqr() {
+	public Discretizer() {
 		
 	}
 
@@ -49,7 +49,7 @@ class Dlqr {
 	}
 
 	// Returns Matrix vector [Matrix Ad, Matrix Bd]
-	public static Matrix[] c2d(Matrix Ac, Matrix Bc, long h) {
+	public static Matrix[] c2d(long h) {
 		/*% Approximations for Ad = expm(Ac*h)
 		    %ZOH (if expm available)
 		    %expm(Ac*h)
@@ -67,7 +67,8 @@ class Dlqr {
 
 		    % Probably better, but wont work due to Ac not invertible.
 		    %inv(Ac)*(Ad - eye(size(Ad)))*Bc*/
-
+			Matrix Ac = new Matrix(new double[][]{{0, 1, 0, 0},{31.3167200666837, 0, 0, 0},{0, 0, 0, 1,},{-0.588392468761969, 0, 0, 0}});
+			Matrix Bc = new Matrix(new double[]{0, -71.2339550559284, 0 ,191.245792952122},4);
 		    int m = Ac.getRowDimension();
 		    // h converted to seconds below!
 		    Matrix Ad = Matrix.identity(m,m).plus(Ac.times(0.5*h/1000)).times((Matrix.identity(m,m).minus(Ac.times(0.5*h/1000))).inverse());
@@ -87,7 +88,7 @@ class Dlqr {
 		Matrix Q = new Matrix(new double[][]{{1,0},{0,1}});
 		Matrix R = new Matrix(new double[]{1},1);
 
-		System.out.println(Arrays.deepToString(Dlqr.getL(A,B,Q,R).getArray()));
+		System.out.println(Arrays.deepToString(Discretizer.getL(A,B,Q,R).getArray()));
 		
 		Matrix Ac = new Matrix(new double[][]{{0, 1, 0, 0},{31.3167200666837, 0, 0, 0},{0, 0, 0, 1,},{-0.588392468761969, 0, 0, 0}});
 		Matrix Bc = new Matrix(new double[]{0, -71.2339550559284, 0 ,191.245792952122},4);
