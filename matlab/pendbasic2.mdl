@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.63"
+    ComputedModelVersion    "1.67"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -27,9 +27,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "geo10ewe"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Apr 18 12:06:24 2016"
-  RTWModifiedTimeStamp	  382878568
-  ModelVersionFormat	  "1.%<AutoIncrement:63>"
+  LastModifiedDate	  "Mon Apr 18 12:38:51 2016"
+  RTWModifiedTimeStamp	  382883372
+  ModelVersionFormat	  "1.%<AutoIncrement:67>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -965,15 +965,25 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "592"
+    SIDHighWatermark	    "596"
     Block {
       BlockType		      Constant
       Name		      "Constant"
       SID		      "587"
-      Position		      [180, 490, 210, 520]
+      Position		      [110, 460, 140, 490]
       ZOrder		      -5
       BlockRotation	      270
       NamePlacement	      "alternate"
+      Value		      "1337"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant1"
+      SID		      "596"
+      Position		      [125, 145, 155, 175]
+      ZOrder		      -5
+      BlockRotation	      270
+      BlockMirror	      on
       Value		      "0"
     }
     Block {
@@ -1002,7 +1012,7 @@ Model {
       BlockType		      Gain
       Name		      "Gain1"
       SID		      "588"
-      Position		      [295, 235, 325, 265]
+      Position		      [245, 225, 275, 255]
       ZOrder		      -11
       BlockRotation	      270
       BlockMirror	      on
@@ -1337,7 +1347,7 @@ Model {
 	  MaskHideContents	  off
 	  System {
 	    Name		    "Hardware"
-	    Location		    [190, 279, 1011, 569]
+	    Location		    [180, 242, 1001, 532]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -3535,7 +3545,7 @@ Model {
       Position		      [695, 179, 725, 211]
       ZOrder		      -12
       Floating		      off
-      Location		      [1, 471, 622, 845]
+      Location		      [1, 463, 622, 837]
       Open		      off
       NumInputPorts	      "1"
       List {
@@ -3568,7 +3578,7 @@ Model {
       ZOrder		      -13
       Floating		      off
       Location		      [454, 472, 839, 769]
-      Open		      on
+      Open		      off
       NumInputPorts	      "1"
       List {
 	ListType		AxesTitles
@@ -3603,7 +3613,7 @@ Model {
       Name		      "Subsystem"
       SID		      "298"
       Ports		      [2, 4]
-      Position		      [215, 257, 255, 328]
+      Position		      [120, 257, 160, 328]
       ZOrder		      -26
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
@@ -3641,7 +3651,7 @@ Model {
 	  BlockType		  Inport
 	  Name			  "ctrl"
 	  SID			  "350"
-	  Position		  [30, 168, 60, 182]
+	  Position		  [30, 148, 60, 162]
 	  ZOrder		  7
 	  Port			  "2"
 	  IconDisplay		  "Port number"
@@ -4028,7 +4038,7 @@ Model {
 	Line {
 	  SrcBlock		  "MATLAB Function1"
 	  SrcPort		  1
-	  Points		  [15, 0; 0, 10]
+	  Points		  [0, 5; 5, 0]
 	  DstBlock		  "Demux1"
 	  DstPort		  1
 	}
@@ -4113,14 +4123,14 @@ Model {
 	Line {
 	  SrcBlock		  "ctrl"
 	  SrcPort		  1
-	  Points		  [16, 0; 0, -75]
+	  Points		  [16, 0; 0, -55]
 	  DstBlock		  "MATLAB Function1"
 	  DstPort		  2
 	}
 	Line {
 	  SrcBlock		  "MATLAB Function1"
 	  SrcPort		  2
-	  Points		  [0, -10; 5, 0; 0, 30; 25, 0; 0, 115]
+	  Points		  [5, 0; 0, 20; 25, 0; 0, 115]
 	  DstBlock		  "VL"
 	  DstPort		  1
 	}
@@ -4131,7 +4141,7 @@ Model {
       Name		      "Sum1"
       SID		      "584"
       Ports		      [2, 1]
-      Position		      [295, 290, 325, 320]
+      Position		      [215, 355, 245, 385]
       ZOrder		      -18
       BlockRotation	      270
       BlockMirror	      on
@@ -4159,9 +4169,21 @@ Model {
       BlockType		      Switch
       Name		      "Switch1"
       SID		      "586"
-      Position		      [100, 315, 150, 355]
+      Position		      [45, 290, 95, 330]
       ZOrder		      -19
       NamePlacement	      "alternate"
+      Threshold		      "0.5"
+      InputSameDT	      off
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      Switch
+      Name		      "Switch2"
+      SID		      "595"
+      Position		      [225, 280, 265, 330]
+      ZOrder		      -19
+      BlockRotation	      270
+      BlockMirror	      on
       Threshold		      "0.5"
       InputSameDT	      off
       SaturateOnIntegerOverflow	off
@@ -4174,8 +4196,8 @@ Model {
       Position		      [695, 129, 725, 161]
       ZOrder		      -29
       Floating		      off
-      Location		      [592, 93, 1065, 430]
-      Open		      on
+      Location		      [582, 93, 1055, 430]
+      Open		      off
       NumInputPorts	      "1"
       ZoomMode		      "yonly"
       List {
@@ -4206,7 +4228,7 @@ Model {
       Position		      [735, 154, 765, 186]
       ZOrder		      -30
       Floating		      off
-      Location		      [454, 93, 844, 420]
+      Location		      [444, 93, 834, 420]
       Open		      on
       NumInputPorts	      "1"
       List {
@@ -4519,7 +4541,7 @@ Model {
       Position		      [320, 459, 350, 491]
       ZOrder		      -3
       Floating		      off
-      Location		      [279, 171, 1267, 624]
+      Location		      [269, 163, 1257, 616]
       Open		      on
       NumInputPorts	      "1"
       ZoomMode		      "xonly"
@@ -4553,7 +4575,7 @@ Model {
       ZOrder		      3
       NamePlacement	      "alternate"
       Floating		      off
-      Location		      [58, 253, 1028, 901]
+      Location		      [48, 245, 1018, 893]
       Open		      on
       NumInputPorts	      "1"
       List {
@@ -4571,8 +4593,8 @@ Model {
 	MarkerStyles		"none|none|none|none|none|none"
       }
       ShowLegends	      off
-      YMin		      "-0.01"
-      YMax		      "0.19"
+      YMin		      "-0.2"
+      YMax		      "1.2"
       SaveName		      "ScopeData4"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
@@ -4582,7 +4604,7 @@ Model {
       Name		      "fv"
       SID		      "355"
       Ports		      [1]
-      Position		      [325, 135, 355, 165]
+      Position		      [325, 80, 355, 110]
       ZOrder		      4
       NamePlacement	      "alternate"
       Floating		      off
@@ -4604,8 +4626,8 @@ Model {
 	MarkerStyles		"none|none|none|none|none|none"
       }
       ShowLegends	      off
-      YMin		      "-0.141"
-      YMax		      "-0.134"
+      YMin		      "-1.4"
+      YMax		      "0.1"
       SaveName		      "ScopeData5"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
@@ -4681,11 +4703,11 @@ Model {
       Name		      "uF"
       SID		      "452"
       Ports		      [1]
-      Position		      [350, 200, 380, 230]
+      Position		      [350, 160, 380, 190]
       ZOrder		      8
       NamePlacement	      "alternate"
       Floating		      off
-      Location		      [274, 659, 985, 1000]
+      Location		      [264, 651, 975, 992]
       Open		      on
       NumInputPorts	      "1"
       List {
@@ -4703,8 +4725,8 @@ Model {
 	MarkerStyles		"none|none|none|none|none|none"
       }
       ShowLegends	      off
-      YMin		      "-0.01"
-      YMax		      "0.007"
+      YMin		      "-0.006"
+      YMax		      "0.014"
       SaveName		      "ScopeData2"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
@@ -4766,7 +4788,7 @@ Model {
       }
       Branch {
 	Labels			[0, 0]
-	Points			[0, -55; -415, 0; 0, 160]
+	Points			[0, -55; -530, 0; 0, 160]
 	DstBlock		"Subsystem"
 	DstPort			1
       }
@@ -4808,41 +4830,35 @@ Model {
     Line {
       SrcBlock		      "Subsystem"
       SrcPort		      3
-      Points		      [20, 0; 0, -150]
+      Points		      [25, 0; 0, -205]
       DstBlock		      "fv"
       DstPort		      1
     }
     Line {
       SrcBlock		      "Subsystem"
       SrcPort		      4
-      Points		      [25, 0; 0, 160]
+      Points		      [20, 0; 0, 160]
       DstBlock		      "VL"
       DstPort		      1
     }
     Line {
       SrcBlock		      "Sum1"
       SrcPort		      1
-      Points		      [0, 25; 85, 0]
+      Points		      [0, 5; 165, 0]
       DstBlock		      "Switch"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Constant"
-      SrcPort		      1
-      Points		      [0, -110; -110, 0]
-      DstBlock		      "Switch1"
-      DstPort		      3
-    }
-    Line {
       SrcBlock		      "Top controler"
       SrcPort		      1
-      Points		      [-180, 0; 0, 45]
+      Points		      [-225, 0; 0, 45]
       Branch {
+	Points			[0, 75]
 	DstBlock		"Sum1"
 	DstPort			2
       }
       Branch {
-	Points			[0, 110; -265, 0; 0, -85]
+	Points			[0, 110; -285, 0; 0, -110]
 	DstBlock		"Switch1"
 	DstPort			1
       }
@@ -4850,27 +4866,13 @@ Model {
     Line {
       SrcBlock		      "Switch1"
       SrcPort		      1
-      Points		      [20, 0; 0, -25]
       DstBlock		      "Subsystem"
       DstPort		      2
     }
     Line {
       SrcBlock		      "Subsystem"
-      SrcPort		      1
-      Points		      [0, -55; 50, 0]
-      Branch {
-	DstBlock		"uF"
-	DstPort			1
-      }
-      Branch {
-	DstBlock		"Gain1"
-	DstPort			1
-      }
-    }
-    Line {
-      SrcBlock		      "Subsystem"
       SrcPort		      2
-      Points		      [0, -235]
+      Points		      [10, 0; 0, -235]
       DstBlock		      "fc"
       DstPort		      1
     }
@@ -4878,15 +4880,17 @@ Model {
       Labels		      [0, 0]
       SrcBlock		      "MATLAB Function1"
       SrcPort		      2
-      Points		      [-455, 0; 0, -75]
-      DstBlock		      "Switch1"
-      DstPort		      2
-    }
-    Line {
-      SrcBlock		      "Gain1"
-      SrcPort		      1
-      DstBlock		      "Sum1"
-      DstPort		      1
+      Points		      [-220, 0]
+      Branch {
+	Points			[-290, 0; 0, -100]
+	DstBlock		"Switch1"
+	DstPort			2
+      }
+      Branch {
+	Points			[0, -145]
+	DstBlock		"Switch2"
+	DstPort			2
+      }
     }
     Line {
       SrcBlock		      "Switch"
@@ -4899,6 +4903,46 @@ Model {
       Branch {
 	Points			[0, -40]
 	DstBlock		"u"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "Constant"
+      SrcPort		      1
+      Points		      [0, -90; -95, 0]
+      DstBlock		      "Switch1"
+      DstPort		      3
+    }
+    Line {
+      SrcBlock		      "Switch2"
+      SrcPort		      1
+      Points		      [-15, 0]
+      DstBlock		      "Sum1"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Gain1"
+      SrcPort		      1
+      DstBlock		      "Switch2"
+      DstPort		      3
+    }
+    Line {
+      SrcBlock		      "Constant1"
+      SrcPort		      1
+      Points		      [0, 70; 80, 0; 0, 15]
+      DstBlock		      "Switch2"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Subsystem"
+      SrcPort		      1
+      Points		      [45, 0; 0, -95; 50, 0]
+      Branch {
+	DstBlock		"uF"
+	DstPort			1
+      }
+      Branch {
+	DstBlock		"Gain1"
 	DstPort			1
       }
     }
@@ -5379,12 +5423,12 @@ Stateflow {
       isEML		      1
       script		      "function [theta,VL]   = RLS(pendAng,control,phidot)\n%RLS Summary of this function goes here\n%  "
       " Detailed explanation goes here\n    persistent P_old;\n    persistent theta_old;\n    persistent phi;\n    pers"
-      "istent pendAng_old;\n    persistent control_old;\n    pam=100;\n    pbm=100;\n    fcGuess=0;\n    fvGuess=0;\n  "
-      "  if(isempty(P_old))\n        P_old=[pam 0;0 pbm];\n        theta_old = [fvGuess fcGuess]';\n        phi = [0 0]"
-      "';\n        pendAng_old = 0;\n        control_old = 0;\n    end\n    P_old = P_old - (P_old*phi*phi' *P_old)/(1+"
-      "phi'*P_old*phi);\n    VL = abs(phidot+0.0059*pendAng_old-1.9125*control_old-phi(1))/(1.9125);\n    epsilon = VL "
-      "- phi'*theta_old;\n    theta_old = theta_old + P_old*phi.*epsilon;\n    phi = [phidot sign(phidot)]';\n    pendA"
-      "ng_old = pendAng;\n    control_old = control;\n    theta = theta_old;\nend"
+      "istent pendAng_old;\n    persistent control_old;\n    pam=100;\n    pbm=100;\n    fcGuess=0;\n    fvGuess=0;\nif"
+      "(isempty(P_old))\n        P_old=[pam 0;0 pbm];\n        theta_old = [fvGuess fcGuess]';\n        phi = [0 0]';\n"
+      "        pendAng_old = 0;\n        control_old = 0;\nend\nVL = 0;\nif(control~=1337) \n    P_old = P_old - (P_old"
+      "*phi*phi' *P_old)/(1+phi'*P_old*phi);\n    VL = abs(phidot+0.0059*pendAng_old-1.9125*control_old-phi(1))/(1.9125"
+      ");\n    epsilon = VL - phi'*theta_old;\n    theta_old = theta_old + P_old*phi.*epsilon;\n    phi = [phidot sign("
+      "phidot)]';\n    pendAng_old = pendAng;\n    control_old = control;\nend\ntheta = theta_old;\n\nend"
       editorLayout	      "100 M4x1[10 5 700 500]"
     }
   }
