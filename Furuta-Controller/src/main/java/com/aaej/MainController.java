@@ -30,6 +30,7 @@ class MainController extends Thread {
     private RLSParameters rlsParameters;
     private TopController topController;
     private SwingUpController swingUpController;
+    private FrictionCompensator frictionCompensator;
     private CommunicationManager communicationManager;
     private boolean on;
     private Object controllerParametersLock = new Object();
@@ -46,6 +47,8 @@ class MainController extends Thread {
         topController = new TopController();
         swingUpController = new SwingUpController();
         setControllerParameters(newControllerParameters);
+        frictionCompensator = new FrictionCompensator();
+        frictionCompensator.setRLSParameters(rlsParameters);
         observerList = new ArrayList<Observer>();
         on = false;
         shutDown = false;
@@ -193,6 +196,7 @@ class MainController extends Thread {
     }
     public void setRLSParameters(RLSParameters rlsParameters) {
         this.rlsParameters = (RLSParameters)rlsParameters.clone();
+        frictionCompensator.setRLSParameters(this.rlsParameters);
     }
     public void resetEstimator() {
         //TODO
