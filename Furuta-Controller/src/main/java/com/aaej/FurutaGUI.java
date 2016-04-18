@@ -102,7 +102,7 @@ public class FurutaGUI implements Observer {
 		lowerLeftPlotPanel.add(new JLabel("u, f, u+f"));
 		lowerLeftPlotPanel.add(ctrlPanel);
 		
-		rlsPanel = new PlotterPanel(1, priority);
+		rlsPanel = new PlotterPanel(2, priority);
 		rlsPanel.setYAxis(20, -10, 2, 2);
 		rlsPanel.setXAxis(10, 5, 5);
 		rlsPanel.setUpdateFreq(10);
@@ -633,9 +633,9 @@ public class FurutaGUI implements Observer {
 	}
 
 	/** Called by Regul to plot a rls data point. */
-	public synchronized void putRLSDataPoint(DoublePoint dp) { // Consider using a modified PlotData here.
+	public synchronized void putRLSDataPoint(double t, double y1, double y2) {
 		if (isInitialized) {
-			rlsPanel.putData(dp.x, dp.y);
+			rlsPanel.putData(t, y1, y2);
 		} else {
 			LOGGER.log(Level.FINE,"Note: GUI not yet initialized. Ignoring call to putRLSDataPoint().");
 		}

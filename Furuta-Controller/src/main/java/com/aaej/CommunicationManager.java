@@ -87,7 +87,7 @@ public class CommunicationManager {
             e.printStackTrace();
         }
     }
-    public void writeOutput(double u) {
+    public double writeOutput(double u) {
         try {
     	    if(u > 1) {
     		    u = 1;
@@ -101,9 +101,11 @@ public class CommunicationManager {
         } catch (IOChannelException e) {
             e.printStackTrace();
         }
+
 	//If we want to retain the value for other calculations
         this.u = u;
         plotSignals();
+        return u;
     }
     public void plotSignals() {
         double t = (double)this.t/1000;
@@ -112,6 +114,11 @@ public class CommunicationManager {
 	//Top and 360 sensor seems to really follow each other
         //gui.putMeasurementDataPoint(t,pendAng,pendAngVel,pendAngTop,pendAngVelTop);
         gui.putControlDataPoint(t,u);
+    }
+
+    public void plotRLSParameters(double fv, double fc) {
+        double t = (double)this.t/1000;
+        gui.putRLSDataPoint(t, fv, fc);
     }
 
     public synchronized void resetOffsets(boolean onTop) {

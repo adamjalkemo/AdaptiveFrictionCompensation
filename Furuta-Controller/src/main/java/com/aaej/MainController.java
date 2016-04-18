@@ -38,6 +38,7 @@ class MainController extends Thread {
     private Controller activeController = Controller.NONE;
     private int sleepAfterFall = 0;
     private ArrayList<Observer> observerList;
+    private boolean enableFrictionCompensation;
 
     public MainController(int priority, CommunicationManager communicationManager) {
         setPriority(priority);
@@ -52,6 +53,7 @@ class MainController extends Thread {
         observerList = new ArrayList<Observer>();
         on = false;
         shutDown = false;
+        enableFrictionCompensation = true;
 	}
 
     public void run() {
@@ -91,6 +93,7 @@ class MainController extends Thread {
             if(activeController == Controller.TOP) {
                 u = topController.calculateOutput(pendAng, pendAngVel, baseAng, baseAngVel);
                 topController.update();
+                frictionCompensator.rls(baseAngVel);
             } else if(activeController == Controller.SWINGUP) {
                 if (sleepAfterFall > 0) {
                     sleepAfterFall--;
@@ -102,8 +105,14 @@ class MainController extends Thread {
                 //Keep u as 0
             }
         }
-        communicationManager.writeOutput(u);
-    }
+        if(enableFrictionCompensation) {
+            u = u + frictionCompensator.compensate(baseAngVel);
+        }
+        u = communicationManager.writeOutput(u);
+        frictionCompensator.updateStates(baseAngVel, pendAng, u);
+
+        communicationManager.plotRLSParameters(frictionCompensator.getFv(), frictionCompensator.getFc());
+   }
 
     private Controller chooseController(double pendAng, double pendAngVel) {
         //TODO: Test different switching schemes, parameters should be part of ControllerParameters
@@ -209,5 +218,9 @@ class MainController extends Thread {
     public void notifyObservers() {
         for (Observer o : observerList)
             o.update(null, activeController.name());
+    }
+
+    public void setEnableFrictionCompensation(boolean enableFrictionCompensation) {
+        this.enableFrictionCompensation = enableFrictionCompensation;
     }
 }
