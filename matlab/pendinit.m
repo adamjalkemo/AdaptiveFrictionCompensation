@@ -18,7 +18,7 @@
 k1=0.058;  %0.0928;     %0.058;
 %offs1=0.6189; %0.512
 %offs1= 0.7792;
-offs1 = 0.7792-0.035/k1; %0.512 0.0375
+offs1 = 0.7792-0.0425/k1; %0.512 0.0375
 
 % Theta velocity top
 k2=0.68; %1.088     %0.68;
@@ -36,7 +36,7 @@ offs4r=0;
 % Phi velocity
 k5r=2.0;
 %offs5r=0.0708
-offs5r=0.0708+0.16/k5r;
+offs5r=0.0708+0.155/k5r;
 
 ku=1.40;
 
@@ -120,7 +120,7 @@ Dfc_r=zeros(3,1);
 Q = diag([100 1 10e-10 10]);
 R = 100; 
 Lnopos = dlqr(Afd,Bfd,Q,R);
-Q = diag([100 1 10 10]);
+Q = diag([100 1 500 10]);
 Lpos = dlqr(Afd,Bfd,Q,R);
 
 
