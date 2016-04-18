@@ -105,6 +105,8 @@ class MainController extends Thread {
     private Controller chooseController(double pendAng, double pendAngVel) {
         //TODO: Test different switching schemes, parameters should be part of ControllerParameters
         Catcher catcher;
+        Controller newController;
+
         synchronized (controllerParametersLock) {
             catcher = controllerParameters.catcher;
         }
@@ -120,32 +122,18 @@ class MainController extends Thread {
             double Y = pendAngVel;
             double term1 = X*cos(alfar)+Y*sin(alfar);
             double term2 = -X*sin(alfar) + Y*cos(alfar);
-            if((term1*term1/(ar*ar) + term2*term2/(br*br)) < controllerParameters.limit) { // 
-                if (activeController != Controller.TOP) {
-                    LOGGER.log(Level.INFO, "Switching to top controller");
 
-                    // To decrease irratic behavior
-                    sleepAfterFall = (int) (((long) 4000)/controllerParameters.h); // Corresponds to 4s rest
-                }
-                return Controller.TOP;
+            if((term1*term1/(ar*ar) + term2*term2/(br*br)) < controllerParameters.limit) {
+                newController = Controller.TOP;
             } else {
-                if (activeController != Controller.SWINGUP) {
-                    LOGGER.log(Level.INFO, "Switching to swingup controller");
-
-                }
-                return Controller.SWINGUP;
+                newController = Controller.SWINGUP;
             }
+
         } else if(catcher == Catcher.REASONABLEANGLE) {
             if ((Math.abs(pendAng) + Math.abs(pendAngVel)) < 0.8) {
-                if (activeController != Controller.SWINGUP) {
-                    LOGGER.log(Level.INFO, "Switching to top controller");
-                }
-                return Controller.TOP;
+                newController = Controller.TOP;
             } else {
-                if (activeController != Controller.SWINGUP) {
-                    LOGGER.log(Level.INFO, "Switching to swingup controller");
-                }
-                return Controller.SWINGUP;
+                newController = Controller.SWINGUP;
             }
         } else if(catcher == Catcher.ENERGY) {
             double omega0squared;
@@ -154,23 +142,32 @@ class MainController extends Thread {
             }
             double E = Math.cos(pendAng) - 1 + 1 / (2 * omega0squared) * pendAngVel * pendAngVel;
             if (E > 0) {
-                if (activeController != Controller.TOP) {
-                    LOGGER.log(Level.INFO, "Switching to top controller");
-                }
-                return Controller.TOP;
+                newController = Controller.TOP;
             } else {
-                if (activeController != Controller.SWINGUP) {
-                    LOGGER.log(Level.INFO, "Switching to swingup controller");
-                }
-                return Controller.SWINGUP;
+                newController = Controller.SWINGUP;
             }
         } else {
-            return Controller.NONE;
+            newController = Controller.NONE;
         }
+
+        checkForChangeOfController(newController);
+        return newController;
     }
 
-    private void logChangeController() {
-        //adam
+    // Logs changes of controller
+    private void checkForChangeOfController(Controller newController) {
+        if (activeController != newController) {
+            if (newController == Controller.TOP) {
+                LOGGER.log(Level.INFO, "Switching to top controller");
+
+                // To decrease irratic behavior
+                sleepAfterFall = (int) (((long) 4000)/controllerParameters.h); // Corresponds to 4s rest
+            } else if (newController == Controller.SWINGUP) {
+                LOGGER.log(Level.INFO, "Switching to swingup controller");
+            }
+
+            notifyObservers();
+        }
     }
 
     public void setControllerParameters(ControllerParameters newParameters) {
