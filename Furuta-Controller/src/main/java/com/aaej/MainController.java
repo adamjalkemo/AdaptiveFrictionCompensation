@@ -48,9 +48,9 @@ class MainController extends Thread {
         rlsParameters = new RLSParameters();
         topController = new TopController();
         swingUpController = new SwingUpController();
-        setControllerParameters(newControllerParameters);
         frictionCompensator = new FrictionCompensator();
         frictionCompensator.setRLSParameters(rlsParameters);
+        setControllerParameters(newControllerParameters);
         observerList = new ArrayList<Observer>();
         on = false;
         shutDown = false;
@@ -94,7 +94,10 @@ class MainController extends Thread {
             if(activeController == Controller.TOP) {
                 u = topController.calculateOutput(pendAng, pendAngVel, baseAng, baseAngVel);
                 topController.update();
-                frictionCompensator.rls(baseAngVel);
+                frictionCompensator.rls(baseAng, baseAngVel);
+		if(enableFrictionCompensation) {
+                    u = u + frictionCompensator.compensate(baseAngVel);
+	        }
             } else if(activeController == Controller.SWINGUP) {
                 if (sleepAfterFall > 0) {
                     sleepAfterFall--;
@@ -105,12 +108,10 @@ class MainController extends Thread {
             } else {
                 //Keep u as 0
             }
-        }
-        if(enableFrictionCompensation) {
-            u = u + frictionCompensator.compensate(baseAngVel);
+
         }
         u = communicationManager.writeOutput(u);
-        frictionCompensator.updateStates(baseAngVel, pendAng, u);
+        frictionCompensator.updateStates(baseAng, baseAngVel, pendAng, u);
 
         communicationManager.plotRLSParameters(frictionCompensator.getFv(), frictionCompensator.getFc());
    }
@@ -162,7 +163,6 @@ class MainController extends Thread {
         } else {
             newController = Controller.NONE;
         }
-
         checkForChangeOfController(newController);
         return newController;
     }
@@ -171,15 +171,16 @@ class MainController extends Thread {
     private void checkForChangeOfController(Controller newController) {
         if (activeController != newController) {
             if (newController == Controller.TOP) {
+		//communicationManager.setOffsetBaseAngScaled(-communicationManager.getBaseAng());
                 LOGGER.log(Level.INFO, "Switching to top controller");
 
                 // To decrease irratic behavior
-                sleepAfterFall = (int) (((long) 4000)/controllerParameters.h); // Corresponds to 4s rest
+                //sleepAfterFall = (int) (((long) 4000)/controllerParameters.h); // Corresponds to 4s rest
             } else if (newController == Controller.SWINGUP) {
                 LOGGER.log(Level.INFO, "Switching to swingup controller");
             }
 
-            notifyObservers();
+            notifyObservers(newController);
         }
     }
 
@@ -220,9 +221,9 @@ class MainController extends Thread {
     public void registerObserver(Observer o) {
         observerList.add(o);
     }
-    public void notifyObservers() {
+    public void notifyObservers(Controller newController) {
         for (Observer o : observerList)
-            o.update(null, activeController.name());
+            o.update(null, newController.name());
     }
 
     public void setEnableFrictionCompensation(boolean enableFrictionCompensation) {

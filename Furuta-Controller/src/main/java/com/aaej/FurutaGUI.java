@@ -89,13 +89,13 @@ public class FurutaGUI implements Observer {
 
 		// Create PlotterPanels.
 		measPanel = new PlotterPanel(4, priority);
-		measPanel.setYAxis(10, -5, 2, 2);
-		measPanel.setXAxis(10, 5, 5);
+		measPanel.setYAxis(1, -0.5, 2, 2);
+		measPanel.setXAxis(20, 5, 5);
 		measPanel.setUpdateFreq(1);
 
 		ctrlPanel = new PlotterPanel(1, priority);
-		ctrlPanel.setYAxis(20, -10, 2, 2);
-		ctrlPanel.setXAxis(10, 5, 5);
+		ctrlPanel.setYAxis(4, -2, 2, 2);
+		ctrlPanel.setXAxis(20, 5, 5);
 		ctrlPanel.setUpdateFreq(10);
 
 		lowerLeftPlotPanel = new BoxPanel(BoxPanel.VERTICAL);
@@ -103,8 +103,8 @@ public class FurutaGUI implements Observer {
 		lowerLeftPlotPanel.add(ctrlPanel);
 		
 		rlsPanel = new PlotterPanel(2, priority);
-		rlsPanel.setYAxis(20, -10, 2, 2);
-		rlsPanel.setXAxis(10, 5, 5);
+		rlsPanel.setYAxis(0.6, -0.3, 2, 2);
+		rlsPanel.setXAxis(50, 5, 5);
 		rlsPanel.setUpdateFreq(10);
 
 		lowerRightPlotPanel = new BoxPanel(BoxPanel.VERTICAL);

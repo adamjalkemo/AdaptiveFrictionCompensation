@@ -138,6 +138,10 @@ public class CommunicationManager {
         this.offsetBaseAng = offsetBaseAng;
     }
 
+    public synchronized void setOffsetBaseAngScaled(double offsetBaseAng) {
+        this.offsetBaseAng = offsetBaseAng/scalingBaseAng;
+    }
+
     public synchronized double getOffsetBaseAng() {
         return offsetBaseAng;
     }
