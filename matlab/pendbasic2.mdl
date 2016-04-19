@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.82"
+    ComputedModelVersion    "1.94"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -27,9 +27,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "geo10ewe"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Apr 18 15:49:11 2016"
-  RTWModifiedTimeStamp	  382891463
-  ModelVersionFormat	  "1.%<AutoIncrement:82>"
+  LastModifiedDate	  "Tue Apr 19 13:52:49 2016"
+  RTWModifiedTimeStamp	  382969443
+  ModelVersionFormat	  "1.%<AutoIncrement:94>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -951,7 +951,7 @@ Model {
   }
   System {
     Name		    "pendbasic2"
-    Location		    [314, 449, 1186, 1119]
+    Location		    [205, 324, 1077, 994]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -965,7 +965,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "598"
+    SIDHighWatermark	    "602"
     Block {
       BlockType		      Constant
       Name		      "Constant"
@@ -1333,7 +1333,7 @@ Model {
 	  MaskHideContents	  off
 	  System {
 	    Name		    "Hardware"
-	    Location		    [180, 205, 1001, 495]
+	    Location		    [180, 168, 1001, 458]
 	    Open		    on
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -3531,39 +3531,7 @@ Model {
       Position		      [695, 179, 725, 211]
       ZOrder		      -12
       Floating		      off
-      Location		      [1, 463, 622, 837]
-      Open		      off
-      NumInputPorts	      "1"
-      List {
-	ListType		AxesTitles
-	axes1			"%<SignalLabel>"
-      }
-      List {
-	ListType		ScopeGraphics
-	FigureColor		"[0.5 0.5 0.5]"
-	AxesColor		"[0 0 0]"
-	AxesTickColor		"[1 1 1]"
-	LineColors		"[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0 0 1]"
-	LineStyles		"-|-|-|-|-|-"
-	LineWidths		"[0.5 0.5 0.5 0.5 0.5 0.5]"
-	MarkerStyles		"none|none|none|none|none|none"
-      }
-      ShowLegends	      off
-      TimeRange		      "25"
-      YMin		      "-0.5"
-      YMax		      "6.5"
-      DataFormat	      "StructureWithTime"
-      SampleTime	      "0"
-    }
-    Block {
-      BlockType		      Scope
-      Name		      "Phid"
-      SID		      "96"
-      Ports		      [1]
-      Position		      [735, 204, 765, 236]
-      ZOrder		      -13
-      Floating		      off
-      Location		      [174, 362, 559, 659]
+      Location		      [1, 455, 622, 829]
       Open		      on
       NumInputPorts	      "1"
       List {
@@ -3581,8 +3549,40 @@ Model {
 	MarkerStyles		"none|none|none|none|none|none"
       }
       ShowLegends	      off
-      YMin		      "-3"
-      YMax		      "8"
+      TimeRange		      "25"
+      YMin		      "-2.065"
+      YMax		      "-1.95"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "Phid"
+      SID		      "96"
+      Ports		      [1]
+      Position		      [735, 204, 765, 236]
+      ZOrder		      -13
+      Floating		      off
+      Location		      [164, 354, 1444, 1284]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      List {
+	ListType		ScopeGraphics
+	FigureColor		"[0.5 0.5 0.5]"
+	AxesColor		"[0 0 0]"
+	AxesTickColor		"[1 1 1]"
+	LineColors		"[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0 0 1]"
+	LineStyles		"-|-|-|-|-|-"
+	LineWidths		"[0.5 0.5 0.5 0.5 0.5 0.5]"
+	MarkerStyles		"none|none|none|none|none|none"
+      }
+      ShowLegends	      off
+      YMin		      "-0.25"
+      YMax		      "0.325"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
     }
@@ -3610,8 +3610,8 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"Subsystem"
-	Location		[9, 143, 881, 814]
-	Open			on
+	Location		[0, 92, 872, 763]
+	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -3643,32 +3643,11 @@ Model {
 	  IconDisplay		  "Port number"
 	}
 	Block {
-	  BlockType		  Demux
-	  Name			  "Demux"
-	  SID			  "347"
-	  Ports			  [1, 4]
-	  Position		  [55, 76, 60, 114]
-	  ZOrder		  4
-	  ShowName		  off
-	  DisplayOption		  "bar"
-	}
-	Block {
-	  BlockType		  Demux
-	  Name			  "Demux1"
-	  SID			  "296"
-	  Ports			  [1, 2]
-	  Position		  [225, 82, 230, 113]
-	  ZOrder		  -3
-	  BackgroundColor	  "black"
-	  ShowName		  off
-	  Outputs		  "2"
-	}
-	Block {
 	  BlockType		  SubSystem
-	  Name			  "MATLAB Function1"
-	  SID			  "346"
+	  Name			  "Coulomb"
+	  SID			  "599"
 	  Ports			  [4, 2]
-	  Position		  [130, 76, 200, 124]
+	  Position		  [105, 276, 175, 324]
 	  ZOrder		  3
 	  LibraryVersion	  "1.32"
 	  ErrorFcn		  "Stateflow.Translate.translate"
@@ -3683,7 +3662,188 @@ Model {
 	  MaskHideContents	  off
 	  SFBlockType		  "MATLAB Function"
 	  System {
-	    Name		    "MATLAB Function1"
+	    Name		    "Coulomb"
+	    Location		    [219, 337, 814, 775]
+	    Open		    off
+	    ModelBrowserVisibility  off
+	    ModelBrowserWidth	    200
+	    ScreenColor		    "white"
+	    PaperOrientation	    "landscape"
+	    PaperPositionMode	    "auto"
+	    PaperType		    "usletter"
+	    PaperUnits		    "inches"
+	    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+	    TiledPageScale	    1
+	    ShowPageBoundaries	    off
+	    ZoomFactor		    "100"
+	    SIDHighWatermark	    "25"
+	    Block {
+	      BlockType		      Inport
+	      Name		      "pendAng"
+	      SID		      "599::1"
+	      Position		      [20, 101, 40, 119]
+	      ZOrder		      -1
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "control"
+	      SID		      "599::21"
+	      Position		      [20, 136, 40, 154]
+	      ZOrder		      7
+	      Port		      "2"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "phi"
+	      SID		      "599::25"
+	      Position		      [20, 171, 40, 189]
+	      ZOrder		      10
+	      Port		      "3"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "phidot"
+	      SID		      "599::22"
+	      Position		      [20, 206, 40, 224]
+	      ZOrder		      8
+	      Port		      "4"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Demux
+	      Name		      " Demux "
+	      SID		      "599::19"
+	      Ports		      [1, 1]
+	      Position		      [270, 210, 320, 250]
+	      ZOrder		      5
+	      Outputs		      "1"
+	    }
+	    Block {
+	      BlockType		      S-Function
+	      Name		      " SFunction "
+	      SID		      "599::18"
+	      Tag		      "Stateflow S-Function pendbasic2 3"
+	      Ports		      [4, 3]
+	      Position		      [180, 106, 230, 209]
+	      ZOrder		      4
+	      FunctionName	      "sf_sfun"
+	      PortCounts	      "[4 3]"
+	      EnableBusSupport	      on
+	      Port {
+		PortNumber		2
+		Name			"theta"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	      Port {
+		PortNumber		3
+		Name			"VL"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	    }
+	    Block {
+	      BlockType		      Terminator
+	      Name		      " Terminator "
+	      SID		      "599::20"
+	      Position		      [460, 221, 480, 239]
+	      ZOrder		      6
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "theta"
+	      SID		      "599::5"
+	      Position		      [460, 101, 480, 119]
+	      ZOrder		      -5
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "VL"
+	      SID		      "599::23"
+	      Position		      [460, 136, 480, 154]
+	      ZOrder		      9
+	      Port		      "2"
+	      IconDisplay	      "Port number"
+	    }
+	    Line {
+	      SrcBlock		      "pendAng"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "control"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      2
+	    }
+	    Line {
+	      SrcBlock		      "phi"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      3
+	    }
+	    Line {
+	      SrcBlock		      "phidot"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      4
+	    }
+	    Line {
+	      Name		      "theta"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      2
+	      DstBlock		      "theta"
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "VL"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      3
+	      DstBlock		      "VL"
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      " Demux "
+	      SrcPort		      1
+	      DstBlock		      " Terminator "
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      " SFunction "
+	      SrcPort		      1
+	      DstBlock		      " Demux "
+	      DstPort		      1
+	    }
+	  }
+	}
+	Block {
+	  BlockType		  SubSystem
+	  Name			  "Coulomb+Viscuose"
+	  SID			  "346"
+	  Ports			  [4, 2]
+	  Position		  [130, 71, 200, 119]
+	  ZOrder		  3
+	  LibraryVersion	  "1.32"
+	  ErrorFcn		  "Stateflow.Translate.translate"
+	  PermitHierarchicalResolution "ExplicitOnly"
+	  TreatAsAtomicUnit	  on
+	  MinAlgLoopOccurrences	  off
+	  PropExecContextOutsideSubsystem off
+	  RTWSystemCode		  "Auto"
+	  FunctionWithSeparateData off
+	  Opaque		  off
+	  RequestExecContextInheritance	off
+	  MaskHideContents	  off
+	  SFBlockType		  "MATLAB Function"
+	  System {
+	    Name		    "Coulomb+Viscuose"
 	    Location		    [219, 337, 814, 775]
 	    Open		    off
 	    ModelBrowserVisibility  off
@@ -3843,6 +4003,27 @@ Model {
 	      DstPort		      1
 	    }
 	  }
+	}
+	Block {
+	  BlockType		  Demux
+	  Name			  "Demux"
+	  SID			  "347"
+	  Ports			  [1, 4]
+	  Position		  [55, 76, 60, 114]
+	  ZOrder		  4
+	  ShowName		  off
+	  DisplayOption		  "bar"
+	}
+	Block {
+	  BlockType		  Demux
+	  Name			  "Demux1"
+	  SID			  "296"
+	  Ports			  [1, 2]
+	  Position		  [225, 82, 230, 113]
+	  ZOrder		  -3
+	  BackgroundColor	  "black"
+	  ShowName		  off
+	  Outputs		  "2"
 	}
 	Block {
 	  BlockType		  SubSystem
@@ -4037,9 +4218,9 @@ Model {
 	  IconDisplay		  "Port number"
 	}
 	Line {
-	  SrcBlock		  "MATLAB Function1"
+	  SrcBlock		  "Coulomb+Viscuose"
 	  SrcPort		  1
-	  Points		  [0, 5; 5, 0]
+	  Points		  [0, 10; 5, 0]
 	  DstBlock		  "Demux1"
 	  DstPort		  1
 	}
@@ -4088,8 +4269,7 @@ Model {
 	Line {
 	  SrcBlock		  "Demux"
 	  SrcPort		  1
-	  Points		  [50, 0]
-	  DstBlock		  "MATLAB Function1"
+	  DstBlock		  "Coulomb+Viscuose"
 	  DstPort		  1
 	}
 	Line {
@@ -4097,14 +4277,13 @@ Model {
 	  SrcPort		  4
 	  Points		  [42, 0]
 	  Branch {
-	    Points		    [8, 0]
-	    DstBlock		    "MATLAB Function1"
-	    DstPort		    4
-	  }
-	  Branch {
 	    Points		    [0, -48; 148, 0; 0, 28]
 	    DstBlock		    "MATLAB Function3"
 	    DstPort		    1
+	  }
+	  Branch {
+	    DstBlock		    "Coulomb+Viscuose"
+	    DstPort		    4
 	  }
 	}
 	Line {
@@ -4117,21 +4296,20 @@ Model {
 	Line {
 	  SrcBlock		  "Demux"
 	  SrcPort		  3
-	  Points		  [9, 0; 0, 5]
-	  DstBlock		  "MATLAB Function1"
+	  DstBlock		  "Coulomb+Viscuose"
 	  DstPort		  3
 	}
 	Line {
 	  SrcBlock		  "ctrl"
 	  SrcPort		  1
-	  Points		  [16, 0; 0, -60]
-	  DstBlock		  "MATLAB Function1"
+	  Points		  [16, 0; 0, -65]
+	  DstBlock		  "Coulomb+Viscuose"
 	  DstPort		  2
 	}
 	Line {
-	  SrcBlock		  "MATLAB Function1"
+	  SrcBlock		  "Coulomb+Viscuose"
 	  SrcPort		  2
-	  Points		  [5, 0; 0, 20; 25, 0; 0, 115]
+	  Points		  [5, 0; 0, 25; 25, 0; 0, 115]
 	  DstBlock		  "VL"
 	  DstPort		  1
 	}
@@ -4197,7 +4375,7 @@ Model {
       Position		      [695, 129, 725, 161]
       ZOrder		      -29
       Floating		      off
-      Location		      [149, 277, 622, 614]
+      Location		      [99, 237, 1379, 1167]
       Open		      on
       NumInputPorts	      "1"
       ZoomMode		      "xonly"
@@ -4216,8 +4394,8 @@ Model {
 	MarkerStyles		"none|none|none|none|none|none"
       }
       ShowLegends	      off
-      YMin		      "-3.5"
-      YMax		      "3.5"
+      YMin		      "-0.009"
+      YMax		      "0.014"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
     }
@@ -4229,9 +4407,10 @@ Model {
       Position		      [735, 154, 765, 186]
       ZOrder		      -30
       Floating		      off
-      Location		      [444, 93, 834, 420]
-      Open		      on
+      Location		      [424, 93, 1704, 1023]
+      Open		      off
       NumInputPorts	      "1"
+      ZoomMode		      "xonly"
       List {
 	ListType		AxesTitles
 	axes1			"%<SignalLabel>"
@@ -4247,8 +4426,8 @@ Model {
 	MarkerStyles		"none|none|none|none|none|none"
       }
       ShowLegends	      off
-      YMin		      "-37.5"
-      YMax		      "15"
+      YMin		      "-0.2"
+      YMax		      "0.15"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
     }
@@ -4542,7 +4721,7 @@ Model {
       Position		      [320, 459, 350, 491]
       ZOrder		      -3
       Floating		      off
-      Location		      [259, 155, 1247, 608]
+      Location		      [34, 343, 1022, 796]
       Open		      on
       NumInputPorts	      "1"
       ZoomMode		      "yonly"
@@ -4561,8 +4740,8 @@ Model {
 	MarkerStyles		"none|none|none|none|none|none"
       }
       ShowLegends	      off
-      YMin		      "-4.5"
-      YMax		      "3.5"
+      YMin		      "-850"
+      YMax		      "100"
       SaveName		      "ScopeData6"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
@@ -4576,10 +4755,10 @@ Model {
       ZOrder		      3
       NamePlacement	      "alternate"
       Floating		      off
-      Location		      [-10, 388, 960, 944]
+      Location		      [1, 372, 971, 928]
       Open		      on
       NumInputPorts	      "1"
-      ZoomMode		      "yonly"
+      ZoomMode		      "xonly"
       List {
 	ListType		AxesTitles
 	axes1			"%<SignalLabel>"
@@ -4595,8 +4774,8 @@ Model {
 	MarkerStyles		"none|none|none|none|none|none"
       }
       ShowLegends	      off
-      YMin		      "0.0555"
-      YMax		      "0.0635"
+      YMin		      "0.08"
+      YMax		      "0.083"
       SaveName		      "ScopeData4"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
@@ -4611,7 +4790,7 @@ Model {
       NamePlacement	      "alternate"
       Floating		      off
       Location		      [1, 93, 852, 413]
-      Open		      on
+      Open		      off
       NumInputPorts	      "1"
       List {
 	ListType		AxesTitles
@@ -4628,8 +4807,8 @@ Model {
 	MarkerStyles		"none|none|none|none|none|none"
       }
       ShowLegends	      off
-      YMin		      "-2"
-      YMax		      "0.5"
+      YMin		      "0.4175"
+      YMax		      "0.4425"
       SaveName		      "ScopeData5"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
@@ -4677,8 +4856,8 @@ Model {
       ZOrder		      -33
       BlockMirror	      on
       Floating		      off
-      Location		      [172, 100, 496, 339]
-      Open		      off
+      Location		      [78, 536, 402, 775]
+      Open		      on
       NumInputPorts	      "1"
       List {
 	ListType		AxesTitles
@@ -4709,7 +4888,7 @@ Model {
       ZOrder		      8
       NamePlacement	      "alternate"
       Floating		      off
-      Location		      [239, 606, 950, 947]
+      Location		      [64, 164, 1344, 1094]
       Open		      on
       NumInputPorts	      "1"
       List {
@@ -4727,8 +4906,8 @@ Model {
 	MarkerStyles		"none|none|none|none|none|none"
       }
       ShowLegends	      off
-      YMin		      "-1"
-      YMax		      "1.5"
+      YMin		      "-0.175"
+      YMax		      "0.175"
       SaveName		      "ScopeData2"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
@@ -4895,20 +5074,6 @@ Model {
       }
     }
     Line {
-      SrcBlock		      "Switch"
-      SrcPort		      1
-      Points		      [0, -100; 70, 0]
-      Branch {
-	Points			[0, -40]
-	DstBlock		"u"
-	DstPort			1
-      }
-      Branch {
-	DstBlock		"Pendulum1"
-	DstPort			1
-      }
-    }
-    Line {
       SrcBlock		      "Constant"
       SrcPort		      1
       Points		      [0, -90; -95, 0]
@@ -4942,6 +5107,20 @@ Model {
       DstBlock		      "Switch2"
       DstPort		      3
     }
+    Line {
+      SrcBlock		      "Switch"
+      SrcPort		      1
+      Points		      [0, -100; 70, 0]
+      Branch {
+	Points			[0, -40]
+	DstBlock		"u"
+	DstPort			1
+      }
+      Branch {
+	DstBlock		"Pendulum1"
+	DstPort			1
+      }
+    }
   }
 }
 # Finite State Machines
@@ -4957,7 +5136,7 @@ Stateflow {
     name		    "pendbasic2"
     created		    "04-Dec-2015 15:14:45"
     isLibrary		    0
-    firstTarget		    37
+    firstTarget		    48
     sfVersion		    76014001.00040001
   }
   chart {
@@ -4998,7 +5177,7 @@ Stateflow {
       script		      "function [y,y2]= fcn(u)\n%#codegen\nar=sqrt(0.62^2+9.4^2);\nar=ar*0.2;\nbr=sqrt(0.19^2+2.5^2);\nb"
       "r=br*0.2;\nalfar=atan(9.4/0.62);\nX = u(1);\nY = u(2);\n\nterm1 = X*cos(alfar)+Y*sin(alfar);\nterm2 = -X*sin(alf"
       "ar) + Y*cos(alfar);\ny = (term1^2/ar^2 + term2^2/br^2) < 1.5;\ny2 = ((term1^2/ar^2 + term2^2/br^2) < 0.2) && (ab"
-      "s(X)>0.005) && (abs(Y)<0.03);\n\n%y = abs(u(1)) + abs(u(2)) < 0.8;"
+      "s(X)>0.0000005) && (abs(Y)>0.006);\n\n%y = abs(u(1)) + abs(u(2)) < 0.8;"
       editorLayout	      "100 M4x1[10 5 700 500]"
     }
   }
@@ -5222,23 +5401,25 @@ Stateflow {
   }
   chart {
     id			    17
-    name		    "Subsystem/MATLAB Function3"
-    windowPosition	    [192.8 202.4 616 472.8]
-    viewLimits		    [0 569.6 0 433.8]
+    name		    "Subsystem/Coulomb"
+    windowPosition	    [281.4 381 160.8 328]
+    viewLimits		    [0 114.4 0 289]
     screen		    [1 1 1280 1024 1.25]
     treeNode		    [0 18 0 0]
     firstTransition	    20
     firstJunction	    19
     viewObj		    17
     machine		    1
-    ssIdHighWaterMark	    9
+    subviewS {
+    }
+    ssIdHighWaterMark	    10
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
     firstData		    21
-    chartFileNumber	    4
+    chartFileNumber	    3
     disableImplicitCasting  1
     eml {
-      name		      "fcn"
+      name		      "RLS"
     }
   }
   state {
@@ -5255,8 +5436,16 @@ Stateflow {
     decomposition	    CLUSTER_STATE
     eml {
       isEML		      1
-      script		      "function F = fcn(v,Fc,Fv)\n%persistent F_old\n%if isempty(F_old)\n%   F_old = 0;\n%end\n\nF = Fc*"
-      "sign(v)+Fv*v;\n%F_old = F;\nend"
+      script		      "function [theta,VL]   = RLS(pendAng,control,phi,phidot)\n%RLS Summary of this function goes here\n"
+      "%   Detailed explanation goes here\n    persistent P_old;\n    persistent theta_old;\n    persistent regressor;\n"
+      "    persistent pendAng_old;\n    persistent control_old;\n    persistent phi_old;\n    persistent phidot_old;\n "
+      "   pfc=1000;\n    fcGuess=0.134;\n    \nif(isempty(P_old))\n        P_old=pfc;\n        theta_old = fcGuess;\n  "
+      "      regressor = 0;\n        pendAng_old = 0;\n        control_old = 0;\n        phi_old=0;\n        phidot_old"
+      " = 0;\n        regressor_old = [0 0]';\nend\nVL = 0;\nif(control~=1337) \n    P_old = P_old - (P_old*regressor*r"
+      "egressor' *P_old)/(1+regressor'*P_old*regressor);\n    VL =(phidot+0.0059*pendAng_old-1.9125*control_old-phidot_"
+      "old)/(-1.9125);\n    epsilon = VL - regressor'*theta_old;\n    theta_old = theta_old + P_old*regressor.*epsilon;"
+      "\n    regressor = sign(phidot)';\n    pendAng_old = pendAng;\n    control_old = control;\n    phi_old = phi;\n  "
+      "  phidot_old = phidot;\nend\ntheta = [theta_old 0];\n\nend"
       editorLayout	      "100 M4x1[10 5 700 500]"
     }
   }
@@ -5284,7 +5473,7 @@ Stateflow {
     midPoint		    [23.5747 24.9468]
     chart		    17
     linkNode		    [17 0 0]
-    dataLimits		    [21.175 25.975 14.625 42.575]
+    dataLimits		    [23.575 23.575 14.625 34.575]
     subviewer		    17
     drawStyle		    SMART
     slide {
@@ -5296,7 +5485,7 @@ Stateflow {
   data {
     id			    21
     ssIdNumber		    4
-    name		    "v"
+    name		    "pendAng"
     linkNode		    [17 0 22]
     scope		    INPUT_DATA
     machine		    1
@@ -5315,7 +5504,7 @@ Stateflow {
   data {
     id			    22
     ssIdNumber		    5
-    name		    "F"
+    name		    "theta"
     linkNode		    [17 21 23]
     scope		    OUTPUT_DATA
     machine		    1
@@ -5335,7 +5524,7 @@ Stateflow {
   data {
     id			    23
     ssIdNumber		    6
-    name		    "Fc"
+    name		    "control"
     linkNode		    [17 22 24]
     scope		    INPUT_DATA
     machine		    1
@@ -5356,9 +5545,9 @@ Stateflow {
   }
   data {
     id			    24
-    ssIdNumber		    7
-    name		    "Fv"
-    linkNode		    [17 23 0]
+    ssIdNumber		    10
+    name		    "phi"
+    linkNode		    [17 23 25]
     scope		    INPUT_DATA
     machine		    1
     props {
@@ -5376,71 +5565,107 @@ Stateflow {
     }
     dataType		    "Inherit: Same as Simulink"
   }
-  instance {
+  data {
     id			    25
-    name		    "Subsystem/MATLAB Function3"
+    ssIdNumber		    7
+    name		    "phidot"
+    linkNode		    [17 24 26]
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    26
+    ssIdNumber		    8
+    name		    "VL"
+    linkNode		    [17 25 0]
+    scope		    OUTPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_NO
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  instance {
+    id			    27
+    name		    "Subsystem/Coulomb"
     machine		    1
     chart		    17
   }
   chart {
-    id			    26
-    name		    "Subsystem/MATLAB Function1"
-    windowPosition	    [266.4 396 160.8 328]
-    viewLimits		    [0 114.4 0 289]
+    id			    28
+    name		    "Subsystem/MATLAB Function3"
+    windowPosition	    [192.8 202.4 616 472.8]
+    viewLimits		    [0 569.6 0 433.8]
     screen		    [1 1 1280 1024 1.25]
-    treeNode		    [0 27 0 0]
-    firstTransition	    29
-    firstJunction	    28
-    viewObj		    26
+    treeNode		    [0 29 0 0]
+    firstTransition	    31
+    firstJunction	    30
+    viewObj		    28
     machine		    1
-    ssIdHighWaterMark	    10
+    ssIdHighWaterMark	    9
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
-    firstData		    30
-    chartFileNumber	    6
+    firstData		    32
+    chartFileNumber	    4
     disableImplicitCasting  1
     eml {
-      name		      "RLS"
+      name		      "fcn"
     }
   }
   state {
-    id			    27
+    id			    29
     labelString		    "eML_blk_kernel()"
     position		    [18 64.5 118 66]
     fontSize		    12
-    chart		    26
-    treeNode		    [26 0 0 0]
+    chart		    28
+    treeNode		    [28 0 0 0]
     superState		    SUBCHART
-    subviewer		    26
+    subviewer		    28
     ssIdNumber		    1
     type		    FUNC_STATE
     decomposition	    CLUSTER_STATE
     eml {
       isEML		      1
-      script		      "function [theta,VL]   = RLS(pendAng,control,phi,phidot)\n%RLS Summary of this function goes here\n"
-      "%   Detailed explanation goes here\n    persistent P_old;\n    persistent theta_old;\n    persistent regressor;\n"
-      "    persistent pendAng_old;\n    persistent control_old;\n    persistent phi_old;\n    pfc=1000;\n    pfv=1000;\n"
-      "    fcGuess=0.134;\n    fvGuess=0.02;\nif(isempty(P_old))\n        P_old=[pfc 0;0 pfv];\n        theta_old = [fc"
-      "Guess fvGuess]';\n        regressor = [0 0]';\n        pendAng_old = 0;\n        control_old = 0;\n        phi_o"
-      "ld=0;\nend\nVL = 0;\nif(control~=1337) \n    P_old = P_old - (P_old*regressor*regressor' *P_old)/(1+regressor'*P"
-      "_old*regressor);\n    VL =(phidot+0.0059*pendAng_old-1.9125*control_old-regressor(2))/(-1.9125);%phidot\n    %VL"
-      " = (phi_old+0.01*regressor(2)-phi)/(0.0096)+control_old;\n    epsilon = VL - regressor'*theta_old;\n    theta_ol"
-      "d = theta_old + P_old*regressor.*epsilon;\n    regressor = [sign(phidot) phidot]';\n    pendAng_old = pendAng;\n"
-      "    control_old = control;\n    phi_old = phi;\nend\ntheta = theta_old;\n\nend"
+      script		      "function F = fcn(v,Fc,Fv)\n%persistent F_old\n%if isempty(F_old)\n%   F_old = 0;\n%end\n\nF = Fc*"
+      "sign(v)+Fv*v;\n%F_old = F;\nend"
       editorLayout	      "100 M4x1[10 5 700 500]"
     }
   }
   junction {
-    id			    28
+    id			    30
     position		    [23.5747 49.5747 7]
-    chart		    26
-    linkNode		    [26 0 0]
-    subviewer		    26
+    chart		    28
+    linkNode		    [28 0 0]
+    subviewer		    28
     ssIdNumber		    3
     type		    CONNECTIVE_JUNCTION
   }
   transition {
-    id			    29
+    id			    31
     labelString		    "{eML_blk_kernel();}"
     labelPosition	    [36.125 25.875 100.8 17.646]
     fontSize		    12
@@ -5448,14 +5673,14 @@ Stateflow {
       intersection	      [0 0 1 0 23.5747 14.625 0 0]
     }
     dst {
-      id		      28
+      id		      30
       intersection	      [1 0 -1 0 23.5747 42.5747 0 0]
     }
     midPoint		    [23.5747 24.9468]
-    chart		    26
-    linkNode		    [26 0 0]
+    chart		    28
+    linkNode		    [28 0 0]
     dataLimits		    [21.175 25.975 14.625 42.575]
-    subviewer		    26
+    subviewer		    28
     drawStyle		    SMART
     slide {
       sticky		      BOTH_STICK
@@ -5464,10 +5689,10 @@ Stateflow {
     ssIdNumber		    2
   }
   data {
-    id			    30
+    id			    32
     ssIdNumber		    4
-    name		    "pendAng"
-    linkNode		    [26 0 31]
+    name		    "v"
+    linkNode		    [28 0 33]
     scope		    INPUT_DATA
     machine		    1
     props {
@@ -5483,10 +5708,10 @@ Stateflow {
     dataType		    "Inherit: Same as Simulink"
   }
   data {
-    id			    31
+    id			    33
     ssIdNumber		    5
-    name		    "theta"
-    linkNode		    [26 30 32]
+    name		    "F"
+    linkNode		    [28 32 34]
     scope		    OUTPUT_DATA
     machine		    1
     props {
@@ -5503,54 +5728,10 @@ Stateflow {
     dataType		    "Inherit: Same as Simulink"
   }
   data {
-    id			    32
-    ssIdNumber		    6
-    name		    "control"
-    linkNode		    [26 31 33]
-    scope		    INPUT_DATA
-    machine		    1
-    props {
-      array {
-	size			"-1"
-      }
-      type {
-	method			SF_INHERITED_TYPE
-	primitive		SF_DOUBLE_TYPE
-	isSigned		1
-	wordLength		"16"
-      }
-      complexity	      SF_COMPLEX_INHERITED
-      frame		      SF_FRAME_INHERITED
-    }
-    dataType		    "Inherit: Same as Simulink"
-  }
-  data {
-    id			    33
-    ssIdNumber		    10
-    name		    "phi"
-    linkNode		    [26 32 34]
-    scope		    INPUT_DATA
-    machine		    1
-    props {
-      array {
-	size			"-1"
-      }
-      type {
-	method			SF_INHERITED_TYPE
-	primitive		SF_DOUBLE_TYPE
-	isSigned		1
-	wordLength		"16"
-      }
-      complexity	      SF_COMPLEX_INHERITED
-      frame		      SF_FRAME_INHERITED
-    }
-    dataType		    "Inherit: Same as Simulink"
-  }
-  data {
     id			    34
-    ssIdNumber		    7
-    name		    "phidot"
-    linkNode		    [26 33 35]
+    ssIdNumber		    6
+    name		    "Fc"
+    linkNode		    [28 33 35]
     scope		    INPUT_DATA
     machine		    1
     props {
@@ -5570,9 +5751,223 @@ Stateflow {
   }
   data {
     id			    35
+    ssIdNumber		    7
+    name		    "Fv"
+    linkNode		    [28 34 0]
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  instance {
+    id			    36
+    name		    "Subsystem/MATLAB Function3"
+    machine		    1
+    chart		    28
+  }
+  chart {
+    id			    37
+    name		    "Subsystem/Coulomb+Viscuose"
+    windowPosition	    [266.4 396 160.8 328]
+    viewLimits		    [0 114.4 0 289]
+    screen		    [1 1 1280 1024 1.25]
+    treeNode		    [0 38 0 0]
+    firstTransition	    40
+    firstJunction	    39
+    viewObj		    37
+    machine		    1
+    ssIdHighWaterMark	    10
+    decomposition	    CLUSTER_CHART
+    type		    EML_CHART
+    firstData		    41
+    chartFileNumber	    6
+    disableImplicitCasting  1
+    eml {
+      name		      "RLS"
+    }
+  }
+  state {
+    id			    38
+    labelString		    "eML_blk_kernel()"
+    position		    [18 64.5 118 66]
+    fontSize		    12
+    chart		    37
+    treeNode		    [37 0 0 0]
+    superState		    SUBCHART
+    subviewer		    37
+    ssIdNumber		    1
+    type		    FUNC_STATE
+    decomposition	    CLUSTER_STATE
+    eml {
+      isEML		      1
+      script		      "function [theta,VL]   = RLS(pendAng,control,phi,phidot)\n%RLS Summary of this function goes here\n"
+      "%   Detailed explanation goes here\n    persistent P_old;\n    persistent theta_old;\n    persistent regressor;\n"
+      "    persistent pendAng_old;\n    persistent control_old;\n    persistent phi_old;\n    pfc=1000;\n    pfv=1000;\n"
+      "    fcGuess=0.134;\n    fvGuess=0.02;\nif(isempty(P_old))\n        P_old=[pfc 0;0 pfv];\n        theta_old = [fc"
+      "Guess fvGuess]';\n        regressor = [0 0]';\n        pendAng_old = 0;\n        control_old = 0;\n        phi_o"
+      "ld=0;\nend\nVL = 0;\nif(control~=1337) \n    P_old = P_old - (P_old*regressor*regressor' *P_old)/(1+regressor'*P"
+      "_old*regressor);\n    %VL =(phidot+0.0059*pendAng_old-1.9125*control_old-regressor(2))/(-1.9125);%phidot\n    VL"
+      " = (phi_old+0.01*regressor(2)-phi)/(0.0096)+control_old;\n    epsilon = VL - regressor'*theta_old;\n    theta_ol"
+      "d = theta_old + P_old*regressor.*epsilon;\n    regressor = [sign(phidot) phidot]';\n    pendAng_old = pendAng;\n"
+      "    control_old = control;\n    phi_old = phi;\nend\ntheta = theta_old;\n\nend"
+      editorLayout	      "100 M4x1[10 5 700 500]"
+    }
+  }
+  junction {
+    id			    39
+    position		    [23.5747 49.5747 7]
+    chart		    37
+    linkNode		    [37 0 0]
+    subviewer		    37
+    ssIdNumber		    3
+    type		    CONNECTIVE_JUNCTION
+  }
+  transition {
+    id			    40
+    labelString		    "{eML_blk_kernel();}"
+    labelPosition	    [36.125 25.875 100.8 17.646]
+    fontSize		    12
+    src {
+      intersection	      [0 0 1 0 23.5747 14.625 0 0]
+    }
+    dst {
+      id		      39
+      intersection	      [1 0 -1 0 23.5747 42.5747 0 0]
+    }
+    midPoint		    [23.5747 24.9468]
+    chart		    37
+    linkNode		    [37 0 0]
+    dataLimits		    [21.175 25.975 14.625 42.575]
+    subviewer		    37
+    drawStyle		    SMART
+    slide {
+      sticky		      BOTH_STICK
+    }
+    executionOrder	    1
+    ssIdNumber		    2
+  }
+  data {
+    id			    41
+    ssIdNumber		    4
+    name		    "pendAng"
+    linkNode		    [37 0 42]
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+      }
+      complexity	      SF_COMPLEX_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    42
+    ssIdNumber		    5
+    name		    "theta"
+    linkNode		    [37 41 43]
+    scope		    OUTPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_NO
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    43
+    ssIdNumber		    6
+    name		    "control"
+    linkNode		    [37 42 44]
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    44
+    ssIdNumber		    10
+    name		    "phi"
+    linkNode		    [37 43 45]
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    45
+    ssIdNumber		    7
+    name		    "phidot"
+    linkNode		    [37 44 46]
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    46
     ssIdNumber		    8
     name		    "VL"
-    linkNode		    [26 34 0]
+    linkNode		    [37 45 0]
     scope		    OUTPUT_DATA
     machine		    1
     props {
@@ -5591,13 +5986,13 @@ Stateflow {
     dataType		    "Inherit: Same as Simulink"
   }
   instance {
-    id			    36
-    name		    "Subsystem/MATLAB Function1"
+    id			    47
+    name		    "Subsystem/Coulomb+Viscuose"
     machine		    1
-    chart		    26
+    chart		    37
   }
   target {
-    id			    37
+    id			    48
     name		    "sfun"
     description		    "Default Simulink S-Function Target."
     machine		    1
