@@ -1,0 +1,11 @@
+Vi borde diskutera vår implementering så vi vet om vi gjort något fel.
+
+* Hur stilla är ett bra mål?
+* Definitionen på analysera friktionen, var innebär det?
+* Vilket state ska vi använda
+* Varför blir det inte perfekt?
+* Catch funktion, hur viktig är den?
+
+
+* Vad ska vi ta med på prediktiv redovisningen?
+* När ska rapporten in. Är det en eller två rapporter?
