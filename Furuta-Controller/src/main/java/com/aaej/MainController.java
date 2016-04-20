@@ -172,6 +172,7 @@ class MainController extends Thread {
         if (activeController != newController) {
             if (newController == Controller.TOP) {
 		//communicationManager.setOffsetBaseAngScaled(-communicationManager.getBaseAng());
+                communicationManager.resetOffsetBaseAng();
                 LOGGER.log(Level.INFO, "Switching to top controller");
 
                 // To decrease irratic behavior

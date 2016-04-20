@@ -3,9 +3,9 @@ package com.aaej;
 public class ControllerParameters implements Cloneable {
 	// TODO, these should not be initialized here
 	// TODO: Should we separate parameters used to calculate controller paramaters and the actual controller parameters?
-	public double[][] qMatrix = new double[][]{{100, 0, 0, 0},{0, 1, 0, 0},{0, 0, 0.00001, 0},{0, 0, 0, 10}};
+	public double[][] qMatrix = new double[][]{{100, 0, 0, 0},{0, 1, 0, 0},{0, 0, 100, 0},{0, 0, 0, 10}};
 	public double[][] rMatrix = new double[][]{{100.0}};
-	public double ellipseRadius1 = 2;//0.3142; // Not used currently
+	public double ellipseRadius1 = 10;//2;//0.3142; // Not used currently
 	public double ellipseRadius2 = 0.5014;	// Not used currently
 	public double limit = 1.5;//1.5;
 	public double gain = 0.6;// 0.6; 

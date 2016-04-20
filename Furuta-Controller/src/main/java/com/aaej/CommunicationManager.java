@@ -110,9 +110,9 @@ public class CommunicationManager {
     public void plotSignals() {
         double t = (double)this.t/1000;
 	//1 black, 2 red, 3 green, 4 blue
-        gui.putMeasurementDataPoint(t,baseAng,baseAngVel,pendAng,pendAngVel);
+        //gui.putMeasurementDataPoint(t,baseAng,baseAngVel,pendAng,pendAngVel);
 	//Top and 360 sensor seems to really follow each other
-        //gui.putMeasurementDataPoint(t,pendAng,pendAngVel,pendAngTop,pendAngVelTop);
+        gui.putMeasurementDataPoint(t,pendAng,pendAngVel,pendAngTop,pendAngVelTop);
         gui.putControlDataPoint(t,u);
     }
 
@@ -138,8 +138,12 @@ public class CommunicationManager {
         this.offsetBaseAng = offsetBaseAng;
     }
 
-    public synchronized void setOffsetBaseAngScaled(double offsetBaseAng) {
+    public synchronized void setOffsetBaseAngScaled(double offsetBaseAng) { // remove?
         this.offsetBaseAng = offsetBaseAng/scalingBaseAng;
+    }
+
+    public synchronized void resetOffsetBaseAng() { // remove?
+        offsetBaseAng = -(baseAng/scalingBaseAng - offsetBaseAng);
     }
 
     public synchronized double getOffsetBaseAng() {
@@ -152,6 +156,14 @@ public class CommunicationManager {
 
     public synchronized double getOffsetPendAng() {
         return offsetPendAng;
+    }
+
+    public synchronized void setOffsetPendAngTop(double offsetPendAngTop) {
+        this.offsetPendAngTop = offsetPendAngTop;
+    }
+
+    public synchronized double getOffsetPendAngTop() {
+        return offsetPendAngTop;
     }
 
 
@@ -172,7 +184,13 @@ public class CommunicationManager {
         return offsetPendAngVel;
     }
 
+    public synchronized void setOffsetPendAngVelTop(double offsetPendAngVelTop) {
+        this.offsetPendAngVelTop = offsetPendAngVelTop;
+    }
 
+    public synchronized double getOffsetPendAngVelTop() {
+        return offsetPendAngVelTop;
+    }
 
 
 
