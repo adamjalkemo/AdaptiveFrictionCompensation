@@ -46,9 +46,9 @@ offsJoyY=0;
 kJoyY=1;
 
 k360=0.3091;
-offs360=5.1763; % 4.984;
+offs360=5.1763-0.035/k360; % 4.984;
 kdot360=3.76;
-offsdot360=-0.022;
+offsdot360=-0.022-0.052/kdot360;
 
 % Tracking constants
 pos_track = 1.0434;
@@ -120,7 +120,7 @@ Dfc_r=zeros(3,1);
 Q = diag([100 1 10e-10 10]);
 R = 100; 
 Lnopos = dlqr(Afd,Bfd,Q,R);
-Q = diag([100 1 1000 10]);
+Q = diag([100 1 100 10]);
 %R = 1000;
 Lpos = dlqr(Afd,Bfd,Q,R);
 
