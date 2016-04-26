@@ -1,0 +1,17 @@
+Plots
+
+* Friktions beteende:
+En plot över hur friktionen beror på hastigheten
+En plot på limit cycles utan compensering
+En plot på limit cycles med compensering
+En plot på coloumb vs coloumb+viscuos
+
+* RLS beteende
+En plot på rls konvergens utan extra excitering
+En plot på rls konvergens med 1 eller 2 exciterings steg
+En plot på vänsterled vs Uf... friktion vs estimerad friktion
+
+Teori slides
+Frictionsmodell + systemmodell + diskretisering
+rls ekvation + LQR + (Kalman om det används)
+Bild på processen
