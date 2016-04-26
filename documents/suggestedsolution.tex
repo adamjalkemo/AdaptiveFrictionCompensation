@@ -155,10 +155,10 @@ f_c
 \label{eq:regressor}
 \end{equation}
 Since we see the friction as an additional addon to all other signals in \ref{eq:discrete} we get the system
-$$x_{k+1} = A_dx_k + B_du_k + f$$
+$$x_{k+1} = A_dx_k + B_d(u_k - f)$$
 To get the RLS to work we take all measurements one step back in time and try to estimate the parameters from \ref{eq:regressor}. We also aim to use the measurement from the arm velocity where we get values from both the pendulum position and the arm velocity, see the state equation for $ \varphi $  in eq. \ref{eq:discrete}. After placing all known variables on the left hand side and we the following
 \begin{equation}
-\dot{\varphi}_k + 0.0059\theta_{k-1}-1.9125u_{k-1}-\dot{\varphi}_{k-1} = \begin{pmatrix}
+\frac{\dot{\varphi}_k + 0.0059\theta_{k-1}-1.9125u_{k-1}-\dot{\varphi}_{k-1}}{-1.9125} = \begin{pmatrix}
 f_c & f_v
 \end{pmatrix}\begin{pmatrix}
 \dot{\varphi}_{k-1}\\
