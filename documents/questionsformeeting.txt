@@ -2,10 +2,23 @@ Vi borde diskutera vår implementering så vi vet om vi gjort något fel.
 
 * Hur stilla är ett bra mål?
 * Definitionen på analysera friktionen, var innebär det?
-* Vilket state ska vi använda
+(Implement an adaptive friction compensator and analyse its properties.)
+* Finnes det något annat sätt än att rakt av lägga till den styrsignal som behövs för att motverka friktionen?
+* Vilket state ska vi använda för rls estimeringen?
 * Varför blir det inte perfekt?
 * Catch funktion, hur viktig är den?
 
 
 * Vad ska vi ta med på prediktiv redovisningen?
 * När ska rapporten in. Är det en eller två rapporter?
+* 
+*
+* Till redovisning
+* Stegsvar för armrörelse
+* RLS utan excitation
+* RLS med excitation i form av två steg.
+* Bild på limit cycles före och efter friktionskompensering
+* 
+*
+*
+*
