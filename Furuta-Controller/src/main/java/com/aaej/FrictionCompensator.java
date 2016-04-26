@@ -25,8 +25,8 @@ public class FrictionCompensator {
 
     public synchronized double[] rls(double baseAng, double baseAngVel) {
 
-        P_old = P_old.minus((P_old.times(phi).times(phi.transpose()).times(P_old))
-                .times(1.0/(1.0+(phi.transpose().times(P_old).times(phi)).get(0,0))));
+        P_old = (P_old.minus((P_old.times(phi).times(phi.transpose()).times(P_old))
+                .times(1.0/(rlsParameters.lambda+(phi.transpose().times(P_old).times(phi)).get(0,0))))).times(1/rlsParameters.lambda);
         double VL = -(baseAngVel + A.get(3,0)*pendAng_old - B.get(3,0)*control_old-A.get(3,3)*baseAngVel_old)/B.get(3,0);
 	//double VL = (A.get(2,2)*baseAng_old + A.get(2,3)*baseAngVel_old - baseAng)/0.0096 + control_old;
         double epsilon = VL - (phi.transpose().times(theta_old)).get(0,0);
@@ -66,6 +66,12 @@ public class FrictionCompensator {
         this.A = A;
         this.B = B;
     }
+
+    public synchronized void reset() {
+        P_old = new Matrix(new double[][] {{rlsParameters.pam,0},{0,rlsParameters.pbm}},2,2);
+        theta_old = new Matrix(new double[][] {{rlsParameters.fvGuess},{rlsParameters.fcGuess}},2,1);
+    }
+        
 
 
 }

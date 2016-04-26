@@ -33,7 +33,7 @@ public class FurutaGUI implements Observer {
 	// Declaration of panels.
 	private BoxPanel 		guiPanel, plotterPanel, rightPanel, ctrlParameterPanel,estimatorParameterPanel,
 							lowerLeftPlotPanel, lowerRightPlotPanel, lowerPlotPanels, generalCtrlPanel, estimatorButtonsPanel,
-							estimatorGridPanel, regressorPanel, topCtrlPanel, swingCtrlPanel, buttonPanel;
+							estimatorGridPanel, regressorPanel, topCtrlPanel, swingCtrlPanel, buttonPanel, buttonPanel2;
 	private PlotterPanel 	measPanel, ctrlPanel, rlsPanel;
 	private JPanel 			qFieldPanel, rFieldPanel, swingLabelPanel, swingFieldPanel, generalLabelPanel,
 							generalFieldPanel, estimatorLabelPanel, estimatorFieldPanel;
@@ -41,6 +41,7 @@ public class FurutaGUI implements Observer {
 	// Declaration of buttons and fields
 	private JButton 		startButton, stopButton, resetEstimatorButton, saveEstimatorButton, saveCtrlButton, brakeButton;
 	private JButton			resetOffsetButton, resetOffsetOnTopButton;
+	private JButton			frictionCompensatorOnButton, frictionCompensatorOffButton;
 	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField,
 							lambdaField, p0Field, theta00Field, theta01Field;
 	private DoubleField[][] qArrayField, rArrayField;
@@ -521,12 +522,31 @@ public class FurutaGUI implements Observer {
 			}
 		});
 
+		frictionCompensatorOnButton = new JButton("Compensate On");
+		frictionCompensatorOnButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				controller.setEnableFrictionCompensation(true);
+			}
+		});
+		frictionCompensatorOffButton = new JButton("Compensate Off");
+		frictionCompensatorOffButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				controller.setEnableFrictionCompensation(false);
+			}
+		});
+
+
 		/*brakeButton = new JButton("Brake");
 		brakeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				controller.toggleBrakePendulum();
 			}
 		});*/
+
+		buttonPanel2 = new BoxPanel(BoxPanel.HORIZONTAL);
+		buttonPanel2.add(frictionCompensatorOnButton);
+		buttonPanel2.add(frictionCompensatorOffButton);
+		buttonPanel2.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		buttonPanel = new BoxPanel(BoxPanel.HORIZONTAL);
 		buttonPanel.add(startButton);
@@ -559,6 +579,8 @@ public class FurutaGUI implements Observer {
 		rightPanel.add(currentController);
 		rightPanel.addFixed(10);
 		rightPanel.add(buttonPanel);
+		rightPanel.addFixed(10);
+		rightPanel.add(buttonPanel2);
 		rightPanel.addFixed(10);
 
 
