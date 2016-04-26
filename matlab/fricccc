@@ -1,0 +1,12 @@
+x = zeros(1,61);
+y = zeros(1,61);
+l = 1;
+for i = 0:20:60*20 
+   y(l) = sum(u(i+5:i+15))/length(u(i+5:i+15));
+   x(l) = sum(phid(i+5:i+15))/length(phid(i+5:i+15));
+   l = l + 1;
+end
+figure 1
+plot(y,x)
+figure 2
+plot(phid,u,'.')
