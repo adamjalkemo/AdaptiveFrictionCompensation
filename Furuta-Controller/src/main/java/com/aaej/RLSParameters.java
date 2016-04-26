@@ -3,7 +3,7 @@ package com.aaej;
 
 public class RLSParameters implements Cloneable {
 	// TODO, these should not be initialized here
-	public double lambda = 0.99;
+	public double lambda = 0.9999;
 	public double p0 = 13.0;
 	public int regressorModel = 1;
 	public double[][] theta0 = {{14.0,0},{15.0,16.0}}; // Vectors because of the different models. Change if needed!
@@ -14,7 +14,10 @@ public class RLSParameters implements Cloneable {
 	public double fcGuess = 0;
 
 	// TODO create kalmanparameters
-	public double[][] Qk = new double [][]{{1}};
+	// Qk Punish model
+	public double[][] Qk = new double[][]{{1000000,0,0,0},{0,1000000,0,0},{0,0,1000000,0},{0,0,0,1000000}};
+
+	// Rk punish measurements
 	public double[][] Rk = new double[][]{{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
 	
 	public Object clone() {

@@ -57,7 +57,7 @@ class MainController extends Thread {
         on = false;
         shutDown = false;
         enableFrictionCompensation = true;
-        enableKalman = true;
+        enableKalman = false;
 
         // Kalman things, TODO, move to function and make sure that it updates when h is changed
         Matrix AandB[] = Discretizer.c2d(controllerParameters.h);
@@ -101,10 +101,10 @@ class MainController extends Thread {
         //KALMAN HERE
         if (enableKalman) {
             Matrix yhat = kalmanFilter.calculateYHat();
-            pendAngKalman = yhat.get(1,1);
-            pendAngVelKalman = yhat.get(2,1);
-            baseAngKalman = yhat.get(3,1);
-            baseAngVelKalman = yhat.get(4,1);
+            pendAngKalman = yhat.get(0,0);
+            pendAngVelKalman = yhat.get(1,0);
+            baseAngKalman = yhat.get(2,0);
+            baseAngVelKalman = yhat.get(3,0);
         } else { // I get errors if I don't define these
             pendAngKalman = 0;
             pendAngVelKalman = 0;
