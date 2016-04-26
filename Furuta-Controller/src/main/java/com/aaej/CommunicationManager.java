@@ -132,9 +132,9 @@ public class CommunicationManager {
     public void plotSignals() {
         double t = (double)this.t/1000;
 	//1 black, 2 red, 3 green, 4 blue
-        //gui.putMeasurementDataPoint(t,baseAng,baseAngVel,pendAng,pendAngVel);
+        gui.putMeasurementDataPoint(t,baseAng,baseAngVel,pendAng,pendAngVel);
 	//Top and 360 sensor seems to really follow each other
-        gui.putMeasurementDataPoint(t,pendAng,pendAngVel,pendAngTop,pendAngVelTop);
+        //gui.putMeasurementDataPoint(t,pendAng,pendAngVel,pendAngTop,pendAngVelTop);
         gui.putControlDataPoint(t,u);
     }
 

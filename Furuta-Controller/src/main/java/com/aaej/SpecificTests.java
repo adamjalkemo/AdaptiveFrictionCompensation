@@ -3,6 +3,7 @@ package com.aaej;
 
 import com.jmatio.io.MatFileWriter;
 import com.jmatio.types.MLDouble;
+import com.jmatio.types.MLInt64;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -54,14 +55,14 @@ public class SpecificTests {
 
     public void saveData(String file) {
         ArrayList data = new ArrayList();
-        data.add(new MLDouble("u", (Double[])communicationManager.getuArray().toArray(), 1));
-        data.add(new MLDouble("baseAng", (Double[])communicationManager.getBaseAngArray().toArray(), 1));
-        data.add(new MLDouble("baseAngVel", (Double[])communicationManager.getBaseAngVelArray().toArray(), 1));
-        data.add(new MLDouble("pendAng", (Double[])communicationManager.getPendAngArray().toArray(), 1));
-        data.add(new MLDouble("pendAngVel", (Double[])communicationManager.getPendAngVelArray().toArray(), 1));
-        data.add(new MLDouble("t", (Double[])communicationManager.gettArray().toArray(), 1));
-        data.add(new MLDouble("fv", (Double[])communicationManager.getFvArray().toArray(), 1));
-        data.add(new MLDouble("fc", (Double[])communicationManager.getFcArray().toArray(), 1));
+        data.add(new MLDouble("u", communicationManager.getuArray().toArray(new Double[]{}), 1));
+        data.add(new MLDouble("baseAng", communicationManager.getBaseAngArray().toArray(new Double[]{}), 1));
+        data.add(new MLDouble("baseAngVel", communicationManager.getBaseAngVelArray().toArray(new Double[]{}), 1));
+        data.add(new MLDouble("pendAng", communicationManager.getPendAngArray().toArray(new Double[]{}), 1));
+        data.add(new MLDouble("pendAngVel", communicationManager.getPendAngVelArray().toArray(new Double[]{}), 1));
+        data.add(new MLInt64("t", communicationManager.gettArray().toArray(new Long[]{}), 1));
+        data.add(new MLDouble("fv", communicationManager.getFvArray().toArray(new Double[]{}), 1));
+        data.add(new MLDouble("fc", communicationManager.getFcArray().toArray(new Double[]{}), 1));
         try {
             new MatFileWriter(file, data);
         } catch (IOException e) {
