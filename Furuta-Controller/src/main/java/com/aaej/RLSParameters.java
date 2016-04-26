@@ -12,6 +12,10 @@ public class RLSParameters implements Cloneable {
 	public double pbm = 100;
 	public double fvGuess = 0;
 	public double fcGuess = 0;
+
+	// TODO create kalmanparameters
+	public double[][] Qk = new double [][]{{1}};
+	public double[][] Rk = new double[][]{{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
 	
 	public Object clone() {
 		try {

@@ -40,6 +40,8 @@ class MainController extends Thread {
     private int sleepAfterFall = 0;
     private ArrayList<Observer> observerList;
     private boolean enableFrictionCompensation;
+    private Kalman kalmanFilter;
+    private boolean enableKalman;
 
     public MainController(int priority, CommunicationManager communicationManager) {
         setPriority(priority);
@@ -55,6 +57,11 @@ class MainController extends Thread {
         on = false;
         shutDown = false;
         enableFrictionCompensation = true;
+        enableKalman = true;
+
+        // Kalman things, TODO, move to function and make sure that it updates when h is changed
+        Matrix AandB[] = Discretizer.c2d(controllerParameters.h);
+        kalmanFilter = new Kalman(AandB[0], AandB[1], new Matrix(rlsParameters.Qk), new Matrix(rlsParameters.Rk));
 	}
 
     public void run() {
@@ -88,15 +95,44 @@ class MainController extends Thread {
         double pendAngVelTop = communicationManager.getPendAngVelTop();
         double baseAng = communicationManager.getBaseAng();
         double baseAngVel = communicationManager.getBaseAngVel();
+
+        double pendAngKalman, pendAngVelKalman, baseAngKalman, baseAngVelKalman;
+
+        //KALMAN HERE
+        if (enableKalman) {
+            Matrix yhat = kalmanFilter.calculateYHat();
+            pendAngKalman = yhat.get(1,1);
+            pendAngVelKalman = yhat.get(2,1);
+            baseAngKalman = yhat.get(3,1);
+            baseAngVelKalman = yhat.get(4,1);
+        } else { // I get errors if I don't define these
+            pendAngKalman = 0;
+            pendAngVelKalman = 0;
+            baseAngKalman = 0;
+            baseAngVelKalman = 0;
+        }
+        
         double u = 0;
         if(on) {
             activeController = chooseController(pendAng,pendAngVel);
             if(activeController == Controller.TOP) {
-                u = topController.calculateOutput(pendAng, pendAngVel, baseAng, baseAngVel);
-                topController.update();
-                frictionCompensator.rls(baseAng, baseAngVel);
+                if (enableKalman) {
+                    u = topController.calculateOutput(pendAngKalman, pendAngVelKalman, baseAngKalman, baseAngVelKalman);
+                    topController.update();
+
+                    frictionCompensator.rls(baseAngKalman, baseAngVelKalman);                
+                } else {
+                    u = topController.calculateOutput(pendAng, pendAngVel, baseAng, baseAngVel);
+                    topController.update();
+
+                    frictionCompensator.rls(baseAng, baseAngVel);
+                }
 		if(enableFrictionCompensation) {
+                if (enableKalman) {
+                    u = u + frictionCompensator.compensate(baseAngVelKalman);
+                } else {
                     u = u + frictionCompensator.compensate(baseAngVel);
+                }
 	        }
             } else if(activeController == Controller.SWINGUP) {
                 if (sleepAfterFall > 0) {
@@ -111,7 +147,14 @@ class MainController extends Thread {
 
         }
         u = communicationManager.writeOutput(u);
-        frictionCompensator.updateStates(baseAng, baseAngVel, pendAng, u);
+        if (enableKalman) {
+            frictionCompensator.updateStates(baseAngKalman, baseAngVelKalman, pendAngKalman, u);
+        } else {
+            frictionCompensator.updateStates(baseAng, baseAngVel, pendAng, u);
+        }
+
+        // I think you can run this even if enableKalman = false;
+        kalmanFilter.updateStates(u, new double[]{pendAng, pendAngVel, baseAng, baseAngVel});
 
         communicationManager.plotRLSParameters(frictionCompensator.getFv(), frictionCompensator.getFc());
    }
@@ -210,6 +253,7 @@ class MainController extends Thread {
     public void setRLSParameters(RLSParameters rlsParameters) {
         this.rlsParameters = (RLSParameters)rlsParameters.clone();
         frictionCompensator.setRLSParameters(this.rlsParameters);
+        kalmanFilter.setRLSParameters(this.rlsParameters);
     }
     public void resetEstimator() {
 	frictionCompensator.reset();
