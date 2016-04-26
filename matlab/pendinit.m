@@ -129,7 +129,8 @@ Lpos = dlqr(Afd,Bfd,Q,R);
 clear i
 
 
-
+[KEST,L,P,M,Z] = kalmd(ss(Afc,Bfc,Cfc,Dfc),0.01,diag([1 100 1 100]), h)
+%sys = c2d(ss(Afc,Bfc,Cfc,Dfc),h);
 
 
 
