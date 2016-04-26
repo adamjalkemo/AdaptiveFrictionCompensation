@@ -212,7 +212,7 @@ class MainController extends Thread {
         frictionCompensator.setRLSParameters(this.rlsParameters);
     }
     public void resetEstimator() {
-        //TODO
+	frictionCompensator.reset();
     }
     public void regulatorActive(boolean on) {
         this.on = on;
