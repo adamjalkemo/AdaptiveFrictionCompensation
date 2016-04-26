@@ -653,6 +653,10 @@ public class FurutaGUI implements Observer {
 	public void update(Observable o, Object arg) { // For updates about which controller being used
 	    if (arg instanceof String) {
 	        currentController.setText((String) arg);
+	        offsetBaseAngField.setValue(communicationManager.getOffsetBaseAng());
+	        offsetBaseAngVelField.setValue(communicationManager.getOffsetBaseAngVel());
+	        offsetPendAngField.setValue(communicationManager.getOffsetPendAng());
+	        offsetPendAngVelField.setValue(communicationManager.getOffsetPendAngVel());
 	    }
 	}
 
