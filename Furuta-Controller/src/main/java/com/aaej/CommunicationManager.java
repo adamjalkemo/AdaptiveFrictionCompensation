@@ -4,6 +4,7 @@ import se.lth.control.realtime.AnalogIn;
 import se.lth.control.realtime.AnalogOut;
 import se.lth.control.realtime.IOChannelException;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -54,6 +55,17 @@ public class CommunicationManager {
 
     private double scalingOutput = -1.40;
 
+    private ArrayList<Double> uArray;
+    private ArrayList<Double> pendAngArray;
+    private ArrayList<Double> pendAngVelArray;
+    private ArrayList<Double> pendAngTopArray;
+    private ArrayList<Double> pendAngVelTopArray;
+    private ArrayList<Double> baseAngArray;
+    private ArrayList<Double> baseAngVelArray;
+    private ArrayList<Long> tArray;
+    private ArrayList<Double> fvArray;
+    private ArrayList<Double> fcArray;
+    private boolean saveArray = false;
 
     public CommunicationManager(FurutaGUI gui) {
         this.gui = gui;
@@ -83,6 +95,13 @@ public class CommunicationManager {
             baseAng = (analogBaseAng.get()+offsetBaseAng)*scalingBaseAng;
             baseAngVel = (analogBaseAngVel.get()+offsetBaseAngVel)*scalingBaseAngVel;
             t = System.currentTimeMillis() - startTime;
+            if(saveArray) {
+                pendAngArray.add(pendAng);
+                pendAngVelArray.add(pendAngVel);
+                baseAngArray.add(baseAng);
+                baseAngVelArray.add(baseAngVel);
+                tArray.add(t);
+            }
         } catch (IOChannelException e) {
             e.printStackTrace();
         }
@@ -104,6 +123,9 @@ public class CommunicationManager {
 
 	//If we want to retain the value for other calculations
         this.u = u;
+        if(saveArray) {
+            uArray.add(u);
+        }
         plotSignals();
         return u;
     }
@@ -119,6 +141,10 @@ public class CommunicationManager {
     public void plotRLSParameters(double fv, double fc) {
         double t = (double)this.t/1000;
         gui.putRLSDataPoint(t, fv, fc);
+        if(saveArray) {
+            fvArray.add(fv);
+            fcArray.add(fc);
+        }
     }
 
     public synchronized void resetOffsets(boolean onTop) {
@@ -216,5 +242,65 @@ public class CommunicationManager {
 
     public double getPendAng() {
         return pendAng;
+    }
+
+    /* Functions for SpecificTests */
+    public synchronized void changeOffsetBaseAng(double rad) {
+        offsetBaseAng = (offsetBaseAng*scalingBaseAng + rad)/scalingBaseAng;
+    }
+
+    public synchronized  void startSaveArrays() {
+        uArray = new ArrayList<Double>();
+        baseAngArray = new ArrayList<Double>();
+        baseAngVelArray = new ArrayList<Double>();
+        pendAngArray = new ArrayList<Double>();
+        pendAngVelArray = new ArrayList<Double>();
+        tArray = new ArrayList<Long>();
+        fvArray = new ArrayList<Double>();
+        fcArray = new ArrayList<Double>();
+        saveArray = true;
+    }
+    public synchronized void stopSaveArrays() {
+        saveArray = false;
+    }
+
+    public ArrayList<Double> getuArray() {
+        return uArray;
+    }
+
+    public ArrayList<Double> getPendAngArray() {
+        return pendAngArray;
+    }
+
+    public ArrayList<Double> getPendAngVelArray() {
+        return pendAngVelArray;
+    }
+
+    public ArrayList<Double> getPendAngTopArray() {
+        return pendAngTopArray;
+    }
+
+    public ArrayList<Double> getPendAngVelTopArray() {
+        return pendAngVelTopArray;
+    }
+
+    public ArrayList<Double> getBaseAngArray() {
+        return baseAngArray;
+    }
+
+    public ArrayList<Double> getBaseAngVelArray() {
+        return baseAngVelArray;
+    }
+
+    public ArrayList<Long> gettArray() {
+        return tArray;
+    }
+
+    public ArrayList<Double> getFvArray() {
+        return fvArray;
+    }
+
+    public ArrayList<Double> getFcArray() {
+        return fcArray;
     }
 }

@@ -25,6 +25,7 @@ public class FurutaGUI implements Observer {
 	private CommunicationManager communicationManager;
 	private ControllerParameters ctrlPar;
 	private RLSParameters rlsPar;
+	private SpecificTests specificTests;
 	private int priority;
 
 	// Declaration of main frame.
@@ -33,7 +34,8 @@ public class FurutaGUI implements Observer {
 	// Declaration of panels.
 	private BoxPanel 		guiPanel, plotterPanel, rightPanel, ctrlParameterPanel,estimatorParameterPanel,
 							lowerLeftPlotPanel, lowerRightPlotPanel, lowerPlotPanels, generalCtrlPanel, estimatorButtonsPanel,
-							estimatorGridPanel, regressorPanel, topCtrlPanel, swingCtrlPanel, buttonPanel, buttonPanel2;
+							estimatorGridPanel, regressorPanel, topCtrlPanel, swingCtrlPanel, buttonPanel, buttonPanel2,
+							buttonPanel3;
 	private PlotterPanel 	measPanel, ctrlPanel, rlsPanel;
 	private JPanel 			qFieldPanel, rFieldPanel, swingLabelPanel, swingFieldPanel, generalLabelPanel,
 							generalFieldPanel, estimatorLabelPanel, estimatorFieldPanel;
@@ -42,6 +44,7 @@ public class FurutaGUI implements Observer {
 	private JButton 		startButton, stopButton, resetEstimatorButton, saveEstimatorButton, saveCtrlButton, brakeButton;
 	private JButton			resetOffsetButton, resetOffsetOnTopButton;
 	private JButton			frictionCompensatorOnButton, frictionCompensatorOffButton;
+	private JButton         rlsConvergeTestButton, stepResponseTestButton;
 	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField,
 							lambdaField, p0Field, theta00Field, theta01Field;
 	private DoubleField[][] qArrayField, rArrayField;
@@ -80,6 +83,7 @@ public class FurutaGUI implements Observer {
 		// Get initial parameters from Regul
 		ctrlPar = controller.getControllerParameters();
 		rlsPar = controller.getRLSParameters();
+		specificTests = new SpecificTests(communicationManager, controller);
 
 		// Create main frame.
 		frame = new JFrame("Furuta GUI");
@@ -535,6 +539,20 @@ public class FurutaGUI implements Observer {
 			}
 		});
 
+		rlsConvergeTestButton = new JButton("rls test");
+		rlsConvergeTestButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				specificTests.rlsConverge();
+			}
+		});
+
+		stepResponseTestButton = new JButton("step test");
+		stepResponseTestButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				specificTests.stepResponse();
+			}
+		});
+
 
 		/*brakeButton = new JButton("Brake");
 		brakeButton.addActionListener(new ActionListener() {
@@ -542,6 +560,10 @@ public class FurutaGUI implements Observer {
 				controller.toggleBrakePendulum();
 			}
 		});*/
+		buttonPanel3 = new BoxPanel(BoxPanel.HORIZONTAL);
+		buttonPanel3.add(rlsConvergeTestButton);
+		buttonPanel3.add(stepResponseTestButton);
+		buttonPanel3.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		buttonPanel2 = new BoxPanel(BoxPanel.HORIZONTAL);
 		buttonPanel2.add(frictionCompensatorOnButton);
@@ -581,6 +603,8 @@ public class FurutaGUI implements Observer {
 		rightPanel.add(buttonPanel);
 		rightPanel.addFixed(10);
 		rightPanel.add(buttonPanel2);
+		rightPanel.addFixed(10);
+		rightPanel.add(buttonPanel3);
 		rightPanel.addFixed(10);
 
 

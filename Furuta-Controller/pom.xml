@@ -45,5 +45,13 @@
 			<artifactId>json-simple</artifactId>
 			<version>1.1.1</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.jmatio</groupId>
+			<artifactId>jmatio</artifactId>
+			<version>041212</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/libs/jmatio.jar</systemPath>
+		</dependency>
 	</dependencies>
 </project>
