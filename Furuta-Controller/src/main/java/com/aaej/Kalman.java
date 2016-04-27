@@ -10,6 +10,8 @@ class Kalman {
 	Matrix Qk, Rk;
 	Matrix P, X;
 
+	int counter = 0; // Adam test
+
 	public Kalman(Matrix A, Matrix B, Matrix Qk, Matrix Rk) {
 		
 		// These should be sent to kalman
@@ -28,6 +30,7 @@ class Kalman {
 
 		X = new Matrix(new double[] {0,0,0,0},4);
 
+
 	}
 
 	// u control signal, y measurement vector
@@ -35,9 +38,14 @@ class Kalman {
 	    //System.out.println(Arrays.deepToString(Ad.getArray()));
 	    //System.out.println(Arrays.deepToString(Bd.getArray()));
 		Matrix Z = Rk.plus(C.times(P).times(C.transpose()));
-		Matrix K = (A.times(P).times(C.transpose())).times(Rk.plus(C.times(P).times(C.transpose())).inverse());
+		Matrix K = (A.times(P).times(C.transpose())).times((Rk.plus(C.times(P).times(C.transpose()))).inverse());
 		P = A.times(P).times(A.transpose()).plus(Qk).minus(K.times(Z).times(K.transpose()));
 		X = A.times(X).plus(B.times(u)).plus(K.times(new Matrix(y,4).minus(C.times(X))));
+
+		while (counter > 10) {
+			System.out.println(Arrays.deepToString(P.getArray()));
+			counter = 0;	
+		}
 	}
 
 	public Matrix calculateYHat() {
