@@ -41,7 +41,7 @@ class MainController extends Thread {
     private ArrayList<Observer> observerList;
     private boolean enableFrictionCompensation;
     private Kalman kalmanFilter;
-    private boolean enableKalman;
+    private Boolean enableKalman;
 
     public MainController(int priority, CommunicationManager communicationManager) {
         setPriority(priority);
@@ -61,7 +61,8 @@ class MainController extends Thread {
 
         // Kalman things, TODO, move to function and make sure that it updates when h is changed
         Matrix AandB[] = Discretizer.c2d(controllerParameters.h);
-        kalmanFilter = new Kalman(AandB[0], AandB[1], new Matrix(rlsParameters.Qk), new Matrix(rlsParameters.Rk));
+        kalmanFilter = new Kalman(AandB[0], AandB[1]);
+        kalmanFilter.setRLSParameters(rlsParameters);
 	}
 
     public void run() {
@@ -98,25 +99,36 @@ class MainController extends Thread {
 
         double pendAngKalman, pendAngVelKalman, baseAngKalman, baseAngVelKalman;
 
+        Boolean enableKalmanSync;
+        synchronized(enableKalman) { // Hur gör vi detta snyggast?
+             enableKalmanSync= enableKalman;
+        }
+
         //KALMAN HERE
-        if (enableKalman) {
+        if (enableKalmanSync) {
             Matrix yhat = kalmanFilter.calculateYHat(new double[]{pendAng, pendAngVel, baseAng, baseAngVel});
             pendAngKalman = yhat.get(0,0);
             pendAngVelKalman = yhat.get(1,0);
             baseAngKalman = yhat.get(2,0);
             baseAngVelKalman = yhat.get(3,0);
+            communicationManager.pendAngKalman = pendAngKalman;
+            communicationManager.pendAngVelKalman = pendAngVelKalman;
+            communicationManager.baseAngKalman = baseAngKalman;
+            communicationManager.baseAngVelKalman = baseAngVelKalman;
         } else { // I get errors if I don't define these
-            pendAngKalman = 0;
-            pendAngVelKalman = 0;
-            baseAngKalman = 0;
-            baseAngVelKalman = 0;
+            pendAngKalman = pendAng;
+            pendAngVelKalman = pendAngVel;
+            baseAngKalman = baseAng;
+            baseAngVelKalman = baseAngVel;
         }
         
+        boolean insideDeadzone = Math.abs(baseAngKalman) < rlsParameters.deadzoneBaseAng;
+
         double u = 0;
         if(on) {
             activeController = chooseController(pendAng,pendAngVel);
             if(activeController == Controller.TOP) {
-                if (enableKalman) {
+                if (enableKalmanSync) {
                     u = topController.calculateOutput(pendAngKalman, pendAngVelKalman, baseAngKalman, baseAngVelKalman);
                     topController.update();
 
@@ -127,8 +139,8 @@ class MainController extends Thread {
 
                     frictionCompensator.rls(baseAng, baseAngVel);
                 }
-		if(enableFrictionCompensation) {
-                if (enableKalman) {
+		if(enableFrictionCompensation && !insideDeadzone) {
+                if (enableKalmanSync) {
                     u = u + frictionCompensator.compensate(baseAngVelKalman);
                 } else {
                     u = u + frictionCompensator.compensate(baseAngVel);
@@ -147,7 +159,7 @@ class MainController extends Thread {
 
         }
         u = communicationManager.writeOutput(u);
-        if (enableKalman) {
+        if (enableKalmanSync) {
             frictionCompensator.updateStates(baseAngKalman, baseAngVelKalman, pendAngKalman, u);
         } else {
             frictionCompensator.updateStates(baseAng, baseAngVel, pendAng, u);
@@ -273,5 +285,10 @@ class MainController extends Thread {
 
     public void setEnableFrictionCompensation(boolean enableFrictionCompensation) {
         this.enableFrictionCompensation = enableFrictionCompensation;
+    }
+
+    public synchronized void toggleKalman() {
+        enableKalman = !enableKalman;
+        LOGGER.log(Level.INFO, "Kalman enabled: " + (enableKalman ? "True" : "False"));
     }
 }

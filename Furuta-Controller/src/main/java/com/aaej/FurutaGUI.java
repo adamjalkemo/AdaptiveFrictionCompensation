@@ -35,7 +35,7 @@ public class FurutaGUI implements Observer {
 	private BoxPanel 		guiPanel, plotterPanel, rightPanel, ctrlParameterPanel,estimatorParameterPanel,
 							lowerLeftPlotPanel, lowerRightPlotPanel, lowerPlotPanels, generalCtrlPanel, estimatorButtonsPanel,
 							estimatorGridPanel, regressorPanel, topCtrlPanel, swingCtrlPanel, buttonPanel, buttonPanel2,
-							buttonPanel3;
+							buttonPanel3,kalmanQPanel, kalmanRPanel, kalmanPanel, deadzonePanel;
 	private PlotterPanel 	measPanel, ctrlPanel, rlsPanel;
 	private JPanel 			qFieldPanel, rFieldPanel, swingLabelPanel, swingFieldPanel, generalLabelPanel,
 							generalFieldPanel, estimatorLabelPanel, estimatorFieldPanel;
@@ -44,10 +44,11 @@ public class FurutaGUI implements Observer {
 	private JButton 		startButton, stopButton, resetEstimatorButton, saveEstimatorButton, saveCtrlButton, brakeButton;
 	private JButton			resetOffsetButton, resetOffsetOnTopButton;
 	private JButton			frictionCompensatorOnButton, frictionCompensatorOffButton;
-	private JButton         rlsConvergeTestButton, stepResponseTestButton;
+	private JButton         rlsConvergeTestButton, stepResponseTestButton, toggleKalmanButton;
 	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField,
-							lambdaField, p0Field, theta00Field, theta01Field;
+							lambdaField, p0Field, theta00Field, theta01Field, deadzoneBaseAngField;
 	private DoubleField[][] qArrayField, rArrayField;
+	private DoubleField[]	kalmanQArrayField, kalmanRArrayField;
 	private JLabel currentController;
 
 	DoubleField offsetBaseAngField, offsetBaseAngVelField, offsetPendAngField, offsetPendAngVelField;
@@ -444,6 +445,75 @@ public class FurutaGUI implements Observer {
 		theta0Panel.add(theta00Field);
 		theta0Panel.add(theta01Field);
 
+		int qKalmanSize = rlsPar.qKalman[0].length;
+		kalmanQPanel = new BoxPanel(BoxPanel.HORIZONTAL);
+		kalmanQPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
+		kalmanQPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		kalmanQPanel.add(new JLabel("Kalman Q  "));
+		kalmanQArrayField = new DoubleField[qKalmanSize];
+		for (int i = 0; i < qKalmanSize; i++) {
+			kalmanQArrayField[i] = new DoubleField(10,6);
+			kalmanQArrayField[i].setValue(rlsPar.qKalman[i][i]);
+			kalmanQArrayField[i].putClientProperty("i", (Integer) i);
+			kalmanQArrayField[i].addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					int i = (Integer)((DoubleField)e.getSource()).getClientProperty("i");
+					rlsPar.qKalman[i][i] = kalmanQArrayField[i].getValue();
+					saveEstimatorButton.setEnabled(true);
+				}
+			});
+			kalmanQPanel.add(kalmanQArrayField[i]);
+		}
+
+				int rKalmanSize = rlsPar.rKalman[0].length;
+		kalmanRPanel = new BoxPanel(BoxPanel.HORIZONTAL);
+		kalmanRPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
+		kalmanRPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		kalmanRPanel.add(new JLabel("Kalman R  "));
+		kalmanRArrayField = new DoubleField[rKalmanSize];
+		for (int i = 0; i < rKalmanSize; i++) {
+			kalmanRArrayField[i] = new DoubleField(10,6);
+			kalmanRArrayField[i].setValue(rlsPar.rKalman[i][i]);
+			kalmanRArrayField[i].putClientProperty("i", (Integer) i);
+			kalmanRArrayField[i].addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					int i = (Integer)((DoubleField)e.getSource()).getClientProperty("i");
+					rlsPar.rKalman[i][i] = kalmanRArrayField[i].getValue();
+					saveEstimatorButton.setEnabled(true);
+				}
+			});
+			kalmanRPanel.add(kalmanRArrayField[i]);
+		}
+
+		toggleKalmanButton = new JButton("Toggle Kalman filter");
+		toggleKalmanButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				controller.toggleKalman();
+			}
+		});
+
+		kalmanPanel = new BoxPanel(BoxPanel.VERTICAL);
+		kalmanPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
+		kalmanPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		kalmanPanel.add(kalmanQPanel);
+		kalmanPanel.add(kalmanRPanel);
+		kalmanPanel.add(toggleKalmanButton);
+
+		deadzoneBaseAngField = new DoubleField(10,6);
+		deadzoneBaseAngField.setValue(rlsPar.deadzoneBaseAng);
+		deadzoneBaseAngField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				rlsPar.deadzoneBaseAng = deadzoneBaseAngField.getValue();
+				saveEstimatorButton.setEnabled(true);
+			}
+		});
+
+		deadzonePanel = new BoxPanel(BoxPanel.HORIZONTAL);
+		deadzonePanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
+		deadzonePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		deadzonePanel.add(new JLabel("BaseAng Deadzone"));
+		deadzonePanel.add(deadzoneBaseAngField);
+
 		estimatorFieldPanel = new JPanel();
 		estimatorFieldPanel.setLayout(new GridLayout(0,1));
 		estimatorFieldPanel.add(lambdaField);
@@ -455,6 +525,7 @@ public class FurutaGUI implements Observer {
 		estimatorGridPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		estimatorGridPanel.add(estimatorLabelPanel);
 		estimatorGridPanel.add(estimatorFieldPanel);
+
 
 		saveEstimatorButton = new JButton("Save");
 		saveEstimatorButton.setEnabled(false);
@@ -483,6 +554,8 @@ public class FurutaGUI implements Observer {
 		estimatorParameterPanel.setBorder(BorderFactory.createTitledBorder(formatLabel("Estimator Parameters", true, 4, "#000033")));
 		estimatorParameterPanel.add(regressorPanel);
 		estimatorParameterPanel.add(estimatorGridPanel);
+		estimatorParameterPanel.add(kalmanPanel);
+		estimatorParameterPanel.add(deadzonePanel);
 		estimatorParameterPanel.add(estimatorButtonsPanel);
 		
 		// ------------
