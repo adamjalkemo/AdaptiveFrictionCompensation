@@ -15,10 +15,10 @@ public class RLSParameters implements Cloneable {
 
 	// TODO create kalmanparameters
 	// Qk Punish model
-	public double[][] Qk = new double[][]{{1000000,0,0,0},{0,1000000,0,0},{0,0,1000000,0},{0,0,0,1000000}};
+	public double[][] Qk = new double[][]{{1000,0,0,0},{0,100,0,0},{0,0,1000,0},{0,0,0,100}};
 
 	// Rk punish measurements
-	public double[][] Rk = new double[][]{{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
+	public double[][] Rk = new double[][]{{0,0,0,0},{0,10,0,0},{0,0,0,0},{0,0,0,10}};
 	
 	public Object clone() {
 		try {

@@ -8,7 +8,8 @@ class Kalman {
 
 	Matrix A, B, C;
 	Matrix Qk, Rk;
-	Matrix P, X;
+	Matrix P, X, K;
+	double u;
 
 	int counter = 0; // Adam test
 
@@ -29,26 +30,30 @@ class Kalman {
 		P = Matrix.identity(4,4).times(1000.0);
 
 		X = new Matrix(new double[] {0,0,0,0},4);
-
+		K = new Matrix(new double[][] {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}});
+		u = 0;
 
 	}
 
 	// u control signal, y measurement vector
-	public void updateStates(double u, double[] y) {
+	public void updateStates(double u) {
 	    //System.out.println(Arrays.deepToString(Ad.getArray()));
 	    //System.out.println(Arrays.deepToString(Bd.getArray()));
 		Matrix Z = Rk.plus(C.times(P).times(C.transpose()));
-		Matrix K = (A.times(P).times(C.transpose())).times((Rk.plus(C.times(P).times(C.transpose()))).inverse());
+		K = (A.times(P).times(C.transpose())).times((Rk.plus(C.times(P).times(C.transpose()))).inverse());
 		P = A.times(P).times(A.transpose()).plus(Qk).minus(K.times(Z).times(K.transpose()));
-		X = A.times(X).plus(B.times(u)).plus(K.times(new Matrix(y,4).minus(C.times(X))));
+		this.u = u;
 
-		while (counter > 10) {
-			System.out.println(Arrays.deepToString(P.getArray()));
+/*		counter++;
+		while (counter > 100) {
+			System.out.println(Arrays.deepToString(P.getArray()[0]));
+			//System.out.println(P.getArray()[0][0]);
 			counter = 0;	
-		}
+		}*/
 	}
 
-	public Matrix calculateYHat() {
+	public Matrix calculateYHat(double[] y) {
+		X = (Matrix.identity(4,4).minus(K.times(C))).times((A.times(X).plus(B.times(u)))).plus(K.times(new Matrix(y,4)));
 		return C.times(X);
 	}
 

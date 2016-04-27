@@ -100,7 +100,7 @@ class MainController extends Thread {
 
         //KALMAN HERE
         if (enableKalman) {
-            Matrix yhat = kalmanFilter.calculateYHat();
+            Matrix yhat = kalmanFilter.calculateYHat(new double[]{pendAng, pendAngVel, baseAng, baseAngVel});
             pendAngKalman = yhat.get(0,0);
             pendAngVelKalman = yhat.get(1,0);
             baseAngKalman = yhat.get(2,0);
@@ -154,7 +154,7 @@ class MainController extends Thread {
         }
 
         // I think you can run this even if enableKalman = false;
-        kalmanFilter.updateStates(u, new double[]{pendAng, pendAngVel, baseAng, baseAngVel});
+        kalmanFilter.updateStates(u);
 
         communicationManager.plotRLSParameters(frictionCompensator.getFv(), frictionCompensator.getFc());
    }
