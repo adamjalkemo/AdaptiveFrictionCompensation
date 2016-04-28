@@ -122,9 +122,11 @@ class MainController extends Thread {
             baseAngVelKalman = baseAngVel;
         }
         
-        boolean insideDeadzone = Math.abs(baseAngKalman) < rlsParameters.deadzoneBaseAng;
+        boolean insideDeadzone = Math.abs(pendAngKalman) < rlsParameters.deadzonePendAng;
 
         double u = 0;
+        double uBeforeFrictionComp = 0;
+
         if(on) {
             activeController = chooseController(pendAng,pendAngVel);
             if(activeController == Controller.TOP) {
@@ -139,6 +141,8 @@ class MainController extends Thread {
 
                     frictionCompensator.rls(baseAng, baseAngVel);
                 }
+
+        uBeforeFrictionComp = u;
 		if(enableFrictionCompensation && !insideDeadzone) {
                 if (enableKalmanSync) {
                     u = u + frictionCompensator.compensate(baseAngVelKalman);
@@ -166,7 +170,7 @@ class MainController extends Thread {
         }
 
         // I think you can run this even if enableKalman = false;
-        kalmanFilter.updateStates(u);
+        kalmanFilter.updateStates(uBeforeFrictionComp);
 
         communicationManager.plotRLSParameters(frictionCompensator.getFv(), frictionCompensator.getFc());
    }

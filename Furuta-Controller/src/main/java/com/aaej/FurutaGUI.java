@@ -46,7 +46,7 @@ public class FurutaGUI implements Observer {
 	private JButton			frictionCompensatorOnButton, frictionCompensatorOffButton;
 	private JButton         rlsConvergeTestButton, stepResponseTestButton, toggleKalmanButton;
 	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField,
-							lambdaField, p0Field, theta00Field, theta01Field, deadzoneBaseAngField;
+							lambdaField, p0Field, theta00Field, theta01Field, deadzonePendAngField;
 	private DoubleField[][] qArrayField, rArrayField;
 	private DoubleField[]	kalmanQArrayField, kalmanRArrayField;
 	private JLabel currentController;
@@ -499,11 +499,11 @@ public class FurutaGUI implements Observer {
 		kalmanPanel.add(kalmanRPanel);
 		kalmanPanel.add(toggleKalmanButton);
 
-		deadzoneBaseAngField = new DoubleField(10,6);
-		deadzoneBaseAngField.setValue(rlsPar.deadzoneBaseAng);
-		deadzoneBaseAngField.addActionListener(new ActionListener() {
+		deadzonePendAngField = new DoubleField(10,6);
+		deadzonePendAngField.setValue(rlsPar.deadzonePendAng);
+		deadzonePendAngField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				rlsPar.deadzoneBaseAng = deadzoneBaseAngField.getValue();
+				rlsPar.deadzonePendAng = deadzonePendAngField.getValue();
 				saveEstimatorButton.setEnabled(true);
 			}
 		});
@@ -511,8 +511,8 @@ public class FurutaGUI implements Observer {
 		deadzonePanel = new BoxPanel(BoxPanel.HORIZONTAL);
 		deadzonePanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
 		deadzonePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		deadzonePanel.add(new JLabel("BaseAng Deadzone"));
-		deadzonePanel.add(deadzoneBaseAngField);
+		deadzonePanel.add(new JLabel("PendAng Deadzone"));
+		deadzonePanel.add(deadzonePendAngField);
 
 		estimatorFieldPanel = new JPanel();
 		estimatorFieldPanel.setLayout(new GridLayout(0,1));

@@ -138,7 +138,11 @@ public class CommunicationManager {
         double t = (double)this.t/1000;
 	//1 black, 2 red, 3 green, 4 blue
         gui.putMeasurementDataPoint(t,baseAng,baseAngVel,pendAng,pendAngVel);
+
+    //For kalman
+        //gui.putMeasurementDataPoint(t,pendAng,pendAngKalman,pendAngVel,pendAngVelKalman);
         //gui.putMeasurementDataPoint(t,baseAngKalman,baseAngVelKalman,pendAngKalman,pendAngVelKalman);
+
 	//Top and 360 sensor seems to really follow each other
         //gui.putMeasurementDataPoint(t,pendAng,pendAngVel,pendAngTop,pendAngVelTop);
         gui.putControlDataPoint(t,u);

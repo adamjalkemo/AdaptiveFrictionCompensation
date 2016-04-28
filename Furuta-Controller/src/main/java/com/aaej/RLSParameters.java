@@ -13,7 +13,7 @@ public class RLSParameters implements Cloneable {
 	public double fvGuess = 0;
 	public double fcGuess = 0;
 
-	public double deadzoneBaseAng = 0;
+	public double deadzonePendAng = 0;
 
 	// TODO create kalmanparameters
 	// Qk Punish model
