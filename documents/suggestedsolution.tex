@@ -171,6 +171,18 @@ Now we can apply the normal RLS algorithm with some forgetting factor $\lambda$.
 As we see in equation \ref{eq:discrete} we probably can get different results in the friction estimation by choosing different equations in the same form as in equation \ref{eq:estim}. Initially we want to estimate the friction when the pendulum is hanging straight down and the arm is rotating at a constant speed. If there were no friction, no control signal would be necessary to keep the velocity of the arm constant, and therefore the control signal required corresponds to the signal necessary for compensating the coloumb friction.
 We also want to to estimate the friction in the top position and then the equation corresponding to the state $ \dot{\varphi} $ in eq. \ref{eq:discrete} might not be the one which yields the best result. More research will be put into this at a later stage.
 
+\section{RLS ALG}
+
+\begin{equation}
+\hat{\theta}_k = \hat{\theta}_{k-1}+P_k\phi_k\epsilon_k 
+\end{equation}
+\begin{equation}
+\epsilon_k=y_k-\phi_k^{T}\hat{\theta}_{k-1} 
+\end{equation}
+\begin{equation}
+P_k=\frac{1}{\lambda}(P_{k-1}-\frac{P_{k-1}\phi_k\phi_k^{T}P_{k-1}}{\lambda+\phi_k^{T}P_{k-1}\phi_k})
+\end{equation}
+
 \subsection{GUI}
 The operator should be able to change controller parameters for both types of controller and for the friction estimator. For the top controller, the $Q$ and $R$ matrices. For the swing up controller, the switching area and its limit and the gain. Other general parameters for the controller such as sampling time $h$ (if possible), and $\omega _0$. And for the friction estimation the forgetting factor $\lambda$ and the initial values $P_0$ and $\omega _0$.
 
