@@ -7,7 +7,8 @@ for i = 1000:1000:60*1000
    x(l) = sum(phid(i+200:i+1000))/length(phid(i+200:i+1000));
 end
 figure 
-%plot(x,y,'.')
-plot([x(1:28) x(34:61)],[y(1:28) y(34:61)],'.')
+plot(x,y,'o')
+%plot([x(1:2:28) x(35:2:61)],[y(1:2:28) y(35:2:61)],'o')
 %figure 
-%plot(phid,u,'.')
+%plot(phid(1000:end),u(1000:end),'.')
+%plot([x(20:31) x(31:42)], [y(20:31) y(31:42)], '.')
