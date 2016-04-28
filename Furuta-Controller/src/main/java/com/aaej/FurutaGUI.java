@@ -44,7 +44,7 @@ public class FurutaGUI implements Observer {
 	private JButton 		startButton, stopButton, resetEstimatorButton, saveEstimatorButton, saveCtrlButton, brakeButton;
 	private JButton			resetOffsetButton, resetOffsetOnTopButton;
 	private JButton			frictionCompensatorOnButton, frictionCompensatorOffButton;
-	private JButton         rlsConvergeTestButton, stepResponseTestButton, toggleKalmanButton, saveTestDataButton, stopSaveTestDataButton;
+	private JButton         rlsConvergeTestButton, stepResponseTestButton, toggleKalmanButton, saveTestDataButton, stopSaveTestDataButton, toggleStepResponseButton;
 	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField,
 							lambdaField, p0Field, theta00Field, theta01Field, deadzonePendAngField;
 	private DoubleField[][] qArrayField, rArrayField;
@@ -646,11 +646,20 @@ public class FurutaGUI implements Observer {
 				controller.toggleBrakePendulum();
 			}
 		});*/
+
+		toggleStepResponseButton = new JButton("STEPRESPONSE");
+		toggleStepResponseButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				controller.toggleStepResponse();
+			}
+		});
+
 		buttonPanel3 = new BoxPanel(BoxPanel.HORIZONTAL);
 		buttonPanel3.add(rlsConvergeTestButton);
 		buttonPanel3.add(stepResponseTestButton);
 		buttonPanel3.add(saveTestDataButton);
 		buttonPanel3.add(stopSaveTestDataButton);
+		buttonPanel3.add(toggleStepResponseButton);
 		buttonPanel3.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		buttonPanel2 = new BoxPanel(BoxPanel.HORIZONTAL);

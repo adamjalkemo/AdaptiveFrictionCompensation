@@ -61,8 +61,10 @@ public class SpecificTests {
         data.add(new MLDouble("pendAng", communicationManager.getPendAngArray().toArray(new Double[]{}), 1));
         data.add(new MLDouble("pendAngVel", communicationManager.getPendAngVelArray().toArray(new Double[]{}), 1));
         data.add(new MLInt64("t", communicationManager.gettArray().toArray(new Long[]{}), 1));
+        data.add(new MLDouble("uF", communicationManager.getuFArray().toArray(new Double[]{}), 1));
         data.add(new MLDouble("fv", communicationManager.getFvArray().toArray(new Double[]{}), 1));
         data.add(new MLDouble("fc", communicationManager.getFcArray().toArray(new Double[]{}), 1));
+        data.add(new MLDouble("VL", communicationManager.getVLArray().toArray(new Double[]{}), 1));
         try {
             new MatFileWriter(file, data);
         } catch (IOException e) {

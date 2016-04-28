@@ -18,12 +18,13 @@ public class FrictionCompensator {
     private double control_old = 0;
 
     public FrictionCompensator() {
-        phi = new Matrix(2,1);
-        P_old = new Matrix(2,2);
-        theta_old = new Matrix(2,1);
+        phi = new Matrix(1,1);
+        //phi = new Matrix(2,1);
+        //P_old = new Matrix(2,2);
+        //theta_old = new Matrix(2,1);
     }
 
-    public synchronized double[] rls(double baseAng, double baseAngVel) {
+    public synchronized double rls(double baseAng, double baseAngVel) {
 
         P_old = (P_old.minus((P_old.times(phi).times(phi.transpose()).times(P_old))
                 .times(1.0/(rlsParameters.lambda+(phi.transpose().times(P_old).times(phi)).get(0,0))))).times(1/rlsParameters.lambda);
@@ -32,13 +33,13 @@ public class FrictionCompensator {
         double epsilon = VL - (phi.transpose().times(theta_old)).get(0,0);
         theta_old = theta_old.plus(P_old.times(phi).times(epsilon));
 
-        return(theta_old.getColumnPackedCopy());
+        //return(theta_old.getColumnPackedCopy());
+        return VL;
 
     }
     public synchronized void updateStates(double baseAng, double baseAngVel, double pendAng, double control) {
 
-        phi.set(0, 0, baseAngVel);
-        phi.set(1, 0, signum(baseAngVel));
+        phi.set(0, 0, signum(baseAngVel));
         pendAng_old = pendAng;
         control_old = control;
         baseAngVel_old = baseAngVel;
@@ -46,21 +47,21 @@ public class FrictionCompensator {
     }
 
     public synchronized double compensate(double baseAngVel) {
-        double F = theta_old.get(0, 0) * baseAngVel + theta_old.get(1, 0) * signum(baseAngVel);
+        double F = theta_old.get(0, 0) * signum(baseAngVel);
         return F;
     }
 
     public synchronized void setRLSParameters(RLSParameters newRLSParameters) {
         this.rlsParameters = newRLSParameters;
-        P_old = new Matrix(new double[][] {{rlsParameters.pam,0},{0,rlsParameters.pbm}},2,2);
-        theta_old = new Matrix(new double[][] {{rlsParameters.fvGuess},{rlsParameters.fcGuess}},2,1);
+        P_old = new Matrix(new double[][] {{rlsParameters.pam}},1,1);
+        theta_old = new Matrix(new double[][] {{rlsParameters.fcGuess}},1,1);
     }
 
     public synchronized double getFv() {
-        return theta_old.get(0,0);
+        return 0;
     }
     public synchronized double getFc() {
-        return theta_old.get(1,0);
+        return theta_old.get(0,0);
     }
     public synchronized void newAB(Matrix A, Matrix B) {
         this.A = A;
@@ -68,8 +69,8 @@ public class FrictionCompensator {
     }
 
     public synchronized void reset() {
-        P_old = new Matrix(new double[][] {{rlsParameters.pam,0},{0,rlsParameters.pbm}},2,2);
-        theta_old = new Matrix(new double[][] {{rlsParameters.fvGuess},{rlsParameters.fcGuess}},2,1);
+        P_old = new Matrix(new double[][] {{rlsParameters.pam}},1,1);
+        theta_old = new Matrix(new double[][] {{rlsParameters.fcGuess}},1,1);
     }
         
 

@@ -42,6 +42,7 @@ class MainController extends Thread {
     private boolean enableFrictionCompensation;
     private Kalman kalmanFilter;
     private Boolean enableKalman;
+    private double stepReference = 0;
 
     public MainController(int priority, CommunicationManager communicationManager) {
         setPriority(priority);
@@ -125,29 +126,33 @@ class MainController extends Thread {
         boolean insideDeadzone = Math.abs(pendAngKalman) < rlsParameters.deadzonePendAng;
 
         double u = 0;
+        double uF = 0;
         double uBeforeFrictionComp = 0;
+        double vL = 0;
 
         if(on) {
             activeController = chooseController(pendAng,pendAngVel);
             if(activeController == Controller.TOP) {
                 if (enableKalmanSync) {
-                    u = topController.calculateOutput(pendAngKalman, pendAngVelKalman, baseAngKalman, baseAngVelKalman);
+                    u = topController.calculateOutput(pendAngKalman, pendAngVelKalman, baseAngKalman, baseAngVelKalman, stepReference);
                     topController.update();
 
-                    frictionCompensator.rls(baseAngKalman, baseAngVelKalman);                
+                    vL = frictionCompensator.rls(baseAngKalman, baseAngVelKalman);                
                 } else {
-                    u = topController.calculateOutput(pendAng, pendAngVel, baseAng, baseAngVel);
+                    u = topController.calculateOutput(pendAng, pendAngVel, baseAng, baseAngVel, stepReference);
                     topController.update();
 
-                    frictionCompensator.rls(baseAng, baseAngVel);
+                    vL = frictionCompensator.rls(baseAng, baseAngVel);
                 }
 
         uBeforeFrictionComp = u;
 		if(enableFrictionCompensation && !insideDeadzone) {
                 if (enableKalmanSync) {
-                    u = u + frictionCompensator.compensate(baseAngVelKalman);
+                    uF = frictionCompensator.compensate(baseAngVelKalman);
+                    u = u + uF;
                 } else {
-                    u = u + frictionCompensator.compensate(baseAngVel);
+                    uF = frictionCompensator.compensate(baseAngVel);
+                    u = u + uF;
                 }
 	        }
             } else if(activeController == Controller.SWINGUP) {
@@ -163,6 +168,9 @@ class MainController extends Thread {
 
         }
         u = communicationManager.writeOutput(u);
+        communicationManager.saveUF(uF);
+        communicationManager.saveVL(vL);
+
         if (enableKalmanSync) {
             frictionCompensator.updateStates(baseAngKalman, baseAngVelKalman, pendAngKalman, u);
         } else {
@@ -170,7 +178,7 @@ class MainController extends Thread {
         }
 
         // I think you can run this even if enableKalman = false;
-        kalmanFilter.updateStates(uBeforeFrictionComp);
+        //kalmanFilter.updateStates(uBeforeFrictionComp);
 
         communicationManager.plotRLSParameters(frictionCompensator.getFv(), frictionCompensator.getFc());
    }
@@ -294,5 +302,13 @@ class MainController extends Thread {
     public synchronized void toggleKalman() {
         enableKalman = !enableKalman;
         LOGGER.log(Level.INFO, "Kalman enabled: " + (enableKalman ? "True" : "False"));
+    }
+
+    public synchronized void toggleStepResponse() {
+        if (stepReference == 0) {
+            stepReference = Math.PI;
+        } else {
+            stepReference = 0;
+        }
     }
 }
