@@ -44,7 +44,7 @@ public class FurutaGUI implements Observer {
 	private JButton 		startButton, stopButton, resetEstimatorButton, saveEstimatorButton, saveCtrlButton, brakeButton;
 	private JButton			resetOffsetButton, resetOffsetOnTopButton;
 	private JButton			frictionCompensatorOnButton, frictionCompensatorOffButton;
-	private JButton         rlsConvergeTestButton, stepResponseTestButton, toggleKalmanButton;
+	private JButton         rlsConvergeTestButton, stepResponseTestButton, toggleKalmanButton, saveTestDataButton, stopSaveTestDataButton;
 	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField,
 							lambdaField, p0Field, theta00Field, theta01Field, deadzonePendAngField;
 	private DoubleField[][] qArrayField, rArrayField;
@@ -626,6 +626,19 @@ public class FurutaGUI implements Observer {
 			}
 		});
 
+		saveTestDataButton = new JButton("start save");
+		saveTestDataButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				communicationManager.startSaveArrays();
+			}
+		});
+		stopSaveTestDataButton = new JButton("stop save");
+		stopSaveTestDataButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				specificTests.saveDataGeneral();
+			}
+		});
+
 
 		/*brakeButton = new JButton("Brake");
 		brakeButton.addActionListener(new ActionListener() {
@@ -636,6 +649,8 @@ public class FurutaGUI implements Observer {
 		buttonPanel3 = new BoxPanel(BoxPanel.HORIZONTAL);
 		buttonPanel3.add(rlsConvergeTestButton);
 		buttonPanel3.add(stepResponseTestButton);
+		buttonPanel3.add(saveTestDataButton);
+		buttonPanel3.add(stopSaveTestDataButton);
 		buttonPanel3.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		buttonPanel2 = new BoxPanel(BoxPanel.HORIZONTAL);

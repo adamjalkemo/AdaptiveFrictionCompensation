@@ -44,7 +44,7 @@ public class SpecificTests {
         controller.regulatorActive(true);
         communicationManager.startSaveArrays();
         try {
-            Thread.sleep(10000);
+            Thread.sleep(20000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -68,5 +68,11 @@ public class SpecificTests {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void saveDataGeneral() {
+        communicationManager.stopSaveArrays();
+        String fileName = new SimpleDateFormat("'data-'yyyyMMddhhmmss'.mat'").format(new Date());
+        saveData(fileName);
     }
 }
