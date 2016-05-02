@@ -122,14 +122,22 @@ class MainController extends Thread {
             baseAngVelKalman = baseAngVel;
         }
         
-        boolean insideDeadzone = Math.abs(pendAngKalman) < rlsParameters.deadzonePendAng;
+        boolean insideDeadzone;
+
+        if (enableKalmanSync) {
+            insideDeadzone = Math.abs(baseAngVelKalman) < rlsParameters.deadzoneBaseAngVel;
+            insideDeadzone = insideDeadzone || Math.abs(pendAngVelKalman) < rlsParameters.deadzonePendAngVel;
+        } else {
+            insideDeadzone = Math.abs(baseAngVel) < rlsParameters.deadzoneBaseAngVel;
+            insideDeadzone = insideDeadzone || Math.abs(pendAngVel) < rlsParameters.deadzonePendAngVel;
+        }
 
         double u = 0;
         double uBeforeFrictionComp = 0;
 
         if(on) {
             activeController = chooseController(pendAng,pendAngVel);
-            if(activeController == Controller.TOP) {
+            if(activeController == Controller.TOP && !insideDeadzone) {
                 if (enableKalmanSync) {
                     u = topController.calculateOutput(pendAngKalman, pendAngVelKalman, baseAngKalman, baseAngVelKalman);
                     topController.update();
@@ -142,14 +150,14 @@ class MainController extends Thread {
                     frictionCompensator.rls(baseAng, baseAngVel);
                 }
 
-        uBeforeFrictionComp = u;
-		if(enableFrictionCompensation && !insideDeadzone) {
-                if (enableKalmanSync) {
-                    u = u + frictionCompensator.compensate(baseAngVelKalman);
-                } else {
-                    u = u + frictionCompensator.compensate(baseAngVel);
-                }
-	        }
+                uBeforeFrictionComp = u;
+        		if(enableFrictionCompensation && !insideDeadzone) {
+                    if (enableKalmanSync) {
+                        u = u + frictionCompensator.compensate(baseAngVelKalman);
+                    } else {
+                        u = u + frictionCompensator.compensate(baseAngVel);
+                    }
+    	        }
             } else if(activeController == Controller.SWINGUP) {
                 if (sleepAfterFall > 0) {
                     sleepAfterFall--;

@@ -46,16 +46,16 @@ public class CommunicationManager {
     private double offsetPendAngVelTop =  0.1790;//0;
     private double scalingPendAngVelTop = 0.68;
 
-    private double offsetPendAng = 5.1763;
+    private double offsetPendAng = 5.0673;//5.1763;
     private double scalingPendAng = 0.3091;
 
-    private double offsetPendAngVel = -0.022;
+    private double offsetPendAngVel = -0.0350;//-0.022;
     private double scalingPendAngVel = 3.76;
 
     private double offsetBaseAng = 0.5;//0;
     private double scalingBaseAng = 2.56;//1.28;//2.56;
 
-    private double offsetBaseAngVel = 0.0708;
+    private double offsetBaseAngVel = 0.1482;//0.0708;
     private double scalingBaseAngVel = 2;
 
     private double scalingOutput = -1.40;
@@ -139,8 +139,8 @@ public class CommunicationManager {
 	//1 black, 2 red, 3 green, 4 blue
         gui.putMeasurementDataPoint(t,baseAng,baseAngVel,pendAng,pendAngVel);
 
-    //For kalman
-        //gui.putMeasurementDataPoint(t,pendAng,pendAngKalman,pendAngVel,pendAngVelKalman);
+    //For kalman 
+        //gui.putMeasurementDataPoint(t,pendAngVel,pendAngVelKalman,pendAng,pendAngKalman);
         //gui.putMeasurementDataPoint(t,baseAngKalman,baseAngVelKalman,pendAngKalman,pendAngVelKalman);
 
 	//Top and 360 sensor seems to really follow each other

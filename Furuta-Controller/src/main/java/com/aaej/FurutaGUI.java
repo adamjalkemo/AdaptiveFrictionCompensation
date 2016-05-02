@@ -46,7 +46,7 @@ public class FurutaGUI implements Observer {
 	private JButton			frictionCompensatorOnButton, frictionCompensatorOffButton;
 	private JButton         rlsConvergeTestButton, stepResponseTestButton, toggleKalmanButton, saveTestDataButton, stopSaveTestDataButton;
 	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField,
-							lambdaField, p0Field, theta00Field, theta01Field, deadzonePendAngField;
+							lambdaField, p0Field, theta00Field, theta01Field, deadzoneBaseAngVelField, deadzonePendAngVelField;
 	private DoubleField[][] qArrayField, rArrayField;
 	private DoubleField[]	kalmanQArrayField, kalmanRArrayField;
 	private JLabel currentController;
@@ -499,11 +499,20 @@ public class FurutaGUI implements Observer {
 		kalmanPanel.add(kalmanRPanel);
 		kalmanPanel.add(toggleKalmanButton);
 
-		deadzonePendAngField = new DoubleField(10,6);
-		deadzonePendAngField.setValue(rlsPar.deadzonePendAng);
-		deadzonePendAngField.addActionListener(new ActionListener() {
+		deadzoneBaseAngVelField = new DoubleField(10,6);
+		deadzoneBaseAngVelField.setValue(rlsPar.deadzoneBaseAngVel);
+		deadzoneBaseAngVelField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				rlsPar.deadzonePendAng = deadzonePendAngField.getValue();
+				rlsPar.deadzoneBaseAngVel = deadzoneBaseAngVelField.getValue();
+				saveEstimatorButton.setEnabled(true);
+			}
+		});
+
+		deadzonePendAngVelField = new DoubleField(10,6);
+		deadzonePendAngVelField.setValue(rlsPar.deadzonePendAngVel);
+		deadzonePendAngVelField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				rlsPar.deadzonePendAngVel = deadzonePendAngVelField.getValue();
 				saveEstimatorButton.setEnabled(true);
 			}
 		});
@@ -511,8 +520,11 @@ public class FurutaGUI implements Observer {
 		deadzonePanel = new BoxPanel(BoxPanel.HORIZONTAL);
 		deadzonePanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
 		deadzonePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		deadzonePanel.add(new JLabel("PendAng Deadzone"));
-		deadzonePanel.add(deadzonePendAngField);
+		deadzonePanel.add(new JLabel("BaseAngVel Deadzone"));
+		deadzonePanel.add(deadzoneBaseAngVelField);
+		deadzonePanel.addFixed(10);
+		deadzonePanel.add(new JLabel("PendAngVel Deadzone"));
+		deadzonePanel.add(deadzonePendAngVelField);
 
 		estimatorFieldPanel = new JPanel();
 		estimatorFieldPanel.setLayout(new GridLayout(0,1));

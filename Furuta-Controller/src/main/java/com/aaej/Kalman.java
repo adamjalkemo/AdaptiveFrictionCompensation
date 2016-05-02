@@ -7,7 +7,6 @@ import java.util.*;
 class Kalman {
 
 	Matrix A, B, C;
-	Matrix qKalman, rKalman;
 	Matrix P, X, K;
 	double u;
 
@@ -41,9 +40,7 @@ class Kalman {
 	    //System.out.println(Arrays.deepToString(Ad.getArray()));
 	    //System.out.println(Arrays.deepToString(Bd.getArray()));
 
-		Matrix Z = rKalman.plus(C.times(P).times(C.transpose()));
-		K = (A.times(P).times(C.transpose())).times((rKalman.plus(C.times(P).times(C.transpose()))).inverse());
-		P = A.times(P).times(A.transpose()).plus(qKalman).minus(K.times(Z).times(K.transpose()));
+		
 		this.u = u;
 
 /*		counter++;
@@ -60,12 +57,21 @@ class Kalman {
 	}
 
 	public void setRLSParameters(RLSParameters rlsParameters) {
-		qKalman = new Matrix(rlsParameters.qKalman);
-		rKalman = new Matrix(rlsParameters.rKalman);
+		Matrix qKalman = new Matrix(rlsParameters.qKalman);
+		Matrix rKalman = new Matrix(rlsParameters.rKalman);
+
+		for (int i = 0; i < 200; i++) {
+			Matrix Z = rKalman.plus(C.times(P).times(C.transpose()));
+			K = (A.times(P).times(C.transpose())).times((rKalman.plus(C.times(P).times(C.transpose()))).inverse());
+			P = A.times(P).times(A.transpose()).plus(qKalman).minus(K.times(Z).times(K.transpose()));	
+		}		
 
 		synchronized (this) {
 			this.rlsParameters = rlsParameters;
+			this.K = K;
+			this.X = new Matrix(new double[] {0,0,0,0},4);
 		}
+//		System.out.println("New K: " + Arrays.deepToString(K.getArray()));
 	}
 }
 	
