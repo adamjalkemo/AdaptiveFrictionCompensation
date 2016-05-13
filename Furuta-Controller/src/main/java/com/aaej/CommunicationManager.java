@@ -11,7 +11,9 @@ import java.util.logging.Level;
 import java.lang.Math;
 
 /**
- * Created by alexander on 4/5/16.
+ * This is the class which handles the communication with the analog box.
+ * It provides scaling and offsets for the signals and ensures that the control signal saturates.
+ * There are also methods for saving data in arrays, which are then used by SpecificTests (which writes to file).
  */
 public class CommunicationManager {
     private final static Logger LOGGER = Logger.getLogger(MainController.class.getName());
@@ -19,32 +21,17 @@ public class CommunicationManager {
     private AnalogOut analogU;
     private AnalogIn analogPendAng;
     private AnalogIn analogPendAngVel;
-    private AnalogIn analogPendAngTop;
-    private AnalogIn analogPendAngVelTop;
     private AnalogIn analogBaseAng;
     private AnalogIn analogBaseAngVel;
 
     private double u;
     private double pendAng;
     private double pendAngVel;
-    private double pendAngTop;
-    private double pendAngVelTop;
     private double baseAng;
     private double baseAngVel;
 
-    public double pendAngKalman;
-    public double pendAngVelKalman;
-    public double baseAngKalman;
-    public double baseAngVelKalman;
-
     private long t;
     private long startTime;
-
-    private double offsetPendAngTop = -2.8670;
-    private double scalingPendAngTop = 0.058;
-
-    private double offsetPendAngVelTop =  0.1790;
-    private double scalingPendAngVelTop = 0.68;
 
     private double offsetPendAng = 5.0673;
     private double scalingPendAng = 0.3091;
@@ -63,8 +50,6 @@ public class CommunicationManager {
     private ArrayList<Double> uArray;
     private ArrayList<Double> pendAngArray;
     private ArrayList<Double> pendAngVelArray;
-    private ArrayList<Double> pendAngTopArray;
-    private ArrayList<Double> pendAngVelTopArray;
     private ArrayList<Double> baseAngArray;
     private ArrayList<Double> baseAngVelArray;
     private ArrayList<Long> tArray;
@@ -72,15 +57,16 @@ public class CommunicationManager {
     private ArrayList<Double> fcArray;
     private boolean saveArray = false;
 
+    /*
+     * Constructor, initiates communication with the analog box. Exits on error.
+     */
     public CommunicationManager(FurutaGUI gui) {
         this.gui = gui;
-	startTime = System.currentTimeMillis();
+	    startTime = System.currentTimeMillis();
         try {
             analogU = new AnalogOut(0);
             analogPendAng = new AnalogIn(6);
             analogPendAngVel = new AnalogIn(7);
-            analogPendAngTop = new AnalogIn(2);
-            analogPendAngVelTop = new AnalogIn(3);
             analogBaseAng = new AnalogIn(4);
             analogBaseAngVel = new AnalogIn(5);
         } catch (IOChannelException e) {
@@ -91,14 +77,17 @@ public class CommunicationManager {
         }
     }
 
+    /*
+     *  Reads measurement values from the analog box. Adds offsets and then scales.
+     *  If values are to be saved in array (for write to file), this happens here.
+     *  This is called from the controller at every sampling instant.
+     */
     public synchronized void readInput() {
         try {
-            pendAng = (analogPendAng.get()+offsetPendAng)*scalingPendAng;
-            pendAngVel = (analogPendAngVel.get()+offsetPendAngVel)*scalingPendAngVel;
-            pendAngTop = (analogPendAngTop.get()+offsetPendAngTop)*scalingPendAngTop;
-            pendAngVelTop = (analogPendAngVelTop.get()+offsetPendAngVelTop)*scalingPendAngVelTop;
-            baseAng = (analogBaseAng.get()+offsetBaseAng)*scalingBaseAng;
-            baseAngVel = (analogBaseAngVel.get()+offsetBaseAngVel)*scalingBaseAngVel;
+            pendAng = (analogPendAng.get() + offsetPendAng) * scalingPendAng;
+            pendAngVel = (analogPendAngVel.get() + offsetPendAngVel) * scalingPendAngVel;
+            baseAng = (analogBaseAng.get() + offsetBaseAng) * scalingBaseAng;
+            baseAngVel = (analogBaseAngVel.get() + offsetBaseAngVel) * scalingBaseAngVel;
             t = System.currentTimeMillis() - startTime;
             if(saveArray) {
                 pendAngArray.add(pendAng);
@@ -111,6 +100,10 @@ public class CommunicationManager {
             e.printStackTrace();
         }
     }
+
+    /*
+     * Called by the controller. Saturates if necessary.
+     */
     public double writeOutput(double u) {
         try {
     	    if(u > 1) {
@@ -119,14 +112,15 @@ public class CommunicationManager {
     		    u = -1;
     	    }
 
+            // If something goes wrong in the calculations, set u to 0.
             u = Double.isNaN(u) ? 0 : u;
 
-            analogU.set(u*scalingOutput);
+            analogU.set(u * scalingOutput);
         } catch (IOChannelException e) {
             e.printStackTrace();
         }
 
-	//If we want to retain the value for other calculations
+	    //If we want to retain the value for other calculations
         this.u = u;
         if(saveArray) {
             uArray.add(u);
@@ -134,6 +128,10 @@ public class CommunicationManager {
         plotSignals();
         return u;
     }
+
+    /*
+     * Plot the measured signals and the control signal.
+     */
     public void plotSignals() {
         double t = (double)this.t/1000;
 	    //1 black, 2 red, 3 green, 4 blue
@@ -141,6 +139,9 @@ public class CommunicationManager {
         gui.putControlDataPoint(t,u);
     }
 
+    /*
+     * Plots the estimated friction coefficients
+     */
     public void plotRLSParameters(double fv, double fc) {
         double t = (double)this.t/1000;
         gui.putRLSDataPoint(t, fv, fc);
@@ -150,6 +151,10 @@ public class CommunicationManager {
         }
     }
 
+    /*
+     * Resets the offsets. Should be called when the pendulum is down and still.
+     * Pi is subtracted because 0 is at the top.
+     */
     public synchronized void resetOffsets() {
         try {
             offsetPendAng = -(analogPendAng.get()*scalingPendAng - Math.PI)/scalingPendAng;
@@ -161,56 +166,17 @@ public class CommunicationManager {
         }
     }
 
-
-    public synchronized void setOffsetBaseAng(double offsetBaseAng) {
-        this.offsetBaseAng = offsetBaseAng;
-    }
-
-    public synchronized void resetOffsetBaseAng() { // remove?
+    /*
+     * When the controller switches to top controller it might be a bit aggressive depending on what value
+     * phi has. We solve this by resetting phi by manipulating the offsets.
+     */
+    public synchronized void resetOffsetBaseAng() {
         offsetBaseAng = -(baseAng/scalingBaseAng - offsetBaseAng);
     }
 
-    public synchronized double getOffsetBaseAng() {
-        return offsetBaseAng;
-    }
-
-    public synchronized void setOffsetPendAng(double offsetPendAng) {
-        this.offsetPendAng = offsetPendAng;
-    }
-
-    public synchronized double getOffsetPendAng() {
-        return offsetPendAng;
-    }
-
-    public synchronized void setOffsetBaseAngVel(double offsetBaseAngVel) {
-        this.offsetBaseAngVel = offsetBaseAngVel;
-    }
-
-    public synchronized double getOffsetBaseAngVel() {
-        return offsetBaseAngVel;
-    }
-
-    public synchronized void setOffsetPendAngVel(double offsetPendAngVel) {
-        this.offsetPendAngVel = offsetPendAngVel;
-    }
-
-    public synchronized double getOffsetPendAngVel() {
-        return offsetPendAngVel;
-    }
-
-
-
-
+    // ---------- Get methods for measurements ----------
     public synchronized double getPendAngVel() {
         return pendAngVel;
-    }
-
-    public synchronized double getPendAngTop() {
-        return pendAngTop;
-    }
-
-    public synchronized double getPendAngVelTop() {
-        return pendAngVelTop;
     }
 
     public synchronized double getBaseAng() {
@@ -224,10 +190,12 @@ public class CommunicationManager {
     public double getPendAng() {
         return pendAng;
     }
+    // ----------
 
-
-
-    public synchronized  void startSaveArrays() {
+    /*
+     * Called when values are to be saved for later use (e.g print to file).
+     */
+    public synchronized void startSaveArrays() {
         uArray = new ArrayList<Double>();
         baseAngArray = new ArrayList<Double>();
         baseAngVelArray = new ArrayList<Double>();
@@ -238,10 +206,12 @@ public class CommunicationManager {
         fcArray = new ArrayList<Double>();
         saveArray = true;
     }
+
     public synchronized void stopSaveArrays() {
         saveArray = false;
     }
 
+    // ---------- Get methods for measurement arrays ----------
     public ArrayList<Double> getuArray() {
         return uArray;
     }
@@ -252,14 +222,6 @@ public class CommunicationManager {
 
     public ArrayList<Double> getPendAngVelArray() {
         return pendAngVelArray;
-    }
-
-    public ArrayList<Double> getPendAngTopArray() {
-        return pendAngTopArray;
-    }
-
-    public ArrayList<Double> getPendAngVelTopArray() {
-        return pendAngVelTopArray;
     }
 
     public ArrayList<Double> getBaseAngArray() {
@@ -281,4 +243,5 @@ public class CommunicationManager {
     public ArrayList<Double> getFcArray() {
         return fcArray;
     }
+    // ----------
 }

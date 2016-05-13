@@ -50,9 +50,6 @@ public class FurutaGUI implements Observer {
 	private DoubleField[][] qArrayField, rArrayField;
 	private JLabel currentController;
 
-	DoubleField offsetBaseAngField, offsetBaseAngVelField, offsetPendAngField, offsetPendAngVelField;
-	BoxPanel offsetPanel;
-
 	// Width of right column. Real strange behaviour. However, this works for now.
 	int width =  20000;
 			
@@ -284,61 +281,6 @@ public class FurutaGUI implements Observer {
 
 		// --------------
 
-		// --- Offsets ---
-
-
-
-		offsetBaseAngField = new DoubleField(7,5);
-		offsetBaseAngField.setValue(communicationManager.getOffsetBaseAng());
-		offsetBaseAngField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				communicationManager.setOffsetBaseAng(offsetBaseAngField.getValue());
-			}
-		});
-
-		offsetBaseAngVelField = new DoubleField(7,5);
-		offsetBaseAngVelField.setValue(communicationManager.getOffsetBaseAngVel());
-		offsetBaseAngVelField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				communicationManager.setOffsetBaseAngVel(offsetBaseAngVelField.getValue());
-			}
-		});
-
-		offsetPendAngField = new DoubleField(7,5);
-		offsetPendAngField.setValue(communicationManager.getOffsetPendAng());
-		offsetPendAngField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				communicationManager.setOffsetPendAng(offsetPendAngField.getValue());
-			}
-		});
-
-		offsetPendAngVelField = new DoubleField(7,5);
-		offsetPendAngVelField.setValue(communicationManager.getOffsetPendAngVel());
-		offsetPendAngVelField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				communicationManager.setOffsetPendAngVel(offsetPendAngVelField.getValue());
-			}
-		});
-
-		offsetPanel = new BoxPanel(BoxPanel.HORIZONTAL);
-		offsetPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		offsetPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
-		offsetPanel.add(offsetPendAngField);
-		offsetPanel.addFixed(5);
-		offsetPanel.add(offsetPendAngVelField);
-		offsetPanel.addFixed(5);
-		offsetPanel.add(offsetBaseAngField);
-		offsetPanel.addFixed(5);
-		offsetPanel.add(offsetBaseAngVelField);
-		offsetPanel.addFixed(5);
-
-
-
-
-
-		// -------------
-
-
 		saveCtrlButton = new JButton("Save");
 		saveCtrlButton.setEnabled(false);
 		saveCtrlButton.addActionListener(new ActionListener() {
@@ -347,8 +289,6 @@ public class FurutaGUI implements Observer {
 				saveCtrlButton.setEnabled(false);
 			}
 		});
-
-
 
 		ctrlParameterPanel = new BoxPanel(BoxPanel.VERTICAL);
 		ctrlParameterPanel.setBorder(BorderFactory.createTitledBorder(formatLabel("Controller parameters", true, 4, "#000033")));
@@ -538,10 +478,6 @@ public class FurutaGUI implements Observer {
 		resetOffsetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				communicationManager.resetOffsets();
-				offsetBaseAngField.setValue(communicationManager.getOffsetBaseAng());
-				offsetBaseAngVelField.setValue(communicationManager.getOffsetBaseAngVel());
-				offsetPendAngField.setValue(communicationManager.getOffsetPendAng());
-				offsetPendAngVelField.setValue(communicationManager.getOffsetPendAngVel());
 			}
 		});
 
@@ -627,9 +563,6 @@ public class FurutaGUI implements Observer {
 		rightPanel.add(ctrlParameterPanel);
 		rightPanel.addFixed(10);
 		rightPanel.add(estimatorParameterPanel);
-		rightPanel.addFixed(10);
-		rightPanel.add(new JLabel("Offsets (theta thetavel phi phivel)"));
-		rightPanel.add(offsetPanel);
 		rightPanel.addFixed(10);
 		rightPanel.add(currentController);
 		rightPanel.addFixed(10);
@@ -732,10 +665,6 @@ public class FurutaGUI implements Observer {
 	public void update(Observable o, Object arg) { // For updates about which controller being used
 	    if (arg instanceof String) {
 	        currentController.setText((String) arg);
-	        offsetBaseAngField.setValue(communicationManager.getOffsetBaseAng());
-	        offsetBaseAngVelField.setValue(communicationManager.getOffsetBaseAngVel());
-	        offsetPendAngField.setValue(communicationManager.getOffsetPendAng());
-	        offsetPendAngVelField.setValue(communicationManager.getOffsetPendAngVel());
 	    }
 	}
 

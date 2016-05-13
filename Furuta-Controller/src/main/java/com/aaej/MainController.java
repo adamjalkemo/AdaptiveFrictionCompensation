@@ -199,7 +199,9 @@ class MainController extends Thread {
     }
 
     // Just used when initializing the GUI
-    public ControllerParameters getControllerParameters() { return (ControllerParameters)controllerParameters.clone(); }
+    public ControllerParameters getControllerParameters() {
+        return (ControllerParameters)controllerParameters.clone();
+    }
 
     // Just used when initializing the GUI
     public RLSParameters getRLSParameters() {

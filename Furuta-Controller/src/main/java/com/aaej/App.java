@@ -1,8 +1,9 @@
 package com.aaej;
 
 /**
- * Hello world!
- *
+ * This is the application that should be run.
+ * It will create all necessary objects and initiate threads to the correct priorities.
+ * Se classes for information about usage.
  */
 public class App 
 {
