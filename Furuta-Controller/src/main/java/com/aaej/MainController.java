@@ -180,7 +180,7 @@ class MainController extends Thread {
         // I think you can run this even if enableKalman = false;
         //kalmanFilter.updateStates(uBeforeFrictionComp);
 
-        communicationManager.plotRLSParameters(frictionCompensator.getFv(), frictionCompensator.getFc());
+        communicationManager.plotRLSParameters(frictionCompensator.getFv(), frictionCompensator.getFc(), frictionCompensator.getFo());
    }
 
     private Controller chooseController(double pendAng, double pendAngVel) {

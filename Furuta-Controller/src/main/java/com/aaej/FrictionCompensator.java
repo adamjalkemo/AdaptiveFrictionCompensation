@@ -53,7 +53,7 @@ public class FrictionCompensator {
 
     public synchronized void setRLSParameters(RLSParameters newRLSParameters) {
         this.rlsParameters = newRLSParameters;
-        P_old = new Matrix(new double[][] {{rlsParameters.pam,0,0},{0,rlsParameters.pbm,0},{rlsParameters.pcm}},3,3);
+        P_old = new Matrix(new double[][] {{rlsParameters.pam,0,0},{0,rlsParameters.pbm,0},{0,0,rlsParameters.pcm}},3,3);
         theta_old = new Matrix(new double[][] {{rlsParameters.fvGuess},{rlsParameters.fcGuess},{rlsParameters.foGuess}},3,1);
     }
 
@@ -73,8 +73,8 @@ public class FrictionCompensator {
     }
 
     public synchronized void reset() {
-        P_old = new Matrix(new double[][] {{rlsParameters.pam,0},{0,rlsParameters.pbm}},2,2);
-        theta_old = new Matrix(new double[][] {{rlsParameters.fvGuess},{rlsParameters.fcGuess}},2,1);
+        P_old = new Matrix(new double[][] {{rlsParameters.pam,0,0},{0,rlsParameters.pbm,0},{0,0,rlsParameters.pcm}},3,3);
+        theta_old = new Matrix(new double[][] {{rlsParameters.fvGuess},{rlsParameters.fcGuess},{rlsParameters.foGuess}},3,1);
     }
         
 
