@@ -57,6 +57,12 @@ For our suggested solution we will need one thread for the GUI and one for the c
 
 %ToDo UML AND DESCRIPTION OF CLASSES AND PACKAGES
 
+The program has three main parts: MainController, FurutaGUI and CommunicationManager. The MainController has all the control logic parts. This includes the main control loop, object for top control, object for swingup control and an object for friction compensation. The CommunicationManager is responsible for reading and passing around all the data. It reads the output from the process and fixes the scaling and offset. SpecificTests is an additional class which runs tests on the process and then saves the results to files. The Discretizer class is used for the LQR parameter calculations.
+
+The program has two main threads, the controller and the GUI. The GUI in turn has additional threads to continously update the plot windows. The controller has higher priority than the GUI threads. Since there are only two threads that access the same shared resources and only one lock active at a time there can be no deadlocks.
+
+The objects that are shared between the controller and the GUI are the parameters and the communicationManager object. The GUI has its own versions of the parameter objects. The parameters are all changed by copying the parameter objects from the GUI and set in blocks that are synchronized. The communicationManager object is in itself thread safe and no extra precautions are needed when used in the threads.
+
 
 %Todo what parameters can be changed.
 \section{System model}
