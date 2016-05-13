@@ -99,8 +99,8 @@ class MainController extends Thread {
         boolean insideDeadzone;
 
         // TODO add deadzones for all
-        insideDeadzone = Math.abs(baseAngVel) < rlsParameters.deadzoneBaseAngVel;
-        insideDeadzone = insideDeadzone || Math.abs(pendAngVel) < rlsParameters.deadzonePendAngVel;
+        insideDeadzone = Math.abs(baseAngVel) < controllerParameters.deadzoneBaseAngVel;
+        insideDeadzone = insideDeadzone || Math.abs(pendAngVel) < controllerParameters.deadzonePendAngVel;
 
         double u = 0;
 
@@ -108,8 +108,6 @@ class MainController extends Thread {
             activeController = chooseController(pendAng,pendAngVel);
             if(activeController == Controller.TOP && !insideDeadzone) {
                 u = topController.calculateOutput(pendAng, pendAngVel, baseAng, baseAngVel, r);
-
-                frictionCompensator.rls(baseAng, baseAngVel);
 
         		if(enableFrictionCompensation && !insideDeadzone) {
                     u = u + frictionCompensator.compensate(baseAngVel);
@@ -119,22 +117,22 @@ class MainController extends Thread {
             } else {
                 //Keep u as 0
             }
-
         }
         u = communicationManager.writeOutput(u);
 
+        frictionCompensator.rls(baseAng, baseAngVel);
         frictionCompensator.updateStates(baseAng, baseAngVel, pendAng, u);
 
+        // We need to tell the communication manager what Fv and Fc is
         communicationManager.plotRLSParameters(frictionCompensator.getFv(), frictionCompensator.getFc());
    }
 
     private Controller chooseController(double pendAng, double pendAngVel) {
-        //TODO: Test different switching schemes, parameters should be part of ControllerParameters
         Controller newController;
 
         double ar = controllerParameters.ellipseRadius1;
         double br = controllerParameters.ellipseRadius2;
-        double alfar=atan(9.4/0.62); // Could add this to GUI
+        double alfar=atan(9.4/0.62); // TODO Could add this to GUI
         double X = pendAng;
         double Y = pendAngVel;
         double term1 = X * cos(alfar) + Y * sin(alfar);
@@ -145,11 +143,15 @@ class MainController extends Thread {
         } else {
             newController = Controller.SWINGUP;
         }
+
+        // If controller changes, it should notify the UI.
         checkForChangeOfController(newController);
         return newController;
     }
 
-    // Logs changes of controller
+    /*
+        Logs change of controller and notifies the GUI about the change.
+     */
     private void checkForChangeOfController(Controller newController) {
         if (activeController != newController) {
             if (newController == Controller.TOP) {
@@ -164,52 +166,73 @@ class MainController extends Thread {
         }
     }
 
+
+    /*
+        Sets the controller parameters for all underlying controllers.
+        The whole method is not synchronized to avoid blocking
+    */
     public void setControllerParameters(ControllerParameters newParameters) {
         synchronized(controllerParametersLock) {
-            controllerParameters = (ControllerParameters) newParameters.clone();
+            // Only shallow clone, references to objects will not be copied.
+            this.controllerParameters = (ControllerParameters) newParameters.clone();
         }
         swingUpController.setControllerParameters(controllerParameters);
         topController.setControllerParameters(controllerParameters);
 
-        //Also update friction compensator (it doesn't have its own copy of controller parameters, just need the A and B matrix
-        Matrix AandB[] = Discretizer.c2d(controllerParameters.h);
-        frictionCompensator.newAB(AandB[0], AandB[1]);
+        // Also update friction compensator (it doesn't have its own copy of controller parameters,
+        // it just needs the Phi and Gamma matrices
+        Matrix phiAndGamma[] = Discretizer.c2d(controllerParameters.h); // c2d has continous A and B matrices
+        frictionCompensator.newAB(phiAndGamma[0], phiAndGamma[1]);
     }
 
+
+    public void setRLSParameters(RLSParameters rlsParameters) {
+        // this.rlsParameters is not used in the controller thread, no synchronization needed here
+        this.rlsParameters = (RLSParameters)rlsParameters.clone();
+
+        // This method is synchronized
+        frictionCompensator.setRLSParameters(this.rlsParameters);
+    }
+
+    // For shutting down the whole application
     public synchronized void shutDown() {
         shutDown = true;
     }
-    public ControllerParameters getControllerParameters() {
-        //TODO should this be synchronized?
-        return (ControllerParameters)controllerParameters.clone();
-    }
+
+    // Just used when initializing the GUI
+    public ControllerParameters getControllerParameters() { return (ControllerParameters)controllerParameters.clone(); }
+
+    // Just used when initializing the GUI
     public RLSParameters getRLSParameters() {
         return (RLSParameters)rlsParameters.clone();
     }
-    public void setRLSParameters(RLSParameters rlsParameters) {
-        this.rlsParameters = (RLSParameters)rlsParameters.clone();
-        frictionCompensator.setRLSParameters(this.rlsParameters);
-    }
+
+    // Called from the GUI when RLS should be reset
     public void resetEstimator() {
 	frictionCompensator.reset();
     }
+
+    // Called from the GUI when controller should run
     public void regulatorActive(boolean on) {
         this.on = on;
     }
 
-    // For updates about which controller being used
+    // For updates about which controller is being used
     public void registerObserver(Observer o) {
         observerList.add(o);
     }
+
     public void notifyObservers(Controller newController) {
-        for (Observer o : observerList)
-            o.update(null, newController.name());
+        for (Observer o : observerList) // it's really just one observer.
+            o.update(null, newController.name()); // This sends a reference to a string, no sync needed here
     }
 
+    // On and of switch for friction compensation
     public void setEnableFrictionCompensation(boolean enableFrictionCompensation) {
         this.enableFrictionCompensation = enableFrictionCompensation;
     }
 
+    // For change of reference, acts
     public synchronized void setReference(double r) {
         this.r = r;
     }

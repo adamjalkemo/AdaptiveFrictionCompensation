@@ -446,19 +446,19 @@ public class FurutaGUI implements Observer {
 
 
 		deadzoneBaseAngVelField = new DoubleField(10,6);
-		deadzoneBaseAngVelField.setValue(rlsPar.deadzoneBaseAngVel);
+		deadzoneBaseAngVelField.setValue(ctrlPar.deadzoneBaseAngVel);
 		deadzoneBaseAngVelField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				rlsPar.deadzoneBaseAngVel = deadzoneBaseAngVelField.getValue();
+				ctrlPar.deadzoneBaseAngVel = deadzoneBaseAngVelField.getValue();
 				saveEstimatorButton.setEnabled(true);
 			}
 		});
 
 		deadzonePendAngVelField = new DoubleField(10,6);
-		deadzonePendAngVelField.setValue(rlsPar.deadzonePendAngVel);
+		deadzonePendAngVelField.setValue(ctrlPar.deadzonePendAngVel);
 		deadzonePendAngVelField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				rlsPar.deadzonePendAngVel = deadzonePendAngVelField.getValue();
+				ctrlPar.deadzonePendAngVel = deadzonePendAngVelField.getValue();
 				saveEstimatorButton.setEnabled(true);
 			}
 		});

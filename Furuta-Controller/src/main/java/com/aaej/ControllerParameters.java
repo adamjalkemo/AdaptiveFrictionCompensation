@@ -15,7 +15,11 @@ public class ControllerParameters implements Cloneable {
 	// TODO is this set when initiallizing? In that case, we could init to zero to show this.
 	public double[] L = new double[]{0, 0, 0, 0};
 	public double lr = 0;
-	
+
+	// TODO add more deadzones
+	public double deadzoneBaseAngVel = 0;
+	public double deadzonePendAngVel = 0;
+
 	public Object clone() {
 		try {
 			return super.clone();

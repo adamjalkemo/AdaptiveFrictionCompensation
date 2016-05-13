@@ -56,7 +56,7 @@ class Discretizer {
 		int m = Phi.getRowDimension();
 
 		Matrix tf = C.times((Matrix.identity(m,m).minus(Phi).plus(Gamma.times(L))).inverse()).times(Gamma);
-		// TODO should return lr
+
 		return 1 / tf.get(1,1);
 	}
 
