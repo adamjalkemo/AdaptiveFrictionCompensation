@@ -72,6 +72,7 @@ public class CommunicationManager {
     private ArrayList<Long> tArray;
     private ArrayList<Double> fvArray;
     private ArrayList<Double> fcArray;
+    private ArrayList<Double> foArray;
     private boolean saveArray = false;
 
     public CommunicationManager(FurutaGUI gui) {
@@ -150,12 +151,13 @@ public class CommunicationManager {
         gui.putControlDataPoint(t,u);
     }
 
-    public void plotRLSParameters(double fv, double fc) {
+    public void plotRLSParameters(double fv, double fc, double fo) {
         double t = (double)this.t/1000;
-        gui.putRLSDataPoint(t, fv, fc);
+        gui.putRLSDataPoint(t, fv, fc, fo);
         if(saveArray) {
             fvArray.add(fv);
             fcArray.add(fc);
+            foArray.add(fo);
         }
     }
 
@@ -272,6 +274,7 @@ public class CommunicationManager {
         tArray = new ArrayList<Long>();
         fvArray = new ArrayList<Double>();
         fcArray = new ArrayList<Double>();
+        foArray = new ArrayList<Double>();
         saveArray = true;
     }
     public synchronized void stopSaveArrays() {
@@ -324,6 +327,10 @@ public class CommunicationManager {
 
     public ArrayList<Double> getFcArray() {
         return fcArray;
+    }
+
+    public ArrayList<Double> getFoArray() {
+        return foArray;
     }
 
     public void saveUF(double uF) {
