@@ -152,7 +152,7 @@ public class CommunicationManager {
 
     public synchronized void resetOffsets() {
         try {
-            offsetPendAng = -(analogPendAng.get()*scalingPendAng)/scalingPendAng;
+            offsetPendAng = -(analogPendAng.get()*scalingPendAng - Math.PI)/scalingPendAng;
     	    offsetPendAngVel = -analogPendAngVel.get();
             offsetBaseAng = -analogBaseAng.get();
     	    offsetBaseAngVel = -analogBaseAngVel.get();

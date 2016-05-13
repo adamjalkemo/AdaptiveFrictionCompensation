@@ -57,7 +57,20 @@ class Discretizer {
 
 		Matrix tf = C.times((Matrix.identity(m,m).minus(Phi).plus(Gamma.times(L))).inverse()).times(Gamma);
 
-		return 1 / tf.get(1,1);
+
+		/*System.out.println(Arrays.deepToString(Phi.getArray()));
+		System.out.println();
+		System.out.println(Arrays.deepToString(Gamma.getArray()));
+		System.out.println();
+		System.out.println(Arrays.deepToString(L.getArray()));
+		System.out.println();
+		System.out.println(Arrays.deepToString(C.getArray()));
+		System.out.println();
+		Matrix n = (Matrix.identity(m,m).minus(Phi).plus(Gamma.times(L))).inverse().times(Gamma);
+		System.out.println(Arrays.deepToString(n.getArray()));
+
+		return 0;*/
+		return 1 / tf.get(0,0);
 	}
 
 	// Returns Matrix vector [Matrix Ad, Matrix Bd]

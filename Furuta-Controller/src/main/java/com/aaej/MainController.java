@@ -96,11 +96,11 @@ class MainController extends Thread {
         double baseAng = communicationManager.getBaseAng();
         double baseAngVel = communicationManager.getBaseAngVel();
 
-        boolean insideDeadzone;
+        boolean insideDeadzone = false;
 
         // TODO add deadzones for all
-        insideDeadzone = Math.abs(baseAngVel) < controllerParameters.deadzoneBaseAngVel;
-        insideDeadzone = insideDeadzone || Math.abs(pendAngVel) < controllerParameters.deadzonePendAngVel;
+        //insideDeadzone = Math.abs(baseAngVel) < controllerParameters.deadzoneBaseAngVel;
+        //insideDeadzone = insideDeadzone || Math.abs(pendAngVel) < controllerParameters.deadzonePendAngVel;
 
         double u = 0;
 
@@ -108,8 +108,7 @@ class MainController extends Thread {
             activeController = chooseController(pendAng,pendAngVel);
             if(activeController == Controller.TOP && !insideDeadzone) {
                 u = topController.calculateOutput(pendAng, pendAngVel, baseAng, baseAngVel, r);
-
-        		if(enableFrictionCompensation && !insideDeadzone) {
+        		if(enableFrictionCompensation) {
                     u = u + frictionCompensator.compensate(baseAngVel);
     	        }
             } else if(activeController == Controller.SWINGUP) {

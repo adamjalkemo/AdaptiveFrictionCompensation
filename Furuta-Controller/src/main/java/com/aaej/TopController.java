@@ -26,8 +26,8 @@ class TopController {
 		controllerParameters.L = calculateLMatrix(AdAndBd[0], AdAndBd[1], Q, R).getArray()[0];
 
 		// Feedforward C (should only be for phi);
-		Matrix C = new Matrix(4,4);
-		C.set(2,2,1);
+		Matrix C = new Matrix(1,4);
+		C.set(0,2,1);
 		controllerParameters.lr = Discretizer.getlr(AdAndBd[0], AdAndBd[1], C, new Matrix(controllerParameters.L,1));
 		//System.out.println(Arrays.deepToString(Q.getArray()));
 		synchronized (this) {
