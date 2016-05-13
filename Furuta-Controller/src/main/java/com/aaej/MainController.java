@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 /**
  * This class contains the thread for the controller and will decide which
- * controller to be used depending on the output from the process.
+ * controller(s) to be used depending on the output from the process.
  */
 class MainController extends Thread {
     private enum Controller {
@@ -32,16 +32,14 @@ class MainController extends Thread {
     private TopController topController;
     private SwingUpController swingUpController;
     private FrictionCompensator frictionCompensator;
-    private CommunicationManager communicationManager;
-    private boolean on;
+    private CommunicationManager communicationManager; // Handles all input/output scaling and talks to the analog box
+    private boolean on; // determines if controller is on or off
     private Object controllerParametersLock = new Object();
-    private boolean shutDown;
+    private boolean shutDown; // determines if the application should shut down
     private Controller activeController = Controller.NONE;
-    private int sleepAfterFall = 0;
-    private ArrayList<Observer> observerList;
+    private ArrayList<Observer> observerList; // Used to update GUI about which is the current controller
     private boolean enableFrictionCompensation;
-    private Kalman kalmanFilter;
-    private Boolean enableKalman;
+    private double r = 0; // reference signal
 
     public MainController(int priority, CommunicationManager communicationManager) {
         setPriority(priority);
@@ -57,14 +55,13 @@ class MainController extends Thread {
         on = false;
         shutDown = false;
         enableFrictionCompensation = true;
-        enableKalman = false;
-
-        // Kalman things, TODO, move to function and make sure that it updates when h is changed
-        Matrix AandB[] = Discretizer.c2d(controllerParameters.h);
-        kalmanFilter = new Kalman(AandB[0], AandB[1]);
-        kalmanFilter.setRLSParameters(rlsParameters);
 	}
 
+    /*
+        Outputs warnings if deadlines are missed.
+        Shuts down if the shutdown variable is set to true.
+        Writes zero to the communicationManager when shutting down.
+     */
     public void run() {
         long duration;
         long t = System.currentTimeMillis();
@@ -88,147 +85,65 @@ class MainController extends Thread {
 	   communicationManager.writeOutput(0);
     }
 
+    /*
+        Determines which controllers are to be used (with help from chooseController) and
+        writes outputs and updates states.
+     */
     private void doControl() {
         communicationManager.readInput();
         double pendAng = communicationManager.getPendAng();
         double pendAngVel = communicationManager.getPendAngVel();
-        double pendAngTop = communicationManager.getPendAngTop();
-        double pendAngVelTop = communicationManager.getPendAngVelTop();
         double baseAng = communicationManager.getBaseAng();
         double baseAngVel = communicationManager.getBaseAngVel();
 
-        double pendAngKalman, pendAngVelKalman, baseAngKalman, baseAngVelKalman;
-
-        Boolean enableKalmanSync;
-        synchronized(enableKalman) { // Hur gör vi detta snyggast?
-             enableKalmanSync= enableKalman;
-        }
-
-        //KALMAN HERE
-        if (enableKalmanSync) {
-            Matrix yhat = kalmanFilter.calculateYHat(new double[]{pendAng, pendAngVel, baseAng, baseAngVel});
-            pendAngKalman = yhat.get(0,0);
-            pendAngVelKalman = yhat.get(1,0);
-            baseAngKalman = yhat.get(2,0);
-            baseAngVelKalman = yhat.get(3,0);
-            communicationManager.pendAngKalman = pendAngKalman;
-            communicationManager.pendAngVelKalman = pendAngVelKalman;
-            communicationManager.baseAngKalman = baseAngKalman;
-            communicationManager.baseAngVelKalman = baseAngVelKalman;
-        } else { // I get errors if I don't define these
-            pendAngKalman = pendAng;
-            pendAngVelKalman = pendAngVel;
-            baseAngKalman = baseAng;
-            baseAngVelKalman = baseAngVel;
-        }
-        
         boolean insideDeadzone;
 
-        if (enableKalmanSync) {
-            insideDeadzone = Math.abs(baseAngVelKalman) < rlsParameters.deadzoneBaseAngVel;
-            insideDeadzone = insideDeadzone || Math.abs(pendAngVelKalman) < rlsParameters.deadzonePendAngVel;
-        } else {
-            insideDeadzone = Math.abs(baseAngVel) < rlsParameters.deadzoneBaseAngVel;
-            insideDeadzone = insideDeadzone || Math.abs(pendAngVel) < rlsParameters.deadzonePendAngVel;
-        }
+        // TODO add deadzones for all
+        insideDeadzone = Math.abs(baseAngVel) < rlsParameters.deadzoneBaseAngVel;
+        insideDeadzone = insideDeadzone || Math.abs(pendAngVel) < rlsParameters.deadzonePendAngVel;
 
         double u = 0;
-        double uBeforeFrictionComp = 0;
 
         if(on) {
             activeController = chooseController(pendAng,pendAngVel);
             if(activeController == Controller.TOP && !insideDeadzone) {
-                if (enableKalmanSync) {
-                    u = topController.calculateOutput(pendAngKalman, pendAngVelKalman, baseAngKalman, baseAngVelKalman);
-                    topController.update();
+                u = topController.calculateOutput(pendAng, pendAngVel, baseAng, baseAngVel, r);
 
-                    frictionCompensator.rls(baseAngKalman, baseAngVelKalman);                
-                } else {
-                    u = topController.calculateOutput(pendAng, pendAngVel, baseAng, baseAngVel);
-                    topController.update();
+                frictionCompensator.rls(baseAng, baseAngVel);
 
-                    frictionCompensator.rls(baseAng, baseAngVel);
-                }
-
-                uBeforeFrictionComp = u;
         		if(enableFrictionCompensation && !insideDeadzone) {
-                    if (enableKalmanSync) {
-                        u = u + frictionCompensator.compensate(baseAngVelKalman);
-                    } else {
-                        u = u + frictionCompensator.compensate(baseAngVel);
-                    }
+                    u = u + frictionCompensator.compensate(baseAngVel);
     	        }
             } else if(activeController == Controller.SWINGUP) {
-                if (sleepAfterFall > 0) {
-                    sleepAfterFall--;
-                    u = 0;
-                } else {
-                    u = swingUpController.calculateOutput(pendAng, pendAngVel);
-                }
+                u = swingUpController.calculateOutput(pendAng, pendAngVel);
             } else {
                 //Keep u as 0
             }
 
         }
         u = communicationManager.writeOutput(u);
-        if (enableKalmanSync) {
-            frictionCompensator.updateStates(baseAngKalman, baseAngVelKalman, pendAngKalman, u);
-        } else {
-            frictionCompensator.updateStates(baseAng, baseAngVel, pendAng, u);
-        }
 
-        // I think you can run this even if enableKalman = false;
-        kalmanFilter.updateStates(uBeforeFrictionComp);
+        frictionCompensator.updateStates(baseAng, baseAngVel, pendAng, u);
 
         communicationManager.plotRLSParameters(frictionCompensator.getFv(), frictionCompensator.getFc());
    }
 
     private Controller chooseController(double pendAng, double pendAngVel) {
         //TODO: Test different switching schemes, parameters should be part of ControllerParameters
-        Catcher catcher;
         Controller newController;
 
-        synchronized (controllerParametersLock) {
-            catcher = controllerParameters.catcher;
-        }
-        if(catcher == Catcher.ELLIPSE) {
-            //double ar=sqrt(0.62*0.62+9.4*9.4);
-            //ar=ar*0.2;
-            double ar = controllerParameters.ellipseRadius1;
-            //double br=sqrt(0.19*0.19+2.5*2.5);
-            //br=br*0.2;
-            double br = controllerParameters.ellipseRadius2;
-            double alfar=atan(9.4/0.62); // Could add this to GUI
-            double X = pendAng;
-            double Y = pendAngVel;
-            double term1 = X*cos(alfar)+Y*sin(alfar);
-            double term2 = -X*sin(alfar) + Y*cos(alfar);
+        double ar = controllerParameters.ellipseRadius1;
+        double br = controllerParameters.ellipseRadius2;
+        double alfar=atan(9.4/0.62); // Could add this to GUI
+        double X = pendAng;
+        double Y = pendAngVel;
+        double term1 = X * cos(alfar) + Y * sin(alfar);
+        double term2 = -X * sin(alfar) + Y * cos(alfar);
 
-            if((term1*term1/(ar*ar) + term2*term2/(br*br)) < controllerParameters.limit) {
-                newController = Controller.TOP;
-            } else {
-                newController = Controller.SWINGUP;
-            }
-
-        } else if(catcher == Catcher.REASONABLEANGLE) {
-            if ((Math.abs(pendAng) + Math.abs(pendAngVel)) < 0.8) {
-                newController = Controller.TOP;
-            } else {
-                newController = Controller.SWINGUP;
-            }
-        } else if(catcher == Catcher.ENERGY) {
-            double omega0squared;
-            synchronized (controllerParametersLock) {
-                omega0squared = controllerParameters.omega0 * controllerParameters.omega0;
-            }
-            double E = Math.cos(pendAng) - 1 + 1 / (2 * omega0squared) * pendAngVel * pendAngVel;
-            if (E > 0) {
-                newController = Controller.TOP;
-            } else {
-                newController = Controller.SWINGUP;
-            }
+        if((term1*term1/(ar*ar) + term2*term2/(br*br)) < controllerParameters.limit) {
+            newController = Controller.TOP;
         } else {
-            newController = Controller.NONE;
+            newController = Controller.SWINGUP;
         }
         checkForChangeOfController(newController);
         return newController;
@@ -238,12 +153,9 @@ class MainController extends Thread {
     private void checkForChangeOfController(Controller newController) {
         if (activeController != newController) {
             if (newController == Controller.TOP) {
-		//communicationManager.setOffsetBaseAngScaled(-communicationManager.getBaseAng());
                 communicationManager.resetOffsetBaseAng();
                 LOGGER.log(Level.INFO, "Switching to top controller");
 
-                // To decrease irratic behavior
-                //sleepAfterFall = (int) (((long) 4000)/controllerParameters.h); // Corresponds to 4s rest
             } else if (newController == Controller.SWINGUP) {
                 LOGGER.log(Level.INFO, "Switching to swingup controller");
             }
@@ -264,7 +176,7 @@ class MainController extends Thread {
         frictionCompensator.newAB(AandB[0], AandB[1]);
     }
 
-    public void shutDown() {
+    public synchronized void shutDown() {
         shutDown = true;
     }
     public ControllerParameters getControllerParameters() {
@@ -277,7 +189,6 @@ class MainController extends Thread {
     public void setRLSParameters(RLSParameters rlsParameters) {
         this.rlsParameters = (RLSParameters)rlsParameters.clone();
         frictionCompensator.setRLSParameters(this.rlsParameters);
-        kalmanFilter.setRLSParameters(this.rlsParameters);
     }
     public void resetEstimator() {
 	frictionCompensator.reset();
@@ -299,8 +210,7 @@ class MainController extends Thread {
         this.enableFrictionCompensation = enableFrictionCompensation;
     }
 
-    public synchronized void toggleKalman() {
-        enableKalman = !enableKalman;
-        LOGGER.log(Level.INFO, "Kalman enabled: " + (enableKalman ? "True" : "False"));
+    public synchronized void setReference(double r) {
+        this.r = r;
     }
 }

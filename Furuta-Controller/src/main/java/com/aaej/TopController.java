@@ -6,17 +6,16 @@ class TopController {
 	private ControllerParameters controllerParameters;
 	public TopController() {
 	}
-	public synchronized double calculateOutput(double pendAng, double pendAngVel, double baseAng, double baseAngVel) {
+
+	// Todo implement ref
+	public synchronized double calculateOutput(double pendAng, double pendAngVel, double baseAng, double baseAngVel, double ref) {
 		// x = (theta thetavel phi phivel)
 		double[] L = controllerParameters.L;
-		double u = - (L[0] * pendAng + L[1] * pendAngVel + L[2] * baseAng + L[3] * baseAngVel);
+		double lr = controllerParameters.lr;
+		double u = - (L[0] * pendAng + L[1] * pendAngVel + L[2] * baseAng + L[3] * baseAngVel) + lr * ref;
 		return u;
 	}
-	
-	// If states due to for instance Kalman filter is used!
-	public synchronized void update() {
 
-	}
 	public void setControllerParameters(ControllerParameters controllerParameters) {
 		Matrix Q = new Matrix(controllerParameters.qMatrix);
 		Matrix R = new Matrix(controllerParameters.rMatrix[0],controllerParameters.rMatrix[0].length);
@@ -25,6 +24,7 @@ class TopController {
 		Matrix AdAndBd[] = Discretizer.c2d(controllerParameters.h);
 
 		controllerParameters.L = calculateLMatrix(AdAndBd[0], AdAndBd[1], Q, R).getArray()[0];
+		controllerParameters.lr = Discretizer.getlr(AdAndBd[0], AdAndBd[1], Matrix.identity(4,4), new Matrix(controllerParameters.L,1));
 		//System.out.println(Arrays.deepToString(Q.getArray()));
 		synchronized (this) {
 			this.controllerParameters = controllerParameters;

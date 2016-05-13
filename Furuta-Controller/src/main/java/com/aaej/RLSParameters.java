@@ -13,6 +13,7 @@ public class RLSParameters implements Cloneable {
 	public double fvGuess = 0;
 	public double fcGuess = 0;
 
+	// TODO add deadzones
 	public double deadzoneBaseAngVel = 0;
 	public double deadzonePendAngVel = 0;
 

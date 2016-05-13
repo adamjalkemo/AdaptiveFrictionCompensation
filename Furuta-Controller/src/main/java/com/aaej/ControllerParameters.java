@@ -12,9 +12,9 @@ public class ControllerParameters implements Cloneable {
 	public long h = 10;
 	public double omega0 = 6.5;//5.6561;
 
-	public double[] L = new double[]{-8.83491466316015, -1.58036477625261, -0.220472707928114, -0.304872980032455};
-
-	public Catcher catcher = Catcher.ELLIPSE;
+	// TODO is this set when initiallizing? In that case, we could init to zero to show this.
+	public double[] L = new double[]{0, 0, 0, 0};
+	public double lr = 0;
 	
 	public Object clone() {
 		try {

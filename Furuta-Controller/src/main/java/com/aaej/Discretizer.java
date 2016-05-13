@@ -48,6 +48,18 @@ class Discretizer {
 		return L;
 	}
 
+	public static double getlr(Matrix Phi, Matrix Gamma, Matrix C, Matrix L) {
+				/*
+				H(1) = C * inv(I - A + B * L) * B * lr = 1
+				lr = 1 / (inv(I - A + B * L) * B);
+				 */
+		int m = Phi.getRowDimension();
+
+		Matrix tf = C.times((Matrix.identity(m,m).minus(Phi).plus(Gamma.times(L))).inverse()).times(Gamma);
+		// TODO should return lr
+		return 1 / tf.get(1,1);
+	}
+
 	// Returns Matrix vector [Matrix Ad, Matrix Bd]
 	public static Matrix[] c2d(long h) {
 		/*% Approximations for Ad = expm(Ac*h)

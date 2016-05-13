@@ -22,12 +22,16 @@ public class SpecificTests {
 
     public void stepResponse() {
         communicationManager.startSaveArrays();
-        communicationManager.changeOffsetBaseAng(Math.PI);
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+
+        for (int i = -1; i < 2; i += 2) {
+            controller.setReference(Math.PI * i);
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+
         communicationManager.stopSaveArrays();
         String fileName = new SimpleDateFormat("'stepResponse-'yyyyMMddhhmmss'.mat'").format(new Date());
         saveData(fileName);

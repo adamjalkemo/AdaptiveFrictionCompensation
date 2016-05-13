@@ -40,22 +40,22 @@ public class CommunicationManager {
     private long t;
     private long startTime;
 
-    private double offsetPendAngTop = -2.8670;//0.7792;
+    private double offsetPendAngTop = -2.8670;
     private double scalingPendAngTop = 0.058;
 
-    private double offsetPendAngVelTop =  0.1790;//0;
+    private double offsetPendAngVelTop =  0.1790;
     private double scalingPendAngVelTop = 0.68;
 
-    private double offsetPendAng = 5.0673;//5.1763;
+    private double offsetPendAng = 5.0673;
     private double scalingPendAng = 0.3091;
 
-    private double offsetPendAngVel = -0.0350;//-0.022;
+    private double offsetPendAngVel = -0.0350;
     private double scalingPendAngVel = 3.76;
 
-    private double offsetBaseAng = 0.5;//0;
-    private double scalingBaseAng = 2.56;//1.28;//2.56;
+    private double offsetBaseAng = 0.5;
+    private double scalingBaseAng = 2.56;
 
-    private double offsetBaseAngVel = 0.1482;//0.0708;
+    private double offsetBaseAngVel = 0.1482;
     private double scalingBaseAngVel = 2;
 
     private double scalingOutput = -1.40;
@@ -136,15 +136,8 @@ public class CommunicationManager {
     }
     public void plotSignals() {
         double t = (double)this.t/1000;
-	//1 black, 2 red, 3 green, 4 blue
+	    //1 black, 2 red, 3 green, 4 blue
         gui.putMeasurementDataPoint(t,baseAng,baseAngVel,pendAng,pendAngVel);
-
-    //For kalman 
-        //gui.putMeasurementDataPoint(t,pendAngVel,pendAngVelKalman,pendAng,pendAngKalman);
-        //gui.putMeasurementDataPoint(t,baseAngKalman,baseAngVelKalman,pendAngKalman,pendAngVelKalman);
-
-	//Top and 360 sensor seems to really follow each other
-        //gui.putMeasurementDataPoint(t,pendAng,pendAngVel,pendAngTop,pendAngVelTop);
         gui.putControlDataPoint(t,u);
     }
 
@@ -157,10 +150,9 @@ public class CommunicationManager {
         }
     }
 
-    public synchronized void resetOffsets(boolean onTop) {
+    public synchronized void resetOffsets() {
         try {
-            double comp = onTop ? 0 : Math.PI;
-            offsetPendAng = -(analogPendAng.get()*scalingPendAng - comp)/scalingPendAng;
+            offsetPendAng = -(analogPendAng.get()*scalingPendAng)/scalingPendAng;
     	    offsetPendAngVel = -analogPendAngVel.get();
             offsetBaseAng = -analogBaseAng.get();
     	    offsetBaseAngVel = -analogBaseAngVel.get();
@@ -172,10 +164,6 @@ public class CommunicationManager {
 
     public synchronized void setOffsetBaseAng(double offsetBaseAng) {
         this.offsetBaseAng = offsetBaseAng;
-    }
-
-    public synchronized void setOffsetBaseAngScaled(double offsetBaseAng) { // remove?
-        this.offsetBaseAng = offsetBaseAng/scalingBaseAng;
     }
 
     public synchronized void resetOffsetBaseAng() { // remove?
@@ -194,16 +182,6 @@ public class CommunicationManager {
         return offsetPendAng;
     }
 
-    public synchronized void setOffsetPendAngTop(double offsetPendAngTop) {
-        this.offsetPendAngTop = offsetPendAngTop;
-    }
-
-    public synchronized double getOffsetPendAngTop() {
-        return offsetPendAngTop;
-    }
-
-
-
     public synchronized void setOffsetBaseAngVel(double offsetBaseAngVel) {
         this.offsetBaseAngVel = offsetBaseAngVel;
     }
@@ -220,13 +198,6 @@ public class CommunicationManager {
         return offsetPendAngVel;
     }
 
-    public synchronized void setOffsetPendAngVelTop(double offsetPendAngVelTop) {
-        this.offsetPendAngVelTop = offsetPendAngVelTop;
-    }
-
-    public synchronized double getOffsetPendAngVelTop() {
-        return offsetPendAngVelTop;
-    }
 
 
 
@@ -254,10 +225,7 @@ public class CommunicationManager {
         return pendAng;
     }
 
-    /* Functions for SpecificTests */
-    public synchronized void changeOffsetBaseAng(double rad) {
-        offsetBaseAng = (offsetBaseAng*scalingBaseAng + rad)/scalingBaseAng;
-    }
+
 
     public synchronized  void startSaveArrays() {
         uArray = new ArrayList<Double>();
