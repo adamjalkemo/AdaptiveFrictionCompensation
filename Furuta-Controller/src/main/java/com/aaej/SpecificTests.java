@@ -64,6 +64,7 @@ public class SpecificTests {
         data.add(new MLDouble("uF", communicationManager.getuFArray().toArray(new Double[]{}), 1));
         data.add(new MLDouble("fv", communicationManager.getFvArray().toArray(new Double[]{}), 1));
         data.add(new MLDouble("fc", communicationManager.getFcArray().toArray(new Double[]{}), 1));
+        data.add(new MLDouble("fo", communicationManager.getFoArray().toArray(new Double[]{}), 1));
         data.add(new MLDouble("VL", communicationManager.getVLArray().toArray(new Double[]{}), 1));
         try {
             new MatFileWriter(file, data);
