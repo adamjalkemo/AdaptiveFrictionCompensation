@@ -146,11 +146,11 @@ For this to work we will also use a dead-zone so that the noise from the process
 The regression model for the initial friction model will take the form of \ref{eq:regressor}.
 \begin{equation}
 \phi=\begin{bmatrix}
-\dot{\varphi} \\
-sign(\dot{\varphi})
+sign(\dot{\varphi})\\
+\dot{\varphi} 
 \end{bmatrix}, \beta = \begin{bmatrix}
-f_v\\
-f_c
+f_c\\
+f_v
 \end{bmatrix}
 \label{eq:regressor}
 \end{equation}
@@ -161,8 +161,8 @@ To get the RLS to work we take all measurements one step back in time and try to
 \frac{\dot{\varphi}_k + 0.0059\theta_{k-1}-1.9125u_{k-1}-\dot{\varphi}_{k-1}}{-1.9125} = \begin{pmatrix}
 f_c & f_v
 \end{pmatrix}\begin{pmatrix}
-\dot{\varphi}_{k-1}\\
-sign(\dot{\varphi})
+sign(\dot{\varphi})\\
+\dot{\varphi}_{k-1}
 \end{pmatrix}
 \label{eq:estim}
 \end{equation}
@@ -174,10 +174,10 @@ We also want to to estimate the friction in the top position and then the equati
 \section{RLS ALG}
 
 \begin{equation}
-\hat{\theta}_k = \hat{\theta}_{k-1}+P_k\phi_k\epsilon_k 
+\hat{\beta}_k = \hat{\beta}_{k-1}+P_k\phi_k\epsilon_k 
 \end{equation}
 \begin{equation}
-\epsilon_k=y_k-\phi_k^{T}\hat{\theta}_{k-1} 
+\epsilon_k=y_k-\phi_k^{T}\hat{\beta}_{k-1} 
 \end{equation}
 \begin{equation}
 P_k=\frac{1}{\lambda}(P_{k-1}-\frac{P_{k-1}\phi_k\phi_k^{T}P_{k-1}}{\lambda+\phi_k^{T}P_{k-1}\phi_k})
