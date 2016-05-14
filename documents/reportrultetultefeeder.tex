@@ -192,7 +192,7 @@ To manage the friction an estimate of a simple friction model is derived using R
  \end{equation}
 where \ref{eq:f} is model a and only depends on the direction of the velocities and \ref{eq:fv} is the model in b where a viscous term that depends on the velocity is added.
  
-The regression models for the two friction models will take the form of \ref{eq:regressor}.
+The regression models for the two friction models will take the form of \ref{eq:regressora} and \ref{eq:regressorb} respectively.
 \begin{equation}
 \phi=sign(\dot{\varphi}), \beta = f_c
 \label{eq:regressora}
@@ -219,13 +219,15 @@ sign(\dot{\varphi})
 \end{pmatrix}
 \label{eq:estim}
 \end{equation}
-Now we can apply the normal RLS algorithm with some forgetting factor $\lambda$.
+Now we can apply the normal RLS algorithm with some forgetting factor $\lambda$ given in \ref{subsec:rlsalg}.
 
 As we see in equation \ref{eq:discrete} we probably can get different results in the friction estimation by choosing different equations in the same form as in equation \ref{eq:estim}. Initially we want to estimate the friction when the pendulum is hanging straight down and the arm is rotating at a constant speed. If there were no friction, no control signal would be necessary to keep the velocity of the arm constant, and therefore the control signal required corresponds to the signal necessary for compensating the coloumb friction.
 We also want to to estimate the friction in the top position and then the equation corresponding to the state $ \dot{\varphi} $ in eq. \ref{eq:discrete} might not be the one which yields the best result. More research will be put into this at a later stage.
+% More research at a later stage??
 
-\subsection{RLS ALG}
-
+\subsection{Recursive least squared algotrithm}
+\label{subsec:rlsalg}
+To estimate the parameters throughout this project the standard recursive least squares algorithm with a added foregetting factor will be used as stated below. 
 \begin{equation}
 \hat{\theta}_k = \hat{\theta}_{k-1}+P_k\phi_k\epsilon_k 
 \end{equation}
@@ -235,6 +237,7 @@ We also want to to estimate the friction in the top position and then the equati
 \begin{equation}
 P_k=\frac{1}{\lambda}(P_{k-1}-\frac{P_{k-1}\phi_k\phi_k^{T}P_{k-1}}{\lambda+\phi_k^{T}P_{k-1}\phi_k})
 \end{equation}
+Above $\hat{\theta}_k$ is the estimated parameters , $\phi_k$ is the regressor, $P_k$ is a matrix is the estimate of the parameter covariance and $\lambda$ is the forgetting factor.
 
 \section{GUI}
 The operator should be able to change controller parameters for both types of controller and for the friction estimator. For the top controller, the $Q$ and $R$ matrices. For the swing up controller, the switching area and its limit and the gain. Other general parameters for the controller such as sampling time $h$ (if possible), and $\omega _0$. And for the friction estimation the forgetting factor $\lambda$ and the initial values $P_0$ and $\omega _0$.
@@ -250,8 +253,51 @@ The GUI will plot the outputs from the Furuta pendulum, the friction estimation,
 \end{figure}
 \section{Results}
 
+
+\subsection{Limit cycles}
+The limit cycles of the system got significantly lower when adding the friction compensation using the estimated parameters of the friction. The behavior of the arm angle and pendulum angle can be viewed in \ref{fig:onoffcompensation} where \ref{eq:regressorb} was used as a friction model.
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.6]{plots/onoffcompensation.jpg}
+\caption{Arm and pendulum angle behavior in steady state and turning on friction compensation after 10 seconds. The parameter estimation, after manual excitation of the system, converged before being turned on.}
+\label{fig:onoffcompensation}
+\end{center}
+\end{figure}
+In \ref{fig:onoffcompensation} see that the amplitude of the limit cylces are lowered to about a third of the size. We can also see an offset from the zero angle.
+\subsection{Coloumb + viscouse friction model}
+In \ref{subfigure:srvisctheta}, \ref{fig:srviscthetadot}, \ref{fig:srviscphi}, \ref{fig:srviscphidot} we can see the behavior of the angle and angular velocity for both the arm and the pendulum.
+\begin{figure}[H]
+\centering
+		\begin{subfigure}[t]{0.49\textwidth}
+			\includegraphics[scale=0.33]{plots/steprespviscphi.jpg}
+			\centering
+			\caption{The step response for the angle of the arm.}
+			\label{subfigure:srvisctheta}
+		\end{subfigure}
+		\begin{subfigure}[t]{0.49\textwidth}
+			\includegraphics[scale=0.33]{plots/steprespviscphidot.jpg}
+			\centering
+			\caption{The step response for the angular velocity of the arm.}
+			\label{subfigure:srvisctheta}
+		\end{subfigure}
+		\begin{subfigure}[t]{0.49\textwidth}
+			\includegraphics[scale=0.33]{plots/steprespvisctheta.jpg}
+			\centering
+			\caption{The step response for the angle of the arm.}			
+			\label{subfigure:srvisctheta}
+		\end{subfigure}
+		\begin{subfigure}[t]{0.49\textwidth}
+			\includegraphics[scale=0.33]{plots/steprespviscthetadot.jpg}
+			\centering
+			\caption{The step response for the angular velocity of the pendulum.}						
+			\label{subfigure:srvisctheta}
+		\end{subfigure}
+\end{figure}
+
+
 \section{Conclusion}
 
 
 \end{document}
-
+% Ändra alla figurer till eps??
+% Bad disticntion between figure and equation, decide on norm?
