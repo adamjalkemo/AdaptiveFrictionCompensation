@@ -136,21 +136,21 @@ class MainController extends Thread {
 
     private Controller chooseController(double pendAng, double pendAngVel) {
         Controller newController;
+        synchronized (controllerParametersLock) {
+            double ar = controllerParameters.ellipseRadius1;
+            double br = controllerParameters.ellipseRadius2;
+            double alfar = atan(9.4 / 0.62); // TODO Could add this to GUI
+            double X = pendAng;
+            double Y = pendAngVel;
+            double term1 = X * cos(alfar) + Y * sin(alfar);
+            double term2 = -X * sin(alfar) + Y * cos(alfar);
 
-        double ar = controllerParameters.ellipseRadius1;
-        double br = controllerParameters.ellipseRadius2;
-        double alfar=atan(9.4/0.62); // TODO Could add this to GUI
-        double X = pendAng;
-        double Y = pendAngVel;
-        double term1 = X * cos(alfar) + Y * sin(alfar);
-        double term2 = -X * sin(alfar) + Y * cos(alfar);
-
-        if((term1*term1/(ar*ar) + term2*term2/(br*br)) < controllerParameters.limit) {
-            newController = Controller.TOP;
-        } else {
-            newController = Controller.SWINGUP;
+            if ((term1 * term1 / (ar * ar) + term2 * term2 / (br * br)) < controllerParameters.limit) {
+                newController = Controller.TOP;
+            } else {
+                newController = Controller.SWINGUP;
+            }
         }
-
         // If controller changes, it should notify the UI.
         checkForChangeOfController(newController);
         return newController;
