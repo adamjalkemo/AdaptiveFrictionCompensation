@@ -96,11 +96,12 @@ class MainController extends Thread {
         double baseAng = communicationManager.getBaseAng();
         double baseAngVel = communicationManager.getBaseAngVel();
 
-        boolean insideDeadzone = false;
+        boolean insideDeadzone;
 
-        // TODO add deadzones for all
-        //insideDeadzone = Math.abs(baseAngVel) < controllerParameters.deadzoneBaseAngVel;
-        //insideDeadzone = insideDeadzone || Math.abs(pendAngVel) < controllerParameters.deadzonePendAngVel;
+        insideDeadzone = Math.abs(baseAngVel) < controllerParameters.deadzonePendAng;
+        insideDeadzone = insideDeadzone || Math.abs(pendAngVel) < controllerParameters.deadzonePendAngVel;
+        insideDeadzone = insideDeadzone || Math.abs(pendAngVel) < controllerParameters.deadzoneBaseAng;
+        insideDeadzone = insideDeadzone || Math.abs(pendAngVel) < controllerParameters.deadzoneBaseAngVel;
 
         double u = 0;
         double uF = 0;

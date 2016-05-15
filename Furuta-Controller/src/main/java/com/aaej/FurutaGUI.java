@@ -34,7 +34,7 @@ public class FurutaGUI implements Observer {
 							buttonPanel3, buttonPanel4, deadzonePanel;
 	private PlotterPanel 	measPanel, ctrlPanel, rlsPanel;
 	private JPanel 			qFieldPanel, rFieldPanel, swingLabelPanel, swingFieldPanel, generalLabelPanel,
-							generalFieldPanel, estimatorLabelPanel, estimatorFieldPanel;
+							generalFieldPanel, estimatorLabelPanel, estimatorFieldPanel, deadzoneLabelPanel, deadzoneFieldPanel;
 
 	// Declaration of buttons and fields
 	private JButton 		startButton, stopButton, resetEstimatorButton, saveEstimatorButton, saveCtrlButton;
@@ -42,15 +42,14 @@ public class FurutaGUI implements Observer {
 	private JButton			frictionCompensatorOnButton, frictionCompensatorOffButton;
 	private JButton         rlsConvergeTestButton, stepResponseTestButton, saveTestDataButton, stopSaveTestDataButton;
 	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField, ellipseRotationField,
-							lambdaField, p0Field, theta00Field, theta01Field, theta02Field, deadzoneBaseAngVelField, deadzonePendAngVelField;
+							lambdaField, p0Field, theta00Field, theta01Field, theta02Field, deadzoneBaseAngVelField, deadzonePendAngVelField, deadzoneBaseAngField, deadzonePendAngField;
 	private DoubleField[][] qArrayField, rArrayField;
-	private JLabel currentController;
-	private JScrollPane rightPanelWithScroll;
+	private JLabel 			currentController;
+	private JScrollPane 	rightPanelWithScroll;
 
-	// Width of right column. Real strange behaviour. However, this works for now.
-	int width =  360;
-			
-	//private boolean hChanged = false;
+	// Width of right column
+	int width =  320;
+
 	private boolean isInitialized = false;
 
 	/** Constructor. */
@@ -72,7 +71,7 @@ public class FurutaGUI implements Observer {
 	public void setCommunicationManager(CommunicationManager communicationManager) {
 		this.communicationManager = communicationManager;
 	}
-	/** Creates the GUI. Called from Main. */
+	/** Creates the GUI. Called from App. */
 	public void initializeGUI() {
 		// Get initial parameters from Regul
 		ctrlPar = controller.getControllerParameters();
@@ -159,11 +158,12 @@ public class FurutaGUI implements Observer {
 			for (int j = 0; j < rSize; j++) {
 				rArrayField[i][j] = new DoubleField(10,6);
 				rArrayField[i][j].setValue(ctrlPar.rMatrix[i][j]);
+				rArrayField[i][j].putClientProperty("i", (Integer) i);
+				rArrayField[i][j].putClientProperty("j", (Integer) j);
 				rArrayField[i][j].addActionListener(new ActionListener() {
-					int i,j;
 					public void actionPerformed(ActionEvent e) {
-						this.i = i;
-						this.j = j;
+						int i = (Integer)((DoubleField)e.getSource()).getClientProperty("i");
+						int j = (Integer)((DoubleField)e.getSource()).getClientProperty("j");
 						ctrlPar.rMatrix[i][j] = rArrayField[i][j].getValue();
 						saveCtrlButton.setEnabled(true);
 					}
@@ -180,9 +180,9 @@ public class FurutaGUI implements Observer {
 		topCtrlPanel.add(new JLabel("R matrix"));
 		topCtrlPanel.add(rFieldPanel);
 		
-			// ---------------
+		// ---------------
 
-			// -- Swing up controller--
+		// -- Swing up controller--
 
 		swingLabelPanel = new JPanel();
 		swingLabelPanel.setLayout(new GridLayout(0,1));
@@ -252,9 +252,9 @@ public class FurutaGUI implements Observer {
 		swingCtrlPanel.add(swingLabelPanel);
 		swingCtrlPanel.add(swingFieldPanel);
 
-			// ---------------
+		// ---------------
 
-			// -- General controller --
+		// -- General controller --
 
 		generalLabelPanel = new JPanel(new GridLayout(0,1));
 		generalLabelPanel.add(new JLabel("Sampling time h"));
@@ -287,6 +287,67 @@ public class FurutaGUI implements Observer {
 		generalCtrlPanel.add(generalLabelPanel);
 		generalCtrlPanel.add(generalFieldPanel);
 
+		// ---------------
+
+		// -- Deadzone for controller --
+
+		deadzoneLabelPanel = new JPanel();
+		deadzoneLabelPanel.setLayout(new GridLayout(0,1));
+		deadzoneLabelPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		deadzoneLabelPanel.add(new JLabel("Theta"));
+		deadzoneLabelPanel.add(new JLabel("Theta velocity"));
+		deadzoneLabelPanel.add(new JLabel("Phi"));
+		deadzoneLabelPanel.add(new JLabel("Phi velocity"));
+
+		deadzoneBaseAngVelField = new DoubleField(10,6);
+		deadzoneBaseAngVelField.setValue(ctrlPar.deadzoneBaseAngVel);
+		deadzoneBaseAngVelField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ctrlPar.deadzoneBaseAngVel = deadzoneBaseAngVelField.getValue();
+				saveEstimatorButton.setEnabled(true);
+			}
+		});
+
+		deadzonePendAngVelField = new DoubleField(10,6);
+		deadzonePendAngVelField.setValue(ctrlPar.deadzonePendAngVel);
+		deadzonePendAngVelField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ctrlPar.deadzonePendAngVel = deadzonePendAngVelField.getValue();
+				saveEstimatorButton.setEnabled(true);
+			}
+		});
+
+		deadzoneBaseAngField = new DoubleField(10,6);
+		deadzoneBaseAngField.setValue(ctrlPar.deadzoneBaseAng);
+		deadzoneBaseAngField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ctrlPar.deadzoneBaseAng = deadzoneBaseAngField.getValue();
+				saveEstimatorButton.setEnabled(true);
+			}
+		});
+
+		deadzonePendAngField = new DoubleField(10,6);
+		deadzonePendAngField.setValue(ctrlPar.deadzonePendAng);
+		deadzonePendAngField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ctrlPar.deadzonePendAng = deadzonePendAngField.getValue();
+				saveEstimatorButton.setEnabled(true);
+			}
+		});
+
+		deadzoneFieldPanel = new JPanel();
+		deadzoneFieldPanel.setLayout(new GridLayout(0,1));
+		deadzoneFieldPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		deadzoneFieldPanel.add(deadzonePendAngField);
+		deadzoneFieldPanel.add(deadzonePendAngVelField);
+		deadzoneFieldPanel.add(deadzoneBaseAngField);
+		deadzoneFieldPanel.add(deadzoneBaseAngVelField);
+
+		deadzonePanel = new BoxPanel(BoxPanel.HORIZONTAL);
+		deadzonePanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
+		deadzonePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		deadzonePanel.add(deadzoneLabelPanel);
+		deadzonePanel.add(deadzoneFieldPanel);
 
 		// --------------
 
@@ -310,6 +371,8 @@ public class FurutaGUI implements Observer {
 		ctrlParameterPanel.addFixed(5);
 		ctrlParameterPanel.add(new JLabel(formatLabel("General controller settings", true, 2, "#444444")));
 		ctrlParameterPanel.add(generalCtrlPanel);
+		ctrlParameterPanel.add(new JLabel(formatLabel("Controller Deadzones", true, 2, "#444444")));
+		ctrlParameterPanel.add(deadzonePanel);
 		ctrlParameterPanel.add(saveCtrlButton);
 
 		// ------------
@@ -317,7 +380,7 @@ public class FurutaGUI implements Observer {
 
 		// -- Panel for the estimator parameters --
 
-		String[] regressorModels = {"Coloumb friction [ sign(v) ]", "Viscous friction [ sign(v), v ]", "Viscous friction and offset[ sign(v), v,1 ]"};
+		String[] regressorModels = {"Coloumb friction [ sign(v) ]", "Viscous friction [ sign(v), v ]", "V.f & offset[ sign(v), v, 1 ]"};
 		JComboBox regressorCombo = new JComboBox(regressorModels);
 		regressorCombo.setSelectedIndex(rlsPar.regressorModel);
 
@@ -413,34 +476,6 @@ public class FurutaGUI implements Observer {
 		theta0Panel.add(theta01Field);
 		theta0Panel.add(theta02Field);
 
-
-		deadzoneBaseAngVelField = new DoubleField(10,6);
-		deadzoneBaseAngVelField.setValue(ctrlPar.deadzoneBaseAngVel);
-		deadzoneBaseAngVelField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ctrlPar.deadzoneBaseAngVel = deadzoneBaseAngVelField.getValue();
-				saveEstimatorButton.setEnabled(true);
-			}
-		});
-
-		deadzonePendAngVelField = new DoubleField(10,6);
-		deadzonePendAngVelField.setValue(ctrlPar.deadzonePendAngVel);
-		deadzonePendAngVelField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ctrlPar.deadzonePendAngVel = deadzonePendAngVelField.getValue();
-				saveEstimatorButton.setEnabled(true);
-			}
-		});
-
-		deadzonePanel = new BoxPanel(BoxPanel.HORIZONTAL);
-		deadzonePanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
-		deadzonePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		deadzonePanel.add(new JLabel("BaseAngVel Deadzone"));
-		deadzonePanel.add(deadzoneBaseAngVelField);
-		deadzonePanel.addFixed(10);
-		deadzonePanel.add(new JLabel("PendAngVel Deadzone"));
-		deadzonePanel.add(deadzonePendAngVelField);
-
 		estimatorFieldPanel = new JPanel();
 		estimatorFieldPanel.setLayout(new GridLayout(0,1));
 		estimatorFieldPanel.add(lambdaField);
@@ -452,7 +487,6 @@ public class FurutaGUI implements Observer {
 		estimatorGridPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		estimatorGridPanel.add(estimatorLabelPanel);
 		estimatorGridPanel.add(estimatorFieldPanel);
-
 
 		saveEstimatorButton = new JButton("Save");
 		saveEstimatorButton.setEnabled(false);
@@ -482,7 +516,6 @@ public class FurutaGUI implements Observer {
 		estimatorParameterPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
 		estimatorParameterPanel.add(regressorPanel);
 		estimatorParameterPanel.add(estimatorGridPanel);
-		estimatorParameterPanel.add(deadzonePanel);
 		estimatorParameterPanel.add(estimatorButtonsPanel);
 		
 		// ------------
@@ -503,8 +536,6 @@ public class FurutaGUI implements Observer {
 		});
 		buttonPanel4 = new BoxPanel(BoxPanel.HORIZONTAL);
 		buttonPanel4.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
-		buttonPanel4.add(new JLabel("Tests: "));
-		buttonPanel4.addFixed(10);
 		buttonPanel4.add(rlsConvergeTestButton);
 		buttonPanel4.add(stepResponseTestButton);
 		buttonPanel4.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -591,6 +622,7 @@ public class FurutaGUI implements Observer {
 		rightPanel.add(buttonPanel);
 		rightPanel.add(buttonPanel2);
 		rightPanel.add(buttonPanel3);
+		rightPanel.add(new JLabel("Tests: "));
 		rightPanel.add(buttonPanel4);
 		rightPanel.addFixed(10);
 		rightPanel.add(ctrlParameterPanel);
@@ -601,7 +633,7 @@ public class FurutaGUI implements Observer {
 		// If the right panel does not fit, a scroll pane can be used. This messes with the layout though.
 		rightPanelWithScroll = new JScrollPane(rightPanel);
 		rightPanelWithScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		rightPanelWithScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		rightPanelWithScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		rightPanelWithScroll.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
 
 		// Create panel for the entire GUI.
@@ -611,6 +643,7 @@ public class FurutaGUI implements Observer {
 		guiPanel.addFixed(10);
 		guiPanel.add(rightPanelWithScroll);
 
+		// For updates on current controller
 		controller.registerObserver(this);
 
 
@@ -641,12 +674,6 @@ public class FurutaGUI implements Observer {
 			});
 		}
 
-		// Position the main window at the screen center.
-		/*Dimension sd = Toolkit.getDefaultToolkit().getScreenSize();
-		Dimension fd = frame.getSize();
-		frame.setLocation((sd.width-fd.width)/2, (sd.height-fd.height)/2);
-		*/
-
 		// Make the window visible.
 		frame.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
 		frame.setVisible(true);
@@ -654,6 +681,9 @@ public class FurutaGUI implements Observer {
 		isInitialized = true;
 	}
 
+	/**
+	 * Formatting of labels
+     */
 	private String formatLabel(String str, boolean bold, Integer size, String color) {
 		if (bold)
 			str = "<b>" + str + "</b>";
@@ -664,7 +694,7 @@ public class FurutaGUI implements Observer {
 		return "<html>" + str + "</html>";
 	}
 
-	/** Called by Regul to plot a control signal data point. */
+	/** Called by CommunicationManager to plot a control signal data point. */
 	public synchronized void putControlDataPoint(double t, double u) { // Consider using a modified PlotData here.
 		if (isInitialized) {
 			ctrlPanel.putData(t, u);
@@ -673,7 +703,7 @@ public class FurutaGUI implements Observer {
 		}
 	}
 
-	/** Called by Regul to plot a rls data point. */
+	/** Called by CommunicationManager to plot a rls data point. */
 	public synchronized void putRLSDataPoint(double t, double y1, double y2, double y3) {
 		if (isInitialized) {
 			rlsPanel.putData(t, y1, y2, y3);
@@ -682,7 +712,7 @@ public class FurutaGUI implements Observer {
 		}
 	}
 
-	/** Called by Regul to plot a measurement data point. */
+	/** Called by CommunicationManager to plot a measurement data point. */
 	public synchronized void putMeasurementDataPoint(double t, double y1, double y2, double y3, double y4) {
 		if (isInitialized) {
 			measPanel.putData(t, y1, y2, y3, y4);
@@ -690,11 +720,13 @@ public class FurutaGUI implements Observer {
 			LOGGER.log(Level.FINE, "Note: GUI not yet initialized. Ignoring call to putMeasurementDataPoint().");
 		}
 	}
-	
-	public void update(Observable o, Object arg) { // For updates about which controller being used
+
+	/**
+	 * For updates about which controller being used
+     */
+	public void update(Observable o, Object arg) {
 	    if (arg instanceof String) {
 	        currentController.setText((String) arg);
 	    }
 	}
-
 }

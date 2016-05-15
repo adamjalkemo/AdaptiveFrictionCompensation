@@ -23,9 +23,10 @@ public class ControllerParameters implements Cloneable {
 	public double[] L = new double[]{0, 0, 0, 0};
 	public double lr = 0;
 
-	// TODO add more deadzones
-	public double deadzoneBaseAngVel = 0;
+	public double deadzonePendAng = 0;
 	public double deadzonePendAngVel = 0;
+	public double deadzoneBaseAng = 0;
+	public double deadzoneBaseAngVel = 0;
 
 	public Object clone() {
 		try {
