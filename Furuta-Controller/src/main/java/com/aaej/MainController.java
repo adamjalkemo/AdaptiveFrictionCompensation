@@ -57,7 +57,7 @@ class MainController extends Thread {
         enableFrictionCompensation = true;
 	}
 
-    /*
+    /**
         Outputs warnings if deadlines are missed.
         Shuts down if the shutdown variable is set to true.
         Writes zero to the communicationManager when shutting down.
@@ -85,7 +85,7 @@ class MainController extends Thread {
 	   communicationManager.writeOutput(0);
     }
 
-    /*
+    /**
         Determines which controllers are to be used (with help from chooseController) and
         writes outputs and updates states.
      */
@@ -148,7 +148,7 @@ class MainController extends Thread {
         return newController;
     }
 
-    /*
+    /**
         Logs change of controller and notifies the GUI about the change.
      */
     private void checkForChangeOfController(Controller newController) {
@@ -166,7 +166,7 @@ class MainController extends Thread {
     }
 
 
-    /*
+    /**
         Sets the controller parameters for all underlying controllers.
         The whole method is not synchronized to avoid blocking
     */

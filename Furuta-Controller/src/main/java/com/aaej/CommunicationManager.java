@@ -57,7 +57,7 @@ public class CommunicationManager {
     private ArrayList<Double> fcArray;
     private boolean saveArray = false;
 
-    /*
+    /**
      * Constructor, initiates communication with the analog box. Exits on error.
      */
     public CommunicationManager(FurutaGUI gui) {
@@ -77,7 +77,7 @@ public class CommunicationManager {
         }
     }
 
-    /*
+    /**
      *  Reads measurement values from the analog box. Adds offsets and then scales.
      *  If values are to be saved in array (for write to file), this happens here.
      *  This is called from the controller at every sampling instant.
@@ -101,7 +101,7 @@ public class CommunicationManager {
         }
     }
 
-    /*
+    /**
      * Called by the controller. Saturates if necessary.
      */
     public double writeOutput(double u) {
@@ -129,7 +129,7 @@ public class CommunicationManager {
         return u;
     }
 
-    /*
+    /**
      * Plot the measured signals and the control signal.
      */
     public void plotSignals() {
@@ -139,7 +139,7 @@ public class CommunicationManager {
         gui.putControlDataPoint(t,u);
     }
 
-    /*
+    /**
      * Plots the estimated friction coefficients
      */
     public void plotRLSParameters(double fv, double fc) {
@@ -151,7 +151,7 @@ public class CommunicationManager {
         }
     }
 
-    /*
+    /**
      * Resets the offsets. Should be called when the pendulum is down and still.
      * Pi is subtracted because 0 is at the top.
      */
@@ -166,7 +166,7 @@ public class CommunicationManager {
         }
     }
 
-    /*
+    /**
      * When the controller switches to top controller it might be a bit aggressive depending on what value
      * phi has. We solve this by resetting phi by manipulating the offsets.
      */
@@ -192,7 +192,7 @@ public class CommunicationManager {
     }
     // ----------
 
-    /*
+    /**
      * Called when values are to be saved for later use (e.g print to file).
      */
     public synchronized void startSaveArrays() {

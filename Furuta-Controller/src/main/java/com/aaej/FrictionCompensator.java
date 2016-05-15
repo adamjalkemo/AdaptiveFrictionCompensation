@@ -5,6 +5,7 @@ import Jama.Matrix;
 import static java.lang.Math.abs;
 import static java.lang.Math.signum;
 
+// TODO comment this class
 public class FrictionCompensator {
     private RLSParameters rlsParameters;
     private Matrix P_old;

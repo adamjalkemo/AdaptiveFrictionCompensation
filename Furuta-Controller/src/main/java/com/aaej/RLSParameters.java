@@ -1,11 +1,14 @@
-
 package com.aaej;
 
+
+/**
+ * RLS estimation parameters. Also see ControllerParameters.
+ */
 public class RLSParameters implements Cloneable {
-	// TODO, these should not be initialized here
 	public double lambda = 1;
 	public double p0 = 13.0;
-	public int regressorModel = 1;
+	public int regressorModel = 1; // TODO were not using this, right?
+	// TODO and this?
 	public double[][] theta0 = {{14.0,0},{15.0,16.0}}; // Vectors because of the different models. Change if needed!
 
 	public double pam = 100;

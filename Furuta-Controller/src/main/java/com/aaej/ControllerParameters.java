@@ -1,6 +1,6 @@
 package com.aaej;
 
-/*
+/**
  * Controller parameters. Also see RLSParameters where we have the parameters for the RLS estimation.
  */
 public class ControllerParameters implements Cloneable {

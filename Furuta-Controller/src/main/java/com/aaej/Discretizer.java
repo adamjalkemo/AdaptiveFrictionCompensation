@@ -3,13 +3,13 @@ package com.aaej;
 import Jama.*;
 import java.util.*;
 
-/*
+/**
  * This class contains methods for generating a sampled system and calculating the state feedback provided
  * the system and Q and R matrices.
  */
 class Discretizer {
 
-	/*
+	/**
 	 * Calculates the State feedback matrix L.
 	 */
 	public static Matrix getL(Matrix Phi, Matrix Gamma, Matrix Q, Matrix R) {
@@ -33,7 +33,7 @@ class Discretizer {
 		return L;
 	}
 
-	/*
+	/**
 	 * Calculates the feed forward gain lr (for H(1) = 1).
 	 */
 	public static double getlr(Matrix Phi, Matrix Gamma, Matrix C, Matrix L) {
@@ -45,10 +45,10 @@ class Discretizer {
 		return 1 / tf.get(0,0);
 	}
 
-	// Returns Matrix vector [Matrix Ad, Matrix Bd]
-	/*
+
+	/**
  	* C2d is used for generating a sampled representation of the system.
- 	* Phi is calculated using tustin. Gamma is calculated using B*h.
+ 	* Phi is calculated using Tustin's method / bilinear transform. Gamma is calculated using B*h.
  	*/
 	public static Matrix[] c2d(long h) {
 		Matrix Ac = new Matrix(new double[][]{{0, 1, 0, 0},{31.3167200666837, 0, 0, 0},{0, 0, 0, 1,},{-0.588392468761969, 0, 0, 0}});
@@ -56,31 +56,12 @@ class Discretizer {
 		int m = Ac.getRowDimension();
 
 		// (eye(size(Ac))+1/2*Ac*h)*inv(eye(size(Ac))-1/2*Ac*h)
-		// h converted to seconds below!
-		Matrix Ad = Matrix.identity(m,m).plus(Ac.times(0.5*h/1000)).times((Matrix.identity(m,m).minus(Ac.times(0.5*h/1000))).inverse());
-		Matrix Bd = Bc.times((double) h / 1000);
+		// (h converted to seconds below!)
+		Matrix Phi = Matrix.identity(m,m).plus(Ac.times(0.5*h/1000)).times((Matrix.identity(m,m).minus(Ac.times(0.5*h/1000))).inverse());
+		Matrix Gamma = Bc.times((double) h / 1000);
 
-		return new Matrix[]{Ad, Bd};
+		// Returns Matrix vector [Matrix Ad, Matrix Bd]
+		return new Matrix[]{Phi, Gamma};
 	}
-
-	// I'm leaving this here for manual test purposes
-	/*public static void main(String[] args) { 
-		
-		Matrix A = new Matrix(new double[][]{{-2, 0},{0, -1}});
-		
-		Matrix B = new Matrix(new double[]{1, 0.1},2);
-
-		Matrix Q = new Matrix(new double[][]{{1,0},{0,1}});
-		Matrix R = new Matrix(new double[]{1},1);
-
-		System.out.println(Arrays.deepToString(Discretizer.getL(A,B,Q,R).getArray()));
-		
-		Matrix Ac = new Matrix(new double[][]{{0, 1, 0, 0},{31.3167200666837, 0, 0, 0},{0, 0, 0, 1,},{-0.588392468761969, 0, 0, 0}});
-		Matrix Bc = new Matrix(new double[]{0, -71.2339550559284, 0 ,191.245792952122},4);
-		c2d(Ac,Bc,10);
-		
-
-	}*/
-
 }
 	

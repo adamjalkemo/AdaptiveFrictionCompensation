@@ -10,6 +10,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+    This class holds functionality for saving data to a MATLAB .mat file (data is stored
+    in CommunicationManager until it is written to file.
+    There are also methods available for running simple step response tests etc.
+ */
 public class SpecificTests {
     private CommunicationManager communicationManager;
     private MainController controller;
@@ -18,8 +23,11 @@ public class SpecificTests {
         this.controller = controller;
     }
 
-
-
+    /**
+        Runs a test with two step response test (one in each direction) for phi.
+        TODO verify that it moves PI in below directions:
+        First it moves 180 deg clockwise direction, then 360 counter clockwise direction.
+     */
     public void stepResponse() {
         communicationManager.startSaveArrays();
 
@@ -37,6 +45,9 @@ public class SpecificTests {
         saveData(fileName);
     }
 
+    /**
+        TODO describe what it does
+     */
     public void rlsConverge() {
         controller.regulatorActive(false);
         try {
@@ -57,6 +68,9 @@ public class SpecificTests {
         saveData(fileName);
     }
 
+    /**
+        This method saves data to a .mat file.
+     */
     public void saveData(String file) {
         ArrayList data = new ArrayList();
         data.add(new MLDouble("u", communicationManager.getuArray().toArray(new Double[]{}), 1));
@@ -74,6 +88,9 @@ public class SpecificTests {
         }
     }
 
+    /**
+        If save data is called from the GUI, this method is called and below filename is used.
+     */
     public void saveDataGeneral() {
         communicationManager.stopSaveArrays();
         String fileName = new SimpleDateFormat("'data-'yyyyMMddhhmmss'.mat'").format(new Date());
