@@ -12,13 +12,9 @@ import java.util.Observer;
 import java.util.Observable;
 
 
-// TODO: add frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-// 		according to http://www.control.lth.se/previouscourse/FRTN01/Exercise4_14/Exercise4.html
-//		although windowClosing used below might be enough.
-
-
-
-//Class that creates and maintains a GUI for the FURUTA process.
+/**
+ * Swing based GUI for the furuta pendulum process.
+ */
 public class FurutaGUI implements Observer {
 	private final static Logger LOGGER = Logger.getLogger(FurutaGUI.class.getName());
 	private MainController controller;
@@ -35,7 +31,7 @@ public class FurutaGUI implements Observer {
 	private BoxPanel 		guiPanel, plotterPanel, rightPanel, ctrlParameterPanel,estimatorParameterPanel,
 							lowerLeftPlotPanel, lowerRightPlotPanel, lowerPlotPanels, generalCtrlPanel, estimatorButtonsPanel,
 							estimatorGridPanel, regressorPanel, topCtrlPanel, swingCtrlPanel, buttonPanel, buttonPanel2,
-							buttonPanel3, deadzonePanel;
+							buttonPanel3, buttonPanel4, deadzonePanel;
 	private PlotterPanel 	measPanel, ctrlPanel, rlsPanel;
 	private JPanel 			qFieldPanel, rFieldPanel, swingLabelPanel, swingFieldPanel, generalLabelPanel,
 							generalFieldPanel, estimatorLabelPanel, estimatorFieldPanel;
@@ -44,14 +40,15 @@ public class FurutaGUI implements Observer {
 	private JButton 		startButton, stopButton, resetEstimatorButton, saveEstimatorButton, saveCtrlButton;
 	private JButton			resetOffsetButton;
 	private JButton			frictionCompensatorOnButton, frictionCompensatorOffButton;
-	private JButton         rlsConvergeTestButton, stepResponseTestButton, saveTestDataButton, stopSaveTestDataButton, toggleStepResponseButton;
-	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField,
-							lambdaField, p0Field, theta00Field, theta01Field, deadzoneBaseAngVelField, deadzonePendAngVelField;
+	private JButton         rlsConvergeTestButton, stepResponseTestButton, saveTestDataButton, stopSaveTestDataButton;
+	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField, ellipseRotationField,
+							lambdaField, p0Field, theta00Field, theta01Field, theta02Field, deadzoneBaseAngVelField, deadzonePendAngVelField;
 	private DoubleField[][] qArrayField, rArrayField;
 	private JLabel currentController;
+	private JScrollPane rightPanelWithScroll;
 
 	// Width of right column. Real strange behaviour. However, this works for now.
-	int width =  20000;
+	int width =  360;
 			
 	//private boolean hChanged = false;
 	private boolean isInitialized = false;
@@ -101,6 +98,7 @@ public class FurutaGUI implements Observer {
 		ctrlPanel.setUpdateFreq(10);
 
 		lowerLeftPlotPanel = new BoxPanel(BoxPanel.VERTICAL);
+		// TODO plot f and u+f
 		lowerLeftPlotPanel.add(new JLabel("u, f, u+f"));
 		lowerLeftPlotPanel.add(ctrlPanel);
 		
@@ -110,7 +108,7 @@ public class FurutaGUI implements Observer {
 		rlsPanel.setUpdateFreq(10);
 
 		lowerRightPlotPanel = new BoxPanel(BoxPanel.VERTICAL);
-		lowerRightPlotPanel.add(new JLabel("RLS"));
+		lowerRightPlotPanel.add(new JLabel("RLS Parameters"));
 		lowerRightPlotPanel.add(rlsPanel);
 
 		lowerPlotPanels = new BoxPanel(BoxPanel.HORIZONTAL);
@@ -191,9 +189,9 @@ public class FurutaGUI implements Observer {
 		swingLabelPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		swingLabelPanel.add(new JLabel("Ellipse radius 1"));
 		swingLabelPanel.add(new JLabel("Ellipse radius 2"));
+		swingLabelPanel.add(new JLabel("Ellipse rotation (deg)"));
 		swingLabelPanel.add(new JLabel("Limit"));
 		swingLabelPanel.add(new JLabel("Gain"));
-
 
 		radius1Field = new DoubleField(10,6);
 		radius1Field.setValue(ctrlPar.ellipseRadius1);
@@ -211,6 +209,16 @@ public class FurutaGUI implements Observer {
 				saveCtrlButton.setEnabled(true);
 			}
 		});
+
+		ellipseRotationField = new DoubleField(10,6);
+		ellipseRotationField.setValue(ctrlPar.ellipseRotationField);
+		ellipseRotationField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ctrlPar.ellipseRotationField = ellipseRotationField.getValue();
+				saveCtrlButton.setEnabled(true);
+			}
+		});
+
 		limitField = new DoubleField(10,6);
 		limitField.setValue(ctrlPar.limit);
 		limitField.addActionListener(new ActionListener() {
@@ -219,6 +227,7 @@ public class FurutaGUI implements Observer {
 				saveCtrlButton.setEnabled(true);
 			}
 		});
+
 		gainField = new DoubleField(10,6);
 		gainField.setValue(ctrlPar.gain);
 		gainField.addActionListener(new ActionListener() {
@@ -233,9 +242,9 @@ public class FurutaGUI implements Observer {
 		swingFieldPanel.setAlignmentX(Component.LEFT_ALIGNMENT);		
 		swingFieldPanel.add(radius1Field);
 		swingFieldPanel.add(radius2Field);
+		swingFieldPanel.add(ellipseRotationField);
 		swingFieldPanel.add(limitField);
 		swingFieldPanel.add(gainField);
-
 
 		swingCtrlPanel = new BoxPanel(BoxPanel.HORIZONTAL);
 		swingCtrlPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
@@ -292,6 +301,7 @@ public class FurutaGUI implements Observer {
 
 		ctrlParameterPanel = new BoxPanel(BoxPanel.VERTICAL);
 		ctrlParameterPanel.setBorder(BorderFactory.createTitledBorder(formatLabel("Controller parameters", true, 4, "#000033")));
+		ctrlParameterPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
 		ctrlParameterPanel.add(new JLabel(formatLabel("Top controller", true, 2, "#444444")));
 		ctrlParameterPanel.add(topCtrlPanel);
 		ctrlParameterPanel.addFixed(5);
@@ -307,7 +317,7 @@ public class FurutaGUI implements Observer {
 
 		// -- Panel for the estimator parameters --
 
-		String[] regressorModels = {"Coloumb friction [ sign(v) ]", "Viscous friction [ sign(v), v ]"};
+		String[] regressorModels = {"Coloumb friction [ sign(v) ]", "Viscous friction [ sign(v), v ]", "Viscous friction and offset[ sign(v), v,1 ]"};
 		JComboBox regressorCombo = new JComboBox(regressorModels);
 		regressorCombo.setSelectedIndex(rlsPar.regressorModel);
 
@@ -317,13 +327,21 @@ public class FurutaGUI implements Observer {
 		        int regressorModel = cb.getSelectedIndex();
 		        rlsPar.regressorModel = regressorModel;
 		        theta00Field.setValue(rlsPar.theta0[regressorModel][0]);
-		        if (regressorModel == 0)
-		        	theta01Field.setVisible(false);
-		        else {
+		        if (regressorModel == 0) {
+					theta01Field.setVisible(false);
+					theta02Field.setVisible(false);
+				} else if (regressorModel == 1){
 		        	theta01Field.setVisible(true);
 		        	theta01Field.setValue(rlsPar.theta0[regressorModel][1]);
-		        }
+					theta02Field.setVisible(false);
+		        } else {
+					theta01Field.setVisible(true);
+					theta01Field.setValue(rlsPar.theta0[regressorModel][1]);
+					theta02Field.setVisible(true);
+					theta02Field.setValue(rlsPar.theta0[regressorModel][2]);
+				}
 		        saveEstimatorButton.setEnabled(true);
+				frame.validate(); // Doesn't update correctly otherwise
 		    }
 		});
 
@@ -332,6 +350,7 @@ public class FurutaGUI implements Observer {
 		regressorPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
 		regressorPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		regressorPanel.add(new JLabel("Model"));
+		regressorPanel.addFixed(10);
 		regressorPanel.add(regressorCombo);
 
 
@@ -363,26 +382,36 @@ public class FurutaGUI implements Observer {
 		BoxPanel theta0Panel;
 
 		theta00Field = new DoubleField(10,6);
-		theta00Field.setValue(rlsPar.theta0[rlsPar.regressorModel][0]);
 		theta00Field.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				rlsPar.theta0[rlsPar.regressorModel][0] = theta00Field.getValue();
 				saveEstimatorButton.setEnabled(true);
 			}
 		});
+		theta00Field.setVisible(true);
 
 		theta01Field = new DoubleField(10,6);
-		theta01Field.setValue(rlsPar.theta0[rlsPar.regressorModel][1]);
 		theta01Field.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				rlsPar.theta0[rlsPar.regressorModel][1] = theta01Field.getValue();
 				saveEstimatorButton.setEnabled(true);
 			}
 		});
+		theta00Field.setVisible(true);
+
+		theta02Field = new DoubleField(10,6);
+		theta02Field.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				rlsPar.theta0[rlsPar.regressorModel][2] = theta02Field.getValue();
+				saveEstimatorButton.setEnabled(true);
+			}
+		});
+		theta00Field.setVisible(true);
 
 		theta0Panel = new BoxPanel(BoxPanel.HORIZONTAL);
 		theta0Panel.add(theta00Field);
 		theta0Panel.add(theta01Field);
+		theta0Panel.add(theta02Field);
 
 
 		deadzoneBaseAngVelField = new DoubleField(10,6);
@@ -450,6 +479,7 @@ public class FurutaGUI implements Observer {
 
 		estimatorParameterPanel = new BoxPanel(BoxPanel.VERTICAL);
 		estimatorParameterPanel.setBorder(BorderFactory.createTitledBorder(formatLabel("Estimator Parameters", true, 4, "#000033")));
+		estimatorParameterPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
 		estimatorParameterPanel.add(regressorPanel);
 		estimatorParameterPanel.add(estimatorGridPanel);
 		estimatorParameterPanel.add(deadzonePanel);
@@ -459,6 +489,65 @@ public class FurutaGUI implements Observer {
 
 
 		// -- Panel for start and stop buttons --
+		rlsConvergeTestButton = new JButton("RLS convergence");
+		rlsConvergeTestButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				specificTests.rlsConverge();
+			}
+		});
+		stepResponseTestButton = new JButton("Step response");
+		stepResponseTestButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				specificTests.stepResponse();
+			}
+		});
+		buttonPanel4 = new BoxPanel(BoxPanel.HORIZONTAL);
+		buttonPanel4.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
+		buttonPanel4.add(new JLabel("Tests: "));
+		buttonPanel4.addFixed(10);
+		buttonPanel4.add(rlsConvergeTestButton);
+		buttonPanel4.add(stepResponseTestButton);
+		buttonPanel4.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		saveTestDataButton = new JButton("Start");
+		saveTestDataButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				communicationManager.startSaveArrays();
+			}
+		});
+		stopSaveTestDataButton = new JButton("Stop");
+		stopSaveTestDataButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				specificTests.saveDataGeneral();
+			}
+		});
+		buttonPanel3 = new BoxPanel(BoxPanel.HORIZONTAL);
+		buttonPanel3.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
+		buttonPanel3.add(new JLabel("Save to file: "));
+		buttonPanel3.addFixed(10);
+		buttonPanel3.add(saveTestDataButton);
+		buttonPanel3.add(stopSaveTestDataButton);
+		buttonPanel3.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		frictionCompensatorOnButton = new JButton("On");
+		frictionCompensatorOnButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				controller.setEnableFrictionCompensation(true);
+			}
+		});
+		frictionCompensatorOffButton = new JButton("Off");
+		frictionCompensatorOffButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				controller.setEnableFrictionCompensation(false);
+			}
+		});
+		buttonPanel2 = new BoxPanel(BoxPanel.HORIZONTAL);
+		buttonPanel2.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
+		buttonPanel2.add(new JLabel("Friction compensation: "));
+		buttonPanel2.addFixed(10);
+		buttonPanel2.add(frictionCompensatorOnButton);
+		buttonPanel2.add(frictionCompensatorOffButton);
+		buttonPanel2.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		startButton = new JButton("START");
 		startButton.addActionListener(new ActionListener() {
@@ -466,137 +555,61 @@ public class FurutaGUI implements Observer {
 				controller.regulatorActive(true);
 			}
 		});
-
 		stopButton = new JButton("STOP");
 		stopButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				controller.regulatorActive(false);
 			}
 		});
-
-		resetOffsetButton = new JButton("Reset Offset");
+		resetOffsetButton = new JButton("Reset Offsets");
 		resetOffsetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				communicationManager.resetOffsets();
 			}
 		});
-
-		frictionCompensatorOnButton = new JButton("Compensate On");
-		frictionCompensatorOnButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				controller.setEnableFrictionCompensation(true);
-			}
-		});
-		frictionCompensatorOffButton = new JButton("Compensate Off");
-		frictionCompensatorOffButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				controller.setEnableFrictionCompensation(false);
-			}
-		});
-
-		rlsConvergeTestButton = new JButton("rls test");
-		rlsConvergeTestButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				specificTests.rlsConverge();
-			}
-		});
-
-		stepResponseTestButton = new JButton("step test");
-		stepResponseTestButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				specificTests.stepResponse();
-			}
-		});
-
-		saveTestDataButton = new JButton("start save");
-		saveTestDataButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				communicationManager.startSaveArrays();
-			}
-		});
-		stopSaveTestDataButton = new JButton("stop save");
-		stopSaveTestDataButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				specificTests.saveDataGeneral();
-			}
-		});
-
-
-		/*brakeButton = new JButton("Brake");
-		brakeButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				controller.toggleBrakePendulum();
-			}
-		});*/
-
-		toggleStepResponseButton = new JButton("STEPRESPONSE");
-		toggleStepResponseButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				controller.toggleStepResponse();
-			}
-		});
-
-		buttonPanel3 = new BoxPanel(BoxPanel.HORIZONTAL);
-		buttonPanel3.add(rlsConvergeTestButton);
-		buttonPanel3.add(stepResponseTestButton);
-		buttonPanel3.add(saveTestDataButton);
-		buttonPanel3.add(stopSaveTestDataButton);
-		buttonPanel3.add(toggleStepResponseButton);
-		buttonPanel3.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-		buttonPanel2 = new BoxPanel(BoxPanel.HORIZONTAL);
-		buttonPanel2.add(frictionCompensatorOnButton);
-		buttonPanel2.add(frictionCompensatorOffButton);
-		buttonPanel2.setAlignmentX(Component.LEFT_ALIGNMENT);
-
 		buttonPanel = new BoxPanel(BoxPanel.HORIZONTAL);
+		buttonPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
 		buttonPanel.add(startButton);
 		buttonPanel.add(stopButton);
 		buttonPanel.add(resetOffsetButton);
-		//buttonPanel.add(brakeButton);
 		buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-
 		// ------------
 
 		// --- Controller in use label --
 
-		currentController = new JLabel("NO CONTROLLER");
+		currentController = new JLabel("No controller");
 
 		// -------------
 
 		// Create panel holding everything but the plotters.
 		rightPanel = new BoxPanel(BoxPanel.VERTICAL);
+		rightPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
 		rightPanel.addFixed(10);
-
+		rightPanel.add(new JLabel(formatLabel("Current Controller", true, 4, "#000033")));
+		rightPanel.add(currentController);
+		rightPanel.addFixed(20);
+		rightPanel.add(buttonPanel);
+		rightPanel.add(buttonPanel2);
+		rightPanel.add(buttonPanel3);
+		rightPanel.add(buttonPanel4);
+		rightPanel.addFixed(10);
 		rightPanel.add(ctrlParameterPanel);
 		rightPanel.addFixed(10);
 		rightPanel.add(estimatorParameterPanel);
 		rightPanel.addFixed(10);
-		rightPanel.add(currentController);
-		rightPanel.addFixed(10);
-		rightPanel.add(buttonPanel);
-		rightPanel.addFixed(10);
-		rightPanel.add(buttonPanel2);
-		rightPanel.addFixed(10);
-		rightPanel.add(buttonPanel3);
-		rightPanel.addFixed(10);
 
-
-		/* If the right panel does not fit, a scoll pane can be used. This messes with the layout though.
-		JScrollPane jScrollPane;
-		jScrollPane = new JScrollPane(rightPanel);
-		jScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		jScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		*/
+		// If the right panel does not fit, a scroll pane can be used. This messes with the layout though.
+		rightPanelWithScroll = new JScrollPane(rightPanel);
+		rightPanelWithScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		rightPanelWithScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		rightPanelWithScroll.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
 
 		// Create panel for the entire GUI.
 		guiPanel = new BoxPanel(BoxPanel.HORIZONTAL);
 		guiPanel.addFixed(10);
 		guiPanel.add(plotterPanel);
 		guiPanel.addFixed(10);
-		guiPanel.add(rightPanel);
-		guiPanel.addFixed(10);
+		guiPanel.add(rightPanelWithScroll);
 
 		controller.registerObserver(this);
 
@@ -607,30 +620,37 @@ public class FurutaGUI implements Observer {
 		// Pack the components of the window.
 		frame.pack();
 
-		
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
 		// WindowListener that exits the system if the main window is closed.
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				controller.shutDown();
+				// TODO What about this? How are we closing threads?
 				/*measPanel.stopThread(); // THIS CRASHES ??
 				ctrlPanel.stopThread();
 				rlsPanel.stopThread();*/
 				System.exit(0);
 			}
 		});
-		
-		/*
+
+		// Load regressor model
+		for(ActionListener a: regressorCombo.getActionListeners()) {
+			a.actionPerformed(new ActionEvent(regressorCombo, ActionEvent.ACTION_PERFORMED, null) {
+				//
+			});
+		}
 
 		// Position the main window at the screen center.
-		Dimension sd = Toolkit.getDefaultToolkit().getScreenSize();
+		/*Dimension sd = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension fd = frame.getSize();
 		frame.setLocation((sd.width-fd.width)/2, (sd.height-fd.height)/2);
 		*/
-		
+
 		// Make the window visible.
 		frame.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
 		frame.setVisible(true);
-		
+
 		isInitialized = true;
 	}
 

@@ -40,7 +40,6 @@ class MainController extends Thread {
     private ArrayList<Observer> observerList; // Used to update GUI about which is the current controller
     private boolean enableFrictionCompensation;
     private double r = 0; // reference signal
-    private double stepReference = 0;
 
     public MainController(int priority, CommunicationManager communicationManager) {
         setPriority(priority);
@@ -139,7 +138,7 @@ class MainController extends Thread {
         synchronized (controllerParametersLock) {
             double ar = controllerParameters.ellipseRadius1;
             double br = controllerParameters.ellipseRadius2;
-            double alfar = atan(9.4 / 0.62); // TODO Could add this to GUI
+            double alfar = controllerParameters.ellipseRotationField;
             double X = pendAng;
             double Y = pendAngVel;
             double term1 = X * cos(alfar) + Y * sin(alfar);
@@ -241,16 +240,8 @@ class MainController extends Thread {
         this.enableFrictionCompensation = enableFrictionCompensation;
     }
 
-    // For change of reference, acts
+    // For change of reference for top controller
     public synchronized void setReference(double r) {
         this.r = r;
-    }
-
-    public synchronized void toggleStepResponse() {
-        if (stepReference == 0) {
-            stepReference = Math.PI;
-        } else {
-            stepReference = 0;
-        }
     }
 }

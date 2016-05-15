@@ -12,6 +12,7 @@ public class ControllerParameters implements Cloneable {
 	public double ellipseRadius2 = 0.5014;
 	public double limit = 1.5;
 	public double gain = 0.6;
+	public double ellipseRotationField = 1.5049;
 	public double omega0 = 6.5;
 
 	// Top controller parameters
