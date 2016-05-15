@@ -40,6 +40,7 @@ class MainController extends Thread {
     private ArrayList<Observer> observerList; // Used to update GUI about which is the current controller
     private boolean enableFrictionCompensation;
     private double r = 0; // reference signal
+    private double stepReference = 0;
 
     public MainController(int priority, CommunicationManager communicationManager) {
         setPriority(priority);
@@ -103,13 +104,17 @@ class MainController extends Thread {
         //insideDeadzone = insideDeadzone || Math.abs(pendAngVel) < controllerParameters.deadzonePendAngVel;
 
         double u = 0;
+        double uF = 0;
+        double vL = 0;
 
         if(on) {
             activeController = chooseController(pendAng,pendAngVel);
             if(activeController == Controller.TOP && !insideDeadzone) {
                 u = topController.calculateOutput(pendAng, pendAngVel, baseAng, baseAngVel, r);
         		if(enableFrictionCompensation) {
-                    u = u + frictionCompensator.compensate(baseAngVel);
+                    uF = frictionCompensator.compensate(baseAngVel);
+                    u = u + uF;
+
     	        }
             } else if(activeController == Controller.SWINGUP) {
                 u = swingUpController.calculateOutput(pendAng, pendAngVel);
@@ -118,31 +123,34 @@ class MainController extends Thread {
             }
         }
         u = communicationManager.writeOutput(u);
+        communicationManager.saveUF(uF);
+        communicationManager.saveVL(vL);
+
 
         frictionCompensator.rls(baseAng, baseAngVel);
         frictionCompensator.updateStates(baseAng, baseAngVel, pendAng, u);
 
-        // We need to tell the communication manager what Fv and Fc is
-        communicationManager.plotRLSParameters(frictionCompensator.getFv(), frictionCompensator.getFc());
+        // We need to tell the communication manager what Fv, Fc and Fo is
+        communicationManager.plotRLSParameters(frictionCompensator.getFv(), frictionCompensator.getFc(), frictionCompensator.getFo());
    }
 
     private Controller chooseController(double pendAng, double pendAngVel) {
         Controller newController;
+        synchronized (controllerParametersLock) {
+            double ar = controllerParameters.ellipseRadius1;
+            double br = controllerParameters.ellipseRadius2;
+            double alfar = atan(9.4 / 0.62); // TODO Could add this to GUI
+            double X = pendAng;
+            double Y = pendAngVel;
+            double term1 = X * cos(alfar) + Y * sin(alfar);
+            double term2 = -X * sin(alfar) + Y * cos(alfar);
 
-        double ar = controllerParameters.ellipseRadius1;
-        double br = controllerParameters.ellipseRadius2;
-        double alfar=atan(9.4/0.62); // TODO Could add this to GUI
-        double X = pendAng;
-        double Y = pendAngVel;
-        double term1 = X * cos(alfar) + Y * sin(alfar);
-        double term2 = -X * sin(alfar) + Y * cos(alfar);
-
-        if((term1*term1/(ar*ar) + term2*term2/(br*br)) < controllerParameters.limit) {
-            newController = Controller.TOP;
-        } else {
-            newController = Controller.SWINGUP;
+            if ((term1 * term1 / (ar * ar) + term2 * term2 / (br * br)) < controllerParameters.limit) {
+                newController = Controller.TOP;
+            } else {
+                newController = Controller.SWINGUP;
+            }
         }
-
         // If controller changes, it should notify the UI.
         checkForChangeOfController(newController);
         return newController;
@@ -236,5 +244,13 @@ class MainController extends Thread {
     // For change of reference, acts
     public synchronized void setReference(double r) {
         this.r = r;
+    }
+
+    public synchronized void toggleStepResponse() {
+        if (stepReference == 0) {
+            stepReference = Math.PI;
+        } else {
+            stepReference = 0;
+        }
     }
 }

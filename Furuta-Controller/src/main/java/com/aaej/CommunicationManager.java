@@ -48,6 +48,8 @@ public class CommunicationManager {
     private double scalingOutput = -1.40;
 
     private ArrayList<Double> uArray;
+    private ArrayList<Double> uFArray;
+    private ArrayList<Double> vLArray;
     private ArrayList<Double> pendAngArray;
     private ArrayList<Double> pendAngVelArray;
     private ArrayList<Double> baseAngArray;
@@ -55,6 +57,7 @@ public class CommunicationManager {
     private ArrayList<Long> tArray;
     private ArrayList<Double> fvArray;
     private ArrayList<Double> fcArray;
+    private ArrayList<Double> foArray;
     private boolean saveArray = false;
 
     /**
@@ -142,12 +145,13 @@ public class CommunicationManager {
     /**
      * Plots the estimated friction coefficients
      */
-    public void plotRLSParameters(double fv, double fc) {
+    public void plotRLSParameters(double fv, double fc, double fo) {
         double t = (double)this.t/1000;
-        gui.putRLSDataPoint(t, fv, fc);
+        gui.putRLSDataPoint(t, fv, fc, fo);
         if(saveArray) {
             fvArray.add(fv);
             fcArray.add(fc);
+            foArray.add(fo);
         }
     }
 
@@ -197,6 +201,8 @@ public class CommunicationManager {
      */
     public synchronized void startSaveArrays() {
         uArray = new ArrayList<Double>();
+        uFArray = new ArrayList<Double>();
+        vLArray = new ArrayList<Double>();
         baseAngArray = new ArrayList<Double>();
         baseAngVelArray = new ArrayList<Double>();
         pendAngArray = new ArrayList<Double>();
@@ -204,6 +210,7 @@ public class CommunicationManager {
         tArray = new ArrayList<Long>();
         fvArray = new ArrayList<Double>();
         fcArray = new ArrayList<Double>();
+        foArray = new ArrayList<Double>();
         saveArray = true;
     }
 
@@ -214,6 +221,14 @@ public class CommunicationManager {
     // ---------- Get methods for measurement arrays ----------
     public ArrayList<Double> getuArray() {
         return uArray;
+    }
+
+    public ArrayList<Double> getuFArray() {
+        return uFArray;
+    }
+
+    public ArrayList<Double> getVLArray() {
+        return vLArray;
     }
 
     public ArrayList<Double> getPendAngArray() {
@@ -242,6 +257,22 @@ public class CommunicationManager {
 
     public ArrayList<Double> getFcArray() {
         return fcArray;
+    }
+
+    public ArrayList<Double> getFoArray() {
+        return foArray;
+    }
+
+    public void saveUF(double uF) {
+        if(saveArray) {
+            uFArray.add(uF);
+        }
+    }
+
+    public void saveVL(double vL) {
+        if(saveArray) {
+            vLArray.add(vL);
+        }
     }
     // ----------
 }

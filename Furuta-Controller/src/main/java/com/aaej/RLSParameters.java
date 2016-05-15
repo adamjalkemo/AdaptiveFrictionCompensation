@@ -13,8 +13,10 @@ public class RLSParameters implements Cloneable {
 
 	public double pam = 100;
 	public double pbm = 100;
+	public double pcm = 100;
 	public double fvGuess = 0;
 	public double fcGuess = 0;
+	public double foGuess = 0;
 
 	public Object clone() {		
 		try {
