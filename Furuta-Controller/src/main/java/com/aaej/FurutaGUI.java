@@ -44,7 +44,7 @@ public class FurutaGUI implements Observer {
 	private JButton 		startButton, stopButton, resetEstimatorButton, saveEstimatorButton, saveCtrlButton;
 	private JButton			resetOffsetButton;
 	private JButton			frictionCompensatorOnButton, frictionCompensatorOffButton;
-	private JButton         rlsConvergeTestButton, stepResponseTestButton, saveTestDataButton, stopSaveTestDataButton;
+	private JButton         rlsConvergeTestButton, stepResponseTestButton, saveTestDataButton, stopSaveTestDataButton, toggleStepResponseButton;
 	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField,
 							lambdaField, p0Field, theta00Field, theta01Field, deadzoneBaseAngVelField, deadzonePendAngVelField;
 	private DoubleField[][] qArrayField, rArrayField;
@@ -104,7 +104,7 @@ public class FurutaGUI implements Observer {
 		lowerLeftPlotPanel.add(new JLabel("u, f, u+f"));
 		lowerLeftPlotPanel.add(ctrlPanel);
 		
-		rlsPanel = new PlotterPanel(2, priority);
+		rlsPanel = new PlotterPanel(3, priority);
 		rlsPanel.setYAxis(0.6, -0.3, 2, 2);
 		rlsPanel.setXAxis(50, 5, 5);
 		rlsPanel.setUpdateFreq(10);
@@ -528,11 +528,20 @@ public class FurutaGUI implements Observer {
 				controller.toggleBrakePendulum();
 			}
 		});*/
+
+		toggleStepResponseButton = new JButton("STEPRESPONSE");
+		toggleStepResponseButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				controller.toggleStepResponse();
+			}
+		});
+
 		buttonPanel3 = new BoxPanel(BoxPanel.HORIZONTAL);
 		buttonPanel3.add(rlsConvergeTestButton);
 		buttonPanel3.add(stepResponseTestButton);
 		buttonPanel3.add(saveTestDataButton);
 		buttonPanel3.add(stopSaveTestDataButton);
+		buttonPanel3.add(toggleStepResponseButton);
 		buttonPanel3.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		buttonPanel2 = new BoxPanel(BoxPanel.HORIZONTAL);
@@ -645,9 +654,9 @@ public class FurutaGUI implements Observer {
 	}
 
 	/** Called by Regul to plot a rls data point. */
-	public synchronized void putRLSDataPoint(double t, double y1, double y2) {
+	public synchronized void putRLSDataPoint(double t, double y1, double y2, double y3) {
 		if (isInitialized) {
-			rlsPanel.putData(t, y1, y2);
+			rlsPanel.putData(t, y1, y2, y3);
 		} else {
 			LOGGER.log(Level.FINE,"Note: GUI not yet initialized. Ignoring call to putRLSDataPoint().");
 		}
