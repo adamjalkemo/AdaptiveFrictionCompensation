@@ -205,26 +205,61 @@ f_v
 \label{eq:regressorb}
 \end{equation}
 Since the friction can be seen as a direct negative torque on the arm, it can be directly subtracted from the control signal which gives us the system in \ref{eq:discrete}
+<<<<<<< HEAD
 $$x_{k+1} = A_dx_k + B_d(u_k - f)$$
 To get the RLS to work we take all measurements one step back in time and try to estimate the parameters from \ref{eq:regressorb}. We also aim to use the measurement from the arm velocity where we get values from both the pendulum position and the arm velocity, see the state equation for $ \varphi $  in eq. \ref{eq:discrete}. After placing all known variables on the left hand side and we the following
+=======
+>>>>>>> 4339165b89cc26d1851cede2e5f99a4f44f05536
 \begin{equation}
-\frac{\dot{\varphi}_k + 0.0059\theta_{k-1}-1.9125u_{k-1}-\dot{\varphi}_{k-1}}{-1.9125} = \begin{pmatrix}
-f_c & f_v
-\end{pmatrix}\begin{pmatrix}
-\dot{\varphi}_{k-1}\\
-sign(\dot{\varphi})
-\end{pmatrix}
+ x_{k+1} = A_dx_k + B_d(u_k - f)
+\label{eq:modwf}
+\end{equation}
+To get the RLS to work all measurements are taken one step back in time to estimate the parameters from \ref{eq:regressora} or \ref{eq:regressorb}. After rearranging the equation in \ref{eq:modwf} we get
+\begin{equation}
+ \dfrac{x_{k}-A_dx_{k-1}-B_d u_{k-1}}{-B_d} =   f
 \label{eq:estim}
 \end{equation}
-Now we can apply the normal RLS algorithm with some forgetting factor $\lambda$ given in \ref{subsec:rlsalg}.
+%\frac{\dot{\varphi}_k + 0.0059\theta_{k-1}-1.9125u_{k-1}-\dot{\varphi}_{k-1}}{-1.9125} = \begin{pmatrix}
+%f_c & f_v
+%\end{pmatrix}\begin{pmatrix}
+%\dot{\varphi}_{k-1}\\
+%sign(\dot{\varphi})
+%\end{pmatrix}
 
-As we see in equation \ref{eq:discrete} we probably can get different results in the friction estimation by choosing different equations in the same form as in equation \ref{eq:estim}. Initially we want to estimate the friction when the pendulum is hanging straight down and the arm is rotating at a constant speed. If there were no friction, no control signal would be necessary to keep the velocity of the arm constant, and therefore the control signal required corresponds to the signal necessary for compensating the coloumb friction.
-We also want to to estimate the friction in the top position and then the equation corresponding to the state $ \dot{\varphi} $ in eq. \ref{eq:discrete} might not be the one which yields the best result. More research will be put into this at a later stage.
+where $f$ is one of the regressors in \ref{eq:regressora} or \ref{eq:regressorb}. By choosing one of the states in $x$ the normal RLS algorithm can be applied with some forgetting factor $\lambda$, the algorithm is given in \ref{subsec:rlsalg}.
+\\
+Since the friction of the process have different friction for different directions of the arm, some trials with an extra state in the regressors was also done. The extra state was added to the regressors as a constant to offset the imbalance of the friction compensation for the different directions. The regressors are then given by 
+\begin{equation}
+\phi=\begin{bmatrix}
+sign(\dot{\varphi}) \\
+1
+\end{bmatrix}, \beta = \begin{bmatrix}
+f_c\\
+f_o
+\end{bmatrix}
+\label{eq:regressora}
+\end{equation}
+\begin{equation}
+\phi=\begin{bmatrix}
+sign(\dot{\varphi}) \\
+\dot{\varphi} \\
+1
+\end{bmatrix}, \beta = \begin{bmatrix}
+f_c\\
+f_v\\
+f_o
+\end{bmatrix}
+\label{eq:regressorb}
+\end{equation} 
+
+%As we see in equation \ref{eq:discrete} we probably can get different results in the friction estimation by choosing different equations in the same form as in equation \ref{eq:estim}. Initially we want to estimate the friction when the pendulum is hanging straight down and the arm is rotating at a constant speed. If there were no friction, no control signal would be necessary to keep the velocity of the arm constant, and therefore the control signal required corresponds to the signal necessary for compensating the coloumb friction.
+%We also want to to estimate the friction in the top position and then the equation corresponding to the state $ \dot{\varphi} $ in eq. \ref{eq:discrete} might not be the one which yields the best result. More research will be put into this at a later stage.
+
 % More research at a later stage??
 
 \subsection{Recursive least squared algotrithm}
 \label{subsec:rlsalg}
-To estimate the parameters throughout this project the standard recursive least squares algorithm with a added foregetting factor will be used as stated below. 
+To estimate the parameters throughout this project the standard recursive least squares algorithm with a added forgetting factor will be used as stated below. 
 \begin{equation}
 \hat{\theta}_k = \hat{\theta}_{k-1}+P_k\phi_k\epsilon_k 
 \end{equation}
