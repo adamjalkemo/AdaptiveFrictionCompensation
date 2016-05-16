@@ -11,6 +11,7 @@
 \usepackage{float}
 \usepackage{graphicx}
 \usepackage{parskip}
+\usepackage{gensymb}
 \makeatletter
 \newcommand*{\transpose}{%
   {\mathpalette\@transpose{}}%
@@ -146,7 +147,7 @@ x_{k+1} = A_dx_k + B_du_k =\begin{pmatrix}
 \end{equation}
 
 \section{Controller}
-There are six measurement signal available for the controllers to use. Two for the position $ \theta $ and velocity $ \dot{\theta} $ of the pendulum each (one has higher resolution and is used at the top position) and one for the arm position $ \varphi $ and velocity $ \dot{\varphi} $.
+There are six measurement signal available for the controllers to use. Two for the position $ \theta $ and velocity $ \dot{\theta} $ of the pendulum each (one has higher resolution and can only  be used at the top position) and one for the arm position $ \varphi $ and velocity $ \dot{\varphi} $. Monitoring the signals there was no noticeable difference between the higher resolution and $ 360 \degree $-sensor and we therefore only used the two measurements from the $ 360 \degree $ sensor.
 \subsection{Swing up}
 For the swing up of the pendulum a Lyapunov based controller is used. For the Lyapunov candidate the total energy (kinetic and potential) of the pendulum will be considered and is given by 
 \begin{equation}
@@ -161,9 +162,9 @@ where P is calculated by iterating
 $$ P_{k-1} = A^TP_kA-(A^TP_kB)(R+B^TP_kB)^{-1}(B^TP_kA)+Q $$
 backwards in time with $P_N = Q$. This solution for the Riccati problem will not work for all systems but in this case Fredrik Bagge verified that it should work.
 
+% todo write about integral action
 
 \subsection{Controller switch}
-%ToDo reset av något skit ADAM
 In order to switch between the two controllers good conditions is necessary to enable the pendulum to be in a good position for when the top controller takes over. Since the model is linearized around 
 $$x =
 \begin{pmatrix}
@@ -172,7 +173,7 @@ $$x =
 \begin{pmatrix}
 0 & 0 & 0 & 0
 \end{pmatrix}$$
-the pendulum needs to have both a low velocity and be close to the top for the top controller to work properly. The switching conditions is chosen as an ellipse made from $\dot\theta$ and $\theta$ which will give good estimations of when to switch. 
+the pendulum needs to have both a low velocity and be close to the top for the top controller to work properly. The switching conditions is chosen as an ellipse made from $\dot\theta$ and $\theta$ which will give good estimations of when to switch. Since $ \varphi $ might be far from zero one might run into troubles if this in punished heavily. We solve this by resetting $ \varphi $ when the top controller takes over.
 
 
 \section{Friction compensation}
@@ -285,10 +286,19 @@ P_k=\frac{1}{\lambda}(P_{k-1}-\frac{P_{k-1}\phi_k\phi_k^{T}P_{k-1}}{\lambda+\phi
 Above $\hat{\theta}_k$ is the estimated parameters , $\phi_k$ is the regressor, $P_k$ is a matrix is the estimate of the parameter covariance and $\lambda$ is the forgetting factor.
 
 \section{GUI}
-The operator should be able to change controller parameters for both types of controller and for the friction estimator. For the top controller, the $Q$ and $R$ matrices. For the swing up controller, the switching area and its limit and the gain. Other general parameters for the controller such as sampling time $h$ (if possible), and $\omega _0$. And for the friction estimation the forgetting factor $\lambda$ and the initial values $P_0$ and $\omega _0$.
+The operator is able to change controller parameters for both controllers and for the friction estimator.
 
-The GUI will plot the outputs from the Furuta pendulum, the friction estimation, control signal, both uncompensated as well as the compensated signal. We aim to have different regressor modes for the friction compensation and the operator can therefore change different parameters depending on the regressor chosen. 
+For the top controller, the $Q$ and $R$ matrices. For the swing up controller, the "switching area", natural frequency and gain. Other general parameters for the controller such as sampling time $h$ and deadzones.
 
+For the friction estimation the forgetting factor $\lambda$ and the initial values of $\omega _0$ can be changed. One can also switch between the three available friction models (Coloumb friction, viscous friction and viscous friction with offset). At the top right of the GUI one can enable or disable the friction compensation.
+
+In order to save data to file buttons have been added to start and stop this process (MATLAB .mat files are stored to the root folder of the java project). There are also tests for running step responses and for running a test of the RLS convergence (without manual excitation). Both tests automatically stores the data. 
+
+The GUI will plot the outputs from the Furuta pendulum, the friction estimation and the control signal.
+
+See figure \ref{fig:gui} for an image of the GUI.
+
+% TODO UPDATE IMAGE
 \begin{figure}[!htb]
 \begin{center}
 \includegraphics[width=1\textwidth]{gui.png}
