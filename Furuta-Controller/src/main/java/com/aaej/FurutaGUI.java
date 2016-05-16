@@ -98,8 +98,7 @@ public class FurutaGUI implements Observer {
 		ctrlPanel.setUpdateFreq(10);
 
 		lowerLeftPlotPanel = new BoxPanel(BoxPanel.VERTICAL);
-		// TODO plot f and u+f
-		lowerLeftPlotPanel.add(new JLabel("u, f, u+f"));
+		lowerLeftPlotPanel.add(new JLabel("u"));
 		lowerLeftPlotPanel.add(ctrlPanel);
 		
 		rlsPanel = new PlotterPanel(3, priority);
@@ -116,7 +115,7 @@ public class FurutaGUI implements Observer {
 		lowerPlotPanels.add(lowerRightPlotPanel);
 
 		plotterPanel.addFixed(10);
-		plotterPanel.add(new JLabel("y"));
+		plotterPanel.add(new JLabel("<font color='blue'>Theta</font>, <font color='red'>Theta vel.</font>, <font color='green'>Phi</font>, <font color='black'>Phi vel.</font>"));
 		plotterPanel.add(measPanel);
 		plotterPanel.addFixed(10);
 		plotterPanel.add(lowerPlotPanels);
@@ -393,7 +392,7 @@ public class FurutaGUI implements Observer {
 
 		// -- Panel for the estimator parameters --
 
-		String[] regressorModels = {"Coloumb friction [ sign(v) ]", "Viscous friction [ sign(v), v ]", "V.f & offset[ sign(v), v, 1 ]"};
+		String[] regressorModels = {"Coloumb friction [ sign(v) ]", "+ Viscous friction [ sign(v), v ]", "+ V.f & offset[ sign(v), v, 1 ]"};
 		JComboBox regressorCombo = new JComboBox(regressorModels);
 		regressorCombo.setSelectedIndex(rlsPar.regressorModel);
 
@@ -672,11 +671,6 @@ public class FurutaGUI implements Observer {
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				controller.shutDown();
-				// TODO What about this? How are we closing threads?
-				/*measPanel.stopThread(); // THIS CRASHES ??
-				ctrlPanel.stopThread();
-				rlsPanel.stopThread();*/
-				System.exit(0);
 			}
 		});
 

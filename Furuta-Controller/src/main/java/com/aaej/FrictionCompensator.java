@@ -5,7 +5,9 @@ import Jama.Matrix;
 import static java.lang.Math.abs;
 import static java.lang.Math.signum;
 
-// TODO comment this class
+/**
+ * This class handles everything with the RLS parameters and how the new compensated control signal is calculated
+ */
 public class FrictionCompensator {
     private RLSParameters rlsParameters;
     private Matrix P_old;
@@ -22,6 +24,9 @@ public class FrictionCompensator {
 
     }
 
+    /**
+     * Update the P matrix and theta vector for the RLS
+     */
     public synchronized double rls(double baseAng, double baseAngVel) {
 
         P_old = (P_old.minus((P_old.times(phi).times(phi.transpose()).times(P_old))
@@ -34,6 +39,10 @@ public class FrictionCompensator {
         return(VL);
 
     }
+
+    /**
+     * Update the phi vector according to which regressor is used. Also save needed values for next iteration.
+     */
     public synchronized void updateStates(double baseAng, double baseAngVel, double pendAng, double control) {
         phi.set(0, 0, signum(baseAngVel));
         if (rlsParameters.regressorModel > 0)
@@ -46,6 +55,9 @@ public class FrictionCompensator {
 	    baseAng_old = baseAng;
     }
 
+    /**
+    * Calculates how much to add to the control signal to compensate for the friction
+    */
     public synchronized double compensate(double baseAngVel) {
         double F; 
         if (rlsParameters.regressorModel == 0)
@@ -59,6 +71,9 @@ public class FrictionCompensator {
         return F;
     }
 
+    /**
+     * Get new parameters that are set from the GUI
+     */
     public synchronized void setRLSParameters(RLSParameters newRLSParameters) {
         this.rlsParameters = newRLSParameters;
         reset();
@@ -85,6 +100,9 @@ public class FrictionCompensator {
         this.B = B;
     }
 
+    /**
+     * Reset everything related to the RLS by creating new matrices
+     */
     public synchronized void reset() {
         int m = rlsParameters.regressorModel + 1; // Order of regressor
         phi = new Matrix(m,1);

@@ -7,8 +7,7 @@ package com.aaej;
 public class RLSParameters implements Cloneable {
 	public double lambda = 1;
 	public double p0 = 13.0;
-	public int regressorModel = 2; // TODO were not using this, right? LETs DO IT!!!!
-	// TODO and this? LETs DO IT!!!!
+	public int regressorModel = 2; // 0. Coloumb, 1. + Viscous, 2. + Viscous & Offset
 	public double[][] theta0 = {{0,0,0},{0,0,0},{0,0,0}}; // Vectors because of the different models. Change if needed!
 
 	public double pam = 100;
