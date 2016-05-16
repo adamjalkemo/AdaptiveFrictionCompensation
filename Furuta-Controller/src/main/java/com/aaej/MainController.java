@@ -123,11 +123,10 @@ class MainController extends Thread {
             }
         }
         double u_sat = communicationManager.writeOutput(u);
+        vL = frictionCompensator.rls(baseAng, baseAngVel);
         communicationManager.saveUF(uF);
         communicationManager.saveVL(vL);
-
-
-        frictionCompensator.rls(baseAng, baseAngVel);
+        
         frictionCompensator.updateStates(baseAng, baseAngVel, pendAng, u_sat);
 
         if (activeController == Controller.TOP)
