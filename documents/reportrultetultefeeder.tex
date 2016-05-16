@@ -162,6 +162,7 @@ where P is calculated by iterating
 $$ P_{k-1} = A^TP_kA-(A^TP_kB)(R+B^TP_kB)^{-1}(B^TP_kA)+Q $$
 backwards in time with $P_N = Q$. This solution for the Riccati problem will not work for all systems but in this case Fredrik Bagge verified that it should work.
 
+To remove remaining error in $\phi$ an integral action is introduced. The error is simply integrated and multiplied by an adjustable gain and then added to the control signal. Anti-Windup is done with a resetting factor.
 % todo write about integral action
 
 \subsection{Controller switch}
@@ -286,9 +287,9 @@ P_k=\frac{1}{\lambda}(P_{k-1}-\frac{P_{k-1}\phi_k\phi_k^{T}P_{k-1}}{\lambda+\phi
 Above $\hat{\theta}_k$ is the estimated parameters , $\phi_k$ is the regressor, $P_k$ is a matrix is the estimate of the parameter covariance and $\lambda$ is the forgetting factor.
 
 \section{GUI}
-The operator is able to change controller parameters for both controllers and for the friction estimator.
+The operator is able to change parameters for both controllers and for the friction estimator.
 
-For the top controller, the $Q$ and $R$ matrices. For the swing up controller, the "switching area", natural frequency and gain. Other general parameters for the controller such as sampling time $h$ and deadzones.
+For the top controller, the $Q$ and $R$ matrices and the integrating factor can be changed. For the swing up controller, the "switching area", natural frequency and gain can be changed. Other general parameters for the controller such as sampling time $h$ and deadzones can also be changed.
 
 For the friction estimation the forgetting factor $\lambda$ and the initial values of $\omega _0$ can be changed. One can also switch between the three available friction models (Coloumb friction, viscous friction and viscous friction with offset). At the top right of the GUI one can enable or disable the friction compensation.
 
