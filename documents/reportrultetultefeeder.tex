@@ -47,11 +47,10 @@ In this project a Furuta pendulum process will be used. The Furuta pendulum cons
 For our suggested solution we will need one thread for the GUI and one for the controller. To communicate with the Furuta process we will use the analog box normally used during the control labs at LTH. The realtime package from Automatic Control at LTH will be used for communication in the GUI and controller implementation. It will be important to synchronize the controller calculations with the user inputs. A general overview can be seen in figure \ref{fig:uml}.
 
 \begin{figure}[!htb]
-\begin{center}
+\centering
 \includegraphics[width=1\textwidth]{notUml.png}
 \caption{Overview of the program structure}
 \label{fig:uml}
-\end{center}
 \end{figure}
 %% MORe STUFFS??
 
@@ -166,18 +165,16 @@ When controlling the pendulum in the top position there will be limit cycles due
 
 %When the This will only be used in the top controller since the swing up controller will always output maximal control signal. When the pendulum is close to the top position we will need to add a dead-zone in order to keep the noise from the measurements from making the friction compensation add control signal in the wrong direction.
 \begin{figure}[!htb]
-\begin{center}
+\centering
 \includegraphics[width=1\textwidth]{fric.png}
 \caption{Measured friction of the process for different velocities}
 \label{fig:fric}
-\end{center}
 \end{figure}
 \begin{figure}[!htb]
-\begin{center}
+\centering
 \includegraphics[width=1\textwidth]{frictmodel.png}
 \caption{a) Friction model with coulomb friction. b) Friction model with coulomb and viscous friction.}
 \label{fig:frictmodel}
-\end{center}
 \end{figure}
 \subsection{Friction estimation}
 \label{sec:fricEst}
@@ -209,7 +206,7 @@ f_v
 \end{equation}
 Since the friction can be seen as a direct negative torque on the arm, it can be directly subtracted from the control signal which gives us the system in \ref{eq:discrete}
 $$x_{k+1} = A_dx_k + B_d(u_k - f)$$
-To get the RLS to work we take all measurements one step back in time and try to estimate the parameters from \ref{eq:regressor}. We also aim to use the measurement from the arm velocity where we get values from both the pendulum position and the arm velocity, see the state equation for $ \varphi $  in eq. \ref{eq:discrete}. After placing all known variables on the left hand side and we the following
+To get the RLS to work we take all measurements one step back in time and try to estimate the parameters from \ref{eq:regressorb}. We also aim to use the measurement from the arm velocity where we get values from both the pendulum position and the arm velocity, see the state equation for $ \varphi $  in eq. \ref{eq:discrete}. After placing all known variables on the left hand side and we the following
 \begin{equation}
 \frac{\dot{\varphi}_k + 0.0059\theta_{k-1}-1.9125u_{k-1}-\dot{\varphi}_{k-1}}{-1.9125} = \begin{pmatrix}
 f_c & f_v
@@ -265,20 +262,20 @@ The limit cycles of the system got significantly lower when adding the friction 
 \end{figure}
 In \ref{fig:onoffcompensation} see that the amplitude of the limit cylces are lowered to about a third of the size. We can also see an offset from the zero angle.
 \subsection{Coloumb + viscouse friction model}
-In \ref{subfigure:srvisctheta}, \ref{fig:srviscthetadot}, \ref{fig:srviscphi}, \ref{fig:srviscphidot} we can see the behavior of the angle and angular velocity for both the arm and the pendulum.
+In \ref{fig:srvisc} we can see the behavior of the angle and angular velocity for both the arm and the pendulum.
 \begin{figure}[H]
 \centering
 		\begin{subfigure}[t]{0.49\textwidth}
 			\includegraphics[scale=0.33]{plots/steprespviscphi.jpg}
 			\centering
 			\caption{The step response for the angle of the arm.}
-			\label{subfigure:srvisctheta}
+			\label{subfigure:srviscphi}
 		\end{subfigure}
 		\begin{subfigure}[t]{0.49\textwidth}
 			\includegraphics[scale=0.33]{plots/steprespviscphidot.jpg}
 			\centering
 			\caption{The step response for the angular velocity of the arm.}
-			\label{subfigure:srvisctheta}
+			\label{subfigure:srviscphidot}
 		\end{subfigure}
 		\begin{subfigure}[t]{0.49\textwidth}
 			\includegraphics[scale=0.33]{plots/steprespvisctheta.jpg}
@@ -290,8 +287,39 @@ In \ref{subfigure:srvisctheta}, \ref{fig:srviscthetadot}, \ref{fig:srviscphi}, \
 			\includegraphics[scale=0.33]{plots/steprespviscthetadot.jpg}
 			\centering
 			\caption{The step response for the angular velocity of the pendulum.}						
-			\label{subfigure:srvisctheta}
+			\label{subfigure:srviscthetadot}
 		\end{subfigure}
+		\caption{Stepresonses for the pendulum and arm positions and velocities for the using the coloumb+viscouse friction model.}
+		\label{fig:srvisc}
+\end{figure}
+\subsection{Friction estimation}
+In figure \ref{subfigure:VLUFcol} and \ref{subfigure:VLUFvisc} the calculated fricion and the calculated compensation signal is presented for both the coloumb and the coloumb+viscouse friction models.
+\begin{figure}[H]
+\centering
+	\begin{subfigure}[t]{0.49\textwidth}
+	\includegraphics[scale=0.33]{plots/VLUFcol.jpg}
+	\caption{The calculated friction and the calculated compensation control signal for the coloumb friction model given in eq \ref{eq:regressora}}
+	\label{subfigure:VLUFcol}
+	\end{subfigure}
+	\begin{subfigure}[t]{0.49\textwidth}
+	\includegraphics[scale=0.33]{plots/VLUFvisc.jpg}
+	\caption{The calculated friction and the calculated compensation control signal for the coloumb+viscouse friction model given in eq \ref{eq:regressorb}}\
+	\label{subfigure:VLUFvisc}
+	\end{subfigure}
+\caption{Friction calculation and estimation}
+\label{fig:VLUF}
+\end{figure}
+
+
+
+\subsection{RLS estimation}
+The convergence for the parameter estimation is presented in figure \ref{fig:rlsconv} both with and without external excitation.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.7]{plots/rlsconvergence.jpg}
+\caption{The convergence of the friction parameters given in eq \ref{eq:regressorb}. At time t=5000 time units the estimation is reset and the system is subjected to external excitation.}
+\label{fig:rlsconv}
+
 \end{figure}
 
 
