@@ -205,11 +205,9 @@ f_v
 \label{eq:regressorb}
 \end{equation}
 Since the friction can be seen as a direct negative torque on the arm, it can be directly subtracted from the control signal which gives us the system in \ref{eq:discrete}
-<<<<<<< HEAD
-$$x_{k+1} = A_dx_k + B_d(u_k - f)$$
-To get the RLS to work we take all measurements one step back in time and try to estimate the parameters from \ref{eq:regressorb}. We also aim to use the measurement from the arm velocity where we get values from both the pendulum position and the arm velocity, see the state equation for $ \varphi $  in eq. \ref{eq:discrete}. After placing all known variables on the left hand side and we the following
-=======
->>>>>>> 4339165b89cc26d1851cede2e5f99a4f44f05536
+%$$x_{k+1} = A_dx_k + B_d(u_k - f)$$
+%To get the RLS to work we take all measurements one step back in time and try to estimate the parameters from \ref{eq:regressorb}. We also aim to use the measurement from the arm velocity where we get values from both the pendulum position and the arm velocity, see the state equation for $ \varphi $  in eq. \ref{eq:discrete}. After placing all known variables on the left hand side and we the following
+
 \begin{equation}
  x_{k+1} = A_dx_k + B_d(u_k - f)
 \label{eq:modwf}
@@ -237,7 +235,7 @@ sign(\dot{\varphi}) \\
 f_c\\
 f_o
 \end{bmatrix}
-\label{eq:regressora}
+\label{eq:regressorao}
 \end{equation}
 \begin{equation}
 \phi=\begin{bmatrix}
@@ -249,7 +247,7 @@ f_c\\
 f_v\\
 f_o
 \end{bmatrix}
-\label{eq:regressorb}
+\label{eq:regressorbo}
 \end{equation} 
 
 %As we see in equation \ref{eq:discrete} we probably can get different results in the friction estimation by choosing different equations in the same form as in equation \ref{eq:estim}. Initially we want to estimate the friction when the pendulum is hanging straight down and the arm is rotating at a constant speed. If there were no friction, no control signal would be necessary to keep the velocity of the arm constant, and therefore the control signal required corresponds to the signal necessary for compensating the coloumb friction.
