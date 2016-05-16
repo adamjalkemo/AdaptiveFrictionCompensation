@@ -375,7 +375,9 @@ The convergence for the parameter estimation is presented in figure \ref{fig:rls
 % conclusion-can only supress limitcycles so far.
 
 \subsection{RLS}
-As expected the convergence for the RLS friction coefficients are a lot better with the external excitation compared to when there are no external excitation at all. Without the extra excitation the coefficients would sometimes not converge at all or even converge to negative values. With the external excitation we got a pretty fast convergence to values that would be considered reasonable for the coefficients. The external excitation was simply done by not using the compensation to begin with, resulting in the limit cycles exciting the the system enough to get a good convergence of the coefficients.
+As expected the convergence for the RLS friction coefficients are a lot better with the external excitation compared to when there are no external excitation at all. Without the extra excitation the coefficients would sometimes not converge at all or even converge to negative values. With the external excitation we got a pretty fast convergence to values that would be considered reasonable for the coefficients. The external excitation was simply done by not using the compensation to begin with, resulting in the limit cycles exciting the the system enough to get a good convergence of the coefficients.\\
+
+As for the forgetting factor we tested some different values and found that using a high value $\lambda = 0.9999$ works the best since out signals are quite noisy and there should not be any large changes to the friction or the process. 
 %Forgetting factor
 
 
