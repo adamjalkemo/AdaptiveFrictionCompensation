@@ -1,0 +1,25 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Program structure}{}% 2
+\BOOKMARK [1][-]{section.3}{System model}{}% 3
+\BOOKMARK [2][-]{subsection.3.1}{Linearization}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{Discretization}{section.3}% 5
+\BOOKMARK [1][-]{section.4}{Controller}{}% 6
+\BOOKMARK [2][-]{subsection.4.1}{Swing up}{section.4}% 7
+\BOOKMARK [2][-]{subsection.4.2}{Top controller}{section.4}% 8
+\BOOKMARK [2][-]{subsection.4.3}{Controller switch}{section.4}% 9
+\BOOKMARK [1][-]{section.5}{Friction compensation}{}% 10
+\BOOKMARK [2][-]{subsection.5.1}{Friction estimation}{section.5}% 11
+\BOOKMARK [2][-]{subsection.5.2}{Recursive least squares algorithm}{section.5}% 12
+\BOOKMARK [1][-]{section.6}{GUI}{}% 13
+\BOOKMARK [1][-]{section.7}{Results}{}% 14
+\BOOKMARK [2][-]{subsection.7.1}{Limit cycles}{section.7}% 15
+\BOOKMARK [2][-]{subsection.7.2}{coulomb and viscous friction model}{section.7}% 16
+\BOOKMARK [2][-]{subsection.7.3}{Friction estimation}{section.7}% 17
+\BOOKMARK [3][-]{subsubsection.7.3.1}{RLS convergence}{subsection.7.3}% 18
+\BOOKMARK [1][-]{section.8}{Discussion}{}% 19
+\BOOKMARK [2][-]{subsection.8.1}{Friction model}{section.8}% 20
+\BOOKMARK [2][-]{subsection.8.2}{Offset in \040}{section.8}% 21
+\BOOKMARK [2][-]{subsection.8.3}{RLS}{section.8}% 22
+\BOOKMARK [2][-]{subsection.8.4}{Noise}{section.8}% 23
+\BOOKMARK [2][-]{subsection.8.5}{Real-time implementation in java}{section.8}% 24
+\BOOKMARK [1][-]{section.9}{Conclusion}{}% 25
