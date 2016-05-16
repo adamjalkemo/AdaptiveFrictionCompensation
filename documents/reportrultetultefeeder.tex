@@ -162,11 +162,21 @@ The Lyapunov candidate is then chosen as $V(x,a)=E^2$. By then taking the deriva
 u = \cos(\theta) \dot\theta (cos(\theta) - 1 + \dot{\theta}^2 / (2 \omega^2))
 \end{equation}
 \subsection{Top controller}
-In the top position a LQR controller is used. For this the linearized model in equation \eqref{eq:linear} is used to calculate L. In order to change the cost of matrices Q and R online a way to calculate the state feedback gain vector L was implemented and given by
+In the top position LQR is used. For this the linearized model in equation \eqref{eq:linear} is used to calculate L. In order to change the cost of matrices Q and R online a way to calculate the state feedback gain vector L was implemented and given by
 $$ L = (R+B^TPB)^{-1}(B^TPA) $$
 where P is calculated by iterating
 $$ P_{k-1} = A^TP_kA-(A^TP_kB)(R+B^TP_kB)^{-1}(B^TP_kA)+Q $$
 backwards in time with $P_N = Q$. This solution for the Riccati problem will not work for all systems but in this case Fredrik Bagge verified that it should work.
+
+In addition to the state feedback, feedforward is used to follow a reference value. The reference in this case is desired arm position $\varphi$. The resulting the controller has the form
+\begin{equation}
+u = -Lx + l_rr.
+\end{equation}
+The factor $l_r$ is calculated to achieve static gain $1$ for reference to $\varphi$:
+\begin{equation}
+l_r = \frac{1}{C(I - \Phi + \Gamma L)^{-1}\Gamma},
+\end{equation}
+where $C$ is chosen so that only the state $\varphi$ is represented.
 
 To remove remaining error in $\phi$ integral action is introduced. The error is simply integrated and multiplied by an adjustable gain and then added to the control signal. Anti-Windup is done with a resetting factor.
 % todo write about integral action
