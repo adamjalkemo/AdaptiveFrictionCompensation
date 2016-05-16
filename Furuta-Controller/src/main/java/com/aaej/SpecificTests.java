@@ -26,23 +26,30 @@ public class SpecificTests {
     /**
         Runs a test with two step response test (one in each direction) for phi.
         TODO verify that it moves PI in below directions:
-        First it moves 180 deg clockwise direction, then 360 counter clockwise direction.
+        First it moves 180 deg clockwise direction, then back.
      */
     public void stepResponse() {
         communicationManager.startSaveArrays();
 
-        for (int i = -1; i < 2; i += 2) {
-            controller.setReference(Math.PI * i);
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
+        controller.setReference(Math.PI);
+        threadSleep(5000);
+        controller.setReference(0);
+        threadSleep(5000);
+        
         communicationManager.stopSaveArrays();
         String fileName = new SimpleDateFormat("'stepResponse-'yyyyMMddhhmmss'.mat'").format(new Date());
         saveData(fileName);
+    }
+
+    /**
+    * Help method for sleep
+    */
+    private void threadSleep(long time) {
+        try {
+                Thread.sleep(time);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
     }
 
     /**
