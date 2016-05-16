@@ -25,8 +25,7 @@ public class SpecificTests {
 
     /**
         Runs a test with two step response test (one in each direction) for phi.
-        TODO verify that it moves PI in below directions:
-        First it moves 180 deg clockwise direction, then back.
+        First it moves 180 deg counter clockwise direction, then back.
      */
     public void stepResponse() {
         communicationManager.startSaveArrays();
@@ -53,23 +52,15 @@ public class SpecificTests {
     }
 
     /**
-        TODO describe what it does
+        Stops the pendulum, resets RLS estimation. Runs the controller and plots its convergence
      */
     public void rlsConverge() {
         controller.regulatorActive(false);
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        threadSleep(5000);
         controller.resetEstimator();
         controller.regulatorActive(true);
         communicationManager.startSaveArrays();
-        try {
-            Thread.sleep(20000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        threadSleep(20000);
         communicationManager.stopSaveArrays();
         String fileName = new SimpleDateFormat("'rlsConverge-'yyyyMMddhhmmss'.mat'").format(new Date());
         saveData(fileName);
