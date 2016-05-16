@@ -161,17 +161,27 @@ E= Mgl(cos\theta - 1)+\frac{J_p}{2}\dot\theta^2
 \end{equation}
 The Lyapunov candidate was chosen as $V(x,a)=E^2$. By taking the derivative of the candidate a controller $a=F(x)$ is derived which makes $\dot V \leq 0$ for all $x$. The controller will always output the maximal control signal possible in order to minimize the Lyapunov function.
 \subsection{Top controller}
-In the top position a LQR controller is used. For this the linearized model in eq. \ref{eq:linear} is used to calculate L. In order to change the cost of matrices Q and R online, the state feedback gain vector L is calculated by
+In the top position LQR is used. For this the linearized model in equation \eqref{eq:linear} is used to calculate L. In order to change the cost of matrices Q and R online a way to calculate the state feedback gain vector L was implemented and given by
 $$ L = (R+B^TPB)^{-1}(B^TPA) $$
 where P is calculated by iterating
 $$ P_{k-1} = A^TP_kA-(A^TP_kB)(R+B^TP_kB)^{-1}(B^TP_kA)+Q $$
 backwards in time with $P_N = Q$. This solution for the Riccati problem will not work for all systems but in this case Fredrik Bagge verified that it should work.
 
+In addition to the state feedback, feedforward is used to follow a reference value. The reference in this case is desired arm position $\varphi$. The resulting the controller has the form
+\begin{equation}
+u = -Lx + l_rr.
+\end{equation}
+The factor $l_r$ is calculated to achieve static gain $1$ for reference to $\varphi$:
+\begin{equation}
+l_r = \frac{1}{C(I - \Phi + \Gamma L)^{-1}\Gamma},
+\end{equation}
+where $C$ is chosen so that only the state $\varphi$ is represented.
+
 To remove remaining error in $\phi$ integral action is introduced. The error is integrated and multiplied by an adjustable gain and then added to the control signal.
 % todo write about integral action
 
 \subsection{Controller switch}
-In order to switch between the two controllers adventitious conditions is necessary to enable the pendulum to be in a good position for when the top controller takes over. Since the model is linearized around \ref{eq:linearization} the pendulum needs to have both a low velocity and be close to the top for the top controller to work properly. The switching conditions is chosen as an ellipse made from $\dot\theta$ and $\theta$ which gives good estimations of when to switch. Since $ \varphi $ might be far from zero one might run into troubles if this in punished heavily. We solve this by resetting $ \varphi $ when the top controller takes over.
+In order to switch between the two controllers advantageous conditions is necessary to enable the pendulum to be in a good position for when the top controller takes over. Since the model is linearized around \ref{eq:linearization} the pendulum needs to have both a low velocity and be close to the top for the top controller to work properly. The switching conditions is chosen as an ellipse made from $\dot\theta$ and $\theta$ which gives good estimations of when to switch. Since $ \varphi $ might be far from zero one might run into troubles if this in punished heavily. We solve this by resetting $ \varphi $ when the top controller takes over.
 
 \section{Friction compensation}
 When controlling the pendulum in the top position there are limit cycles due to the friction. To minimize these cycles RLS based friction compensation is added to the top controller. There are a lot of different ways to model friction some more complicated than others. In fig. \ref{fig:fric} measured friction of the process can be seen for different velocities. The oscillating behaviour is believed to be due to different friction in different directions. Since the average friction for the different velocities did not vary that much and the measured signals are noisy the models of the frictions were kept simple. The models used can be seen in fig. \ref{fig:frictmodel}. 
@@ -186,7 +196,7 @@ When controlling the pendulum in the top position there are limit cycles due to 
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=1\textwidth]{frictmodel.png}
-\caption{a) Friction model with coulomb friction. b) Friction model with coulomb and viscous friction. Source: \url{http://article.sapub.org/image/10.5923.j.mechanics.20130301.04_006.gif}}
+\caption{a) Friction model with Coulomb friction. b) Friction model with Coulomb and viscous friction. Source: \url{http://article.sapub.org/image/10.5923.j.mechanics.20130301.04_006.gif}}
 \label{fig:frictmodel}
 \end{figure}
 \subsection{Friction estimation}
@@ -263,7 +273,7 @@ f_o
 \label{eq:regressorbo}
 \end{equation} 
 
-%As we see in equation \ref{eq:discrete} we probably can get different results in the friction estimation by choosing different equations in the same form as in equation \ref{eq:estim}. Initially we want to estimate the friction when the pendulum is hanging straight down and the arm is rotating at a constant speed. If there were no friction, no control signal would be necessary to keep the velocity of the arm constant, and therefore the control signal required corresponds to the signal necessary for compensating the coulomb friction.
+%As we see in equation \ref{eq:discrete} we probably can get different results in the friction estimation by choosing different equations in the same form as in equation \ref{eq:estim}. Initially we want to estimate the friction when the pendulum is hanging straight down and the arm is rotating at a constant speed. If there were no friction, no control signal would be necessary to keep the velocity of the arm constant, and therefore the control signal required corresponds to the signal necessary for compensating the Coulomb friction.
 %We also want to to estimate the friction in the top position and then the equation corresponding to the state $ \dot{\varphi} $ in eq. \ref{eq:discrete} might not be the one which yields the best result. More research will be put into this at a later stage.
 
 % More research at a later stage??
@@ -287,7 +297,7 @@ The operator is able to change parameters for both controllers and for the frict
 
 For the top controller, the $Q$ and $R$ matrices and the integral gain can be changed. For the swing up controller, the "switching area", natural frequency and gain can be changed. Other general parameters for the controller such as sampling time $h$ and deadzones can also be changed.
 
-For the friction estimation the forgetting factor $\lambda$ and the initial values of $\omega _0$ can be changed. One can also switch between the three available friction models (coulomb friction, coulomb with viscous friction and coulomb with viscous friction and offset). At the top right of the GUI one can enable or disable the friction compensation.
+For the friction estimation the forgetting factor $\lambda$ and the initial values of $\omega _0$ can be changed. One can also switch between the three available friction models (Coulomb friction, Coulomb with viscous friction and Coulomb with viscous friction and offset). At the top right of the GUI one can enable or disable the friction compensation.
 
 Start and stop buttons have been added in order to record data and save to file (MATLAB .mat files are stored to the root folder of the java project). There are also tests for running step responses and for running an evaluation of the RLS convergence (without manual excitation). Both tests automatically stores the data. 
 
@@ -318,7 +328,7 @@ The limit cycles of the system got significantly lower when adding the friction 
 \caption{Arm and pendulum angle behaviour in steady state with offset compensation and integral action. The parameter estimation, after manual excitation of the system, converged before being turned on.}
 \label{fig:compintegrate}
 \end{figure}
-\subsection{coulomb and viscous friction model}
+\subsection{Coulomb and viscous friction model}
 In fig. \ref{fig:srvisc} we can see the behaviour of the angle and angular velocity for both the arm and the pendulum.
 \begin{figure}[H]
 \centering
@@ -346,21 +356,21 @@ In fig. \ref{fig:srvisc} we can see the behaviour of the angle and angular veloc
 			\caption{The step response for the angular velocity of the pendulum.}						
 			\label{subfigure:srviscthetadot}
 		\end{subfigure}
-		\caption{Step responses for the pendulum and arm positions and velocities for the using the coulomb and viscous friction model with offset compensation and integral action.}
+		\caption{Step responses for the pendulum and arm positions and velocities for the using the Coulomb and viscous friction model with offset compensation and integral action.}
 		\label{fig:srvisc}
 \end{figure}
 \subsection{Friction estimation}
-In fig. \ref{subfigure:VLUFcol} and \ref{subfigure:VLUFvisc} the calculated friction and the calculated compensation signal is presented for both the coulomb and the coulomb and viscous friction models.
+In fig. \ref{subfigure:VLUFcol} and \ref{subfigure:VLUFvisc} the calculated friction and the calculated compensation signal is presented for both the Coulomb and the Coulomb and viscous friction models.
 \begin{figure}[H]
 \centering
 	\begin{subfigure}[t]{0.49\textwidth}
 	\includegraphics[width=1\textwidth]{plots/vlufcolbest.eps}
-	\caption{The calculated friction and the calculated compensation control signal for the coulomb friction model given in eq. \ref{eq:regressora}}
+	\caption{The calculated friction and the calculated compensation control signal for the Coulomb friction model given in eq. \ref{eq:regressora}}
 	\label{subfigure:VLUFcol}
 	\end{subfigure}
 	\begin{subfigure}[t]{0.49\textwidth}
 	\includegraphics[width=1\textwidth]{plots/vlufviscbest.eps}
-	\caption{The calculated friction and the calculated compensation control signal for the coulomb and viscous friction model given in eq. \ref{eq:regressorb}}\
+	\caption{The calculated friction and the calculated compensation control signal for the Coulomb and viscous friction model given in eq. \ref{eq:regressorb}}\
 	\label{subfigure:VLUFvisc}
 	\end{subfigure}
 \caption{Friction calculation and estimation}
@@ -369,7 +379,7 @@ In fig. \ref{subfigure:VLUFcol} and \ref{subfigure:VLUFvisc} the calculated fric
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{plots/vlufviscoffsetbest.eps}
-\caption{The calculated friction and the calculated compensation control signal for the coulomb and viscous friction model with offset given in eq. \ref{eq:regressorbo}}
+\caption{The calculated friction and the calculated compensation control signal for the Coulomb and viscous friction model with offset given in eq. \ref{eq:regressorbo}}
 \label{fig:VLUFoffset}
 \end{figure}
 
@@ -412,8 +422,8 @@ By analyzing the spectrum of the noise we could not find any disturbances affect
 % Testade Kalmanfilter
 % conclusion-can only supress limitcycles so far.
 \subsection{Friction model}
-A fundamental part of this project was to select a friction model for which a good compensation could be made. As stated we chose to try a coulomb friction model and and model with added viscous part, the difference can be seen in fig. \ref{fig:frictmodel}. After the results in fig. \ref{fig:VLUF} we decided that since they were very similar we would focus on the coulomb with viscous friction model which had a higher potential to be close to the real friction.
-Since we observed that the friction is different depending on the sign of the arm velocity in fig. \ref{fig:fric} we added a constant offset to our regressor models, the coulomb and viscous friction regressors with and without offset can seen in equation eq. \ref{eq:regressorb} and \ref{eq:regressorbo} respectively. This leads to a better representation of the friction which can be seen in fig. \ref{fig:VLUFoffset}. The discrepancy in the amplitude of the friction calculation is likely due to process changes, however fig. \ref{fig:VLUFoffset} still shows the better representation of the calculated friction.
+A fundamental part of this project was to select a friction model for which a good compensation could be made. As stated we chose to try a Coulomb friction model and and model with added viscous part, the difference can be seen in fig. \ref{fig:frictmodel}. After the results in fig. \ref{fig:VLUF} we decided that since they were very similar we would focus on the Coulomb with viscous friction model which had a higher potential to be close to the real friction.
+Since we observed that the friction is different depending on the sign of the arm velocity in fig. \ref{fig:fric} we added a constant offset to our regressor models, the Coulomb and viscous friction regressors with and without offset can seen in equation eq. \ref{eq:regressorb} and \ref{eq:regressorbo} respectively. This leads to a better representation of the friction which can be seen in fig. \ref{fig:VLUFoffset}. The discrepancy in the amplitude of the friction calculation is likely due to process changes, however fig. \ref{fig:VLUFoffset} still shows the better representation of the calculated friction.
 
 
 \subsection{Offset in $ \varphi $}
