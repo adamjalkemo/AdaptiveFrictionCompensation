@@ -444,7 +444,7 @@ By analyzing the spectrum of the noise we could not find any disturbances affect
 %deadzone
 To avoid generating a control signal in the wrong direction and also avoid a noisy control signal we experimented with deadzones around the origin.  This did however not increase the performance but instead increased the limit cycles. Our theory is that the somewhat noisy control signals aren't as bad as disabling the friction compensation and/or the LQR controller around a deadzone, partly due to the pendulum vibrating thus decreasing friction and our rather fast sampling time actively counteracting too much deviation.
 \section{Conclusion}
-
+The project goal was to balance the Furuta Pendulum in an inverted position. This was successfully done by using two separate controllers - one for swing up and one for the top position. The top position controller has, in addition to being an LQR, adaptive friction compensation, which greatly reduces the limit cycles, and integral action which removes the lasting error. The resulting controller stabilizes the pendulum in the top position with very small limit cycles, responds quickly to step changes and can most reasonable disturbances.
 
 
 
