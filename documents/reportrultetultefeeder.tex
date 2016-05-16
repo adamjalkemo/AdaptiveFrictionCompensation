@@ -301,11 +301,9 @@ See figure \ref{fig:gui} for an image of the GUI.
 
 % TODO UPDATE IMAGE
 \begin{figure}[!htb]
-\begin{center}
-\includegraphics[width=1\textwidth]{gui.png}
+\centerline{\includegraphics[width=1.4\textwidth]{gui.png}}
 \caption{Overview of the program structure}
 \label{fig:gui}
-\end{center}
 \end{figure}
 \section{Results}
 
@@ -320,7 +318,7 @@ The limit cycles of the system got significantly lower when adding the friction 
 \end{center}
 \end{figure}
 In \ref{fig:onoffcompensation} see that the amplitude of the limit cycles are lowered to about a third of the size. We can also see an offset from the zero angle.
-\subsection{Coloumb + viscouse friction model}
+\subsection{Coloumb and viscous friction model}
 In \ref{fig:srvisc} we can see the behaviour of the angle and angular velocity for both the arm and the pendulum.
 \begin{figure}[H]
 \centering
@@ -348,11 +346,11 @@ In \ref{fig:srvisc} we can see the behaviour of the angle and angular velocity f
 			\caption{The step response for the angular velocity of the pendulum.}						
 			\label{subfigure:srviscthetadot}
 		\end{subfigure}
-		\caption{Stepresonses for the pendulum and arm positions and velocities for the using the coloumb+viscouse friction model.}
+		\caption{Stepresonses for the pendulum and arm positions and velocities for the using the coloumb and viscouse friction model.}
 		\label{fig:srvisc}
 \end{figure}
 \subsection{Friction estimation}
-In figure \ref{subfigure:VLUFcol} and \ref{subfigure:VLUFvisc} the calculated fricion and the calculated compensation signal is presented for both the coloumb and the coloumb+viscouse friction models.
+In figure \ref{subfigure:VLUFcol} and \ref{subfigure:VLUFvisc} the calculated fricion and the calculated compensation signal is presented for both the coloumb and the coloumb and viscouse friction models.
 \begin{figure}[H]
 \centering
 	\begin{subfigure}[t]{0.49\textwidth}
@@ -362,7 +360,7 @@ In figure \ref{subfigure:VLUFcol} and \ref{subfigure:VLUFvisc} the calculated fr
 	\end{subfigure}
 	\begin{subfigure}[t]{0.49\textwidth}
 	\includegraphics[width=1\textwidth]{plots/VLUFvisc.jpg}
-	\caption{The calculated friction and the calculated compensation control signal for the coloumb+viscouse friction model given in eq \ref{eq:regressorb}}\
+	\caption{The calculated friction and the calculated compensation control signal for the coloumb and viscouse friction model given in eq \ref{eq:regressorb}}\
 	\label{subfigure:VLUFvisc}
 	\end{subfigure}
 \caption{Friction calculation and estimation}
@@ -371,7 +369,7 @@ In figure \ref{subfigure:VLUFcol} and \ref{subfigure:VLUFvisc} the calculated fr
 \begin{figure}
 \centering
 %\includegraphics[width=1\textwidth]{plots/VLUFoffset.eps}
-\caption{The calculated friction and the calculated compensation control signal for the coloumb+viscouse friction model with offset given in eq \ref{eq:regressorbo}}
+\caption{The calculated friction and the calculated compensation control signal for the coloumb and viscouse friction model with offset given in eq \ref{eq:regressorbo}}
 \label{fig:VLUFoffset}
 \end{figure}
 
@@ -407,8 +405,8 @@ The convergence for the parameter estimation is presented in figure \ref{fig:rls
 % Testade Kalmanfilter
 % conclusion-can only supress limitcycles so far.
 \subsection{Friction model}
-A fundamental part of this project was to select a friction model for which a good compensation could be made. As stated we chose to try a coulomb friction model and and model with added viscous part, the difference can be seen in figure \ref{fig:frictmodel}. After the results in \ref{fig:VLUF} we decided that since they were very similar we would focus on the coulomb+viscous friction model which had a higher potential to be close to the real friction.
-Since we observed that the friction is different depending on the sign of the arm velocity in \ref{fig:fric} we added a constant offset to our regressor models, the coulomb+viscous friction regressors with and without offset can seen in equation \ref{eq:regressorb}  and \ref{eq:regressorbo} respectively. This leads to a better representation of the friction which can be seen in figure \ref{fig:VLUFoffset}. The discrepancy in the amplitude of the friction calculation is likely due to process changes, however \ref{fig:VLUFoffset} still shows the better representation of the calculated friction.
+A fundamental part of this project was to select a friction model for which a good compensation could be made. As stated we chose to try a coulomb friction model and and model with added viscous part, the difference can be seen in figure \ref{fig:frictmodel}. After the results in \ref{fig:VLUF} we decided that since they were very similar we would focus on the coulomb and viscous friction model which had a higher potential to be close to the real friction.
+Since we observed that the friction is different depending on the sign of the arm velocity in \ref{fig:fric} we added a constant offset to our regressor models, the coulomb and viscous friction regressors with and without offset can seen in equation \ref{eq:regressorb}  and \ref{eq:regressorbo} respectively. This leads to a better representation of the friction which can be seen in figure \ref{fig:VLUFoffset}. The discrepancy in the amplitude of the friction calculation is likely due to process changes, however \ref{fig:VLUFoffset} still shows the better representation of the calculated friction.
 
 
 \subsection{}
