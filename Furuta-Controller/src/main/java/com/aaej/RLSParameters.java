@@ -6,16 +6,12 @@ package com.aaej;
  */
 public class RLSParameters implements Cloneable {
 	public double lambda = 1;
-	public double p0 = 13.0;
 	public int regressorModel = 2; // 0. Coloumb, 1. + Viscous, 2. + Viscous & Offset
 	public double[][] theta0 = {{0,0,0},{0,0,0},{0,0,0}}; // Vectors because of the different models. Change if needed!
 
 	public double pam = 100;
 	public double pbm = 100;
 	public double pcm = 100;
-	public double fvGuess = 0;
-	public double fcGuess = 0;
-	public double foGuess = 0;
 
 	public Object clone() {		
 		try {

@@ -31,10 +31,11 @@ public class FurutaGUI implements Observer {
 	private BoxPanel 		guiPanel, plotterPanel, rightPanel, ctrlParameterPanel,estimatorParameterPanel,
 							lowerLeftPlotPanel, lowerRightPlotPanel, lowerPlotPanels, generalCtrlPanel, estimatorButtonsPanel,
 							estimatorGridPanel, regressorPanel, topCtrlPanel, swingCtrlPanel, buttonPanel, buttonPanel2,
-							buttonPanel3, buttonPanel4, deadzonePanel;
+							buttonPanel3, buttonPanel4, deadzonePanel, tiPanel;
 	private PlotterPanel 	measPanel, ctrlPanel, rlsPanel;
 	private JPanel 			qFieldPanel, rFieldPanel, swingLabelPanel, swingFieldPanel, generalLabelPanel,
-							generalFieldPanel, estimatorLabelPanel, estimatorFieldPanel, deadzoneLabelPanel, deadzoneFieldPanel;
+							generalFieldPanel, estimatorLabelPanel, estimatorFieldPanel, deadzoneLabelPanel, deadzoneFieldPanel,
+							tiLabelPanel, tiFieldPanel;
 
 	// Declaration of buttons and fields
 	private JButton 		startButton, stopButton, resetEstimatorButton, saveEstimatorButton, saveCtrlButton;
@@ -42,7 +43,7 @@ public class FurutaGUI implements Observer {
 	private JButton			frictionCompensatorOnButton, frictionCompensatorOffButton;
 	private JButton         rlsConvergeTestButton, stepResponseTestButton, saveTestDataButton, stopSaveTestDataButton;
 	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField, ellipseRotationField,
-							lambdaField, p0Field, theta00Field, theta01Field, theta02Field, deadzoneBaseAngVelField,
+							lambdaField, theta00Field, theta01Field, theta02Field, deadzoneBaseAngVelField,
 							deadzonePendAngVelField, deadzoneBaseAngField, deadzonePendAngField, tiField;
 	private DoubleField[][] qArrayField, rArrayField;
 	private JLabel 			currentController;
@@ -181,6 +182,19 @@ public class FurutaGUI implements Observer {
 			}
 		});
 
+		tiFieldPanel = new JPanel(new GridLayout(0,1));
+		tiFieldPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		tiFieldPanel.add(tiField);
+
+		tiLabelPanel = new JPanel(new GridLayout(0,1));
+		tiLabelPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		tiLabelPanel.add(new JLabel("Integrator factor Ti"));
+
+		tiPanel = new BoxPanel(BoxPanel.VERTICAL);
+		tiPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		tiPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
+		tiPanel.add(tiLabelPanel);
+		tiPanel.add(tiFieldPanel);
 
 		topCtrlPanel = new BoxPanel(BoxPanel.VERTICAL);
 		topCtrlPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -189,8 +203,7 @@ public class FurutaGUI implements Observer {
 		topCtrlPanel.add(qFieldPanel);
 		topCtrlPanel.add(new JLabel("R matrix"));
 		topCtrlPanel.add(rFieldPanel);
-		topCtrlPanel.add(new JLabel("Integrator factor Ti"));
-		topCtrlPanel.add(tiField);
+		topCtrlPanel.add(tiPanel);
 		
 		// ---------------
 
@@ -432,7 +445,6 @@ public class FurutaGUI implements Observer {
 		estimatorLabelPanel = new JPanel();
 		estimatorLabelPanel.setLayout(new GridLayout(0,1));
 		estimatorLabelPanel.add(new JLabel("lambda: "));
-		estimatorLabelPanel.add(new JLabel("P0: "));
 		estimatorLabelPanel.add(new JLabel("θ0: "));
 
 
@@ -441,15 +453,6 @@ public class FurutaGUI implements Observer {
 		lambdaField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				rlsPar.lambda = lambdaField.getValue();
-				saveEstimatorButton.setEnabled(true);
-			}
-		});
-
-		p0Field = new DoubleField(10,6);
-		p0Field.setValue(rlsPar.p0);
-		p0Field.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				rlsPar.p0 = p0Field.getValue();
 				saveEstimatorButton.setEnabled(true);
 			}
 		});
@@ -491,7 +494,6 @@ public class FurutaGUI implements Observer {
 		estimatorFieldPanel = new JPanel();
 		estimatorFieldPanel.setLayout(new GridLayout(0,1));
 		estimatorFieldPanel.add(lambdaField);
-		estimatorFieldPanel.add(p0Field);
 		estimatorFieldPanel.add(theta0Panel);
 
 		estimatorGridPanel = new BoxPanel(BoxPanel.HORIZONTAL);
