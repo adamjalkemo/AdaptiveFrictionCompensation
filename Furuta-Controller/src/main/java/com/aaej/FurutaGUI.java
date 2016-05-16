@@ -107,7 +107,7 @@ public class FurutaGUI implements Observer {
 		rlsPanel.setUpdateFreq(10);
 
 		lowerRightPlotPanel = new BoxPanel(BoxPanel.VERTICAL);
-		lowerRightPlotPanel.add(new JLabel("RLS Parameters"));
+		lowerRightPlotPanel.add(new JLabel("<html><font color='red'>Coloumb</font>, <font color='black'>viscous</font>, <font color='lime'>offset</font></html>"));
 		lowerRightPlotPanel.add(rlsPanel);
 
 		lowerPlotPanels = new BoxPanel(BoxPanel.HORIZONTAL);
@@ -115,7 +115,7 @@ public class FurutaGUI implements Observer {
 		lowerPlotPanels.add(lowerRightPlotPanel);
 
 		plotterPanel.addFixed(10);
-		plotterPanel.add(new JLabel("<font color='blue'>Theta</font>, <font color='red'>Theta vel.</font>, <font color='green'>Phi</font>, <font color='black'>Phi vel.</font>"));
+		plotterPanel.add(new JLabel("<html><font color='blue'>Theta</font>, <font color='red'>Theta vel.</font>, <font color='lime'>Phi</font>, <font color='black'>Phi vel.</font></html>"));
 		plotterPanel.add(measPanel);
 		plotterPanel.addFixed(10);
 		plotterPanel.add(lowerPlotPanels);
@@ -645,7 +645,7 @@ public class FurutaGUI implements Observer {
 		// If the right panel does not fit, a scroll pane can be used. This messes with the layout though.
 		rightPanelWithScroll = new JScrollPane(rightPanel);
 		rightPanelWithScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		rightPanelWithScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		rightPanelWithScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		rightPanelWithScroll.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
 
 		// Create panel for the entire GUI.
@@ -671,6 +671,10 @@ public class FurutaGUI implements Observer {
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				controller.shutDown();
+				measPanel.stopThread();
+				ctrlPanel.stopThread();
+				rlsPanel.stopThread();
+				frame.dispose();
 			}
 		});
 
