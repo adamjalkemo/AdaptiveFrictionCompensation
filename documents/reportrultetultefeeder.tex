@@ -65,13 +65,13 @@ The objects that are shared between the controller and the GUI are the parameter
 
 %Todo what parameters can be changed.
 \section{System model}
-Due to the non-linear dynamics of the rotating arm and pendulum the modelling of the process becomes complicated. We have used the model given in Lab2 in "Non-linear control" where the model have been simplified with the help of Lagrange theory. The dynamics of the model is then given by:
+Due to the non-linear dynamics of the rotating arm and pendulum the modelling of the process becomes complicated. A model given in Lab2 in "Non-linear control" has been used where the model have been simplified with the help of Lagrange theory. The dynamics of the model is then given by:
 $$(J_p + Ml^2)(\ddot{\theta} - \dot{\varphi} ^2\sin\theta \cos\theta )+Mrl\ddot{\varphi}\cos\theta-gl(M+m/2)\sin\theta = 0 $$
 \begin{equation}
 Mrl\ddot{\theta}\cos\theta - Mrl\dot{\theta ^2}\sin\theta + 2(J_p + ml^2 ) \dot{\theta} \dot{\varphi}\sin\theta \cos\theta + (J+mr^2 + Mr^2 + (J_p+ml^2)\sin^2\theta)\ddot{\varphi}=u
 \label{eq:model}
 \end{equation}
-where $\theta$ is the angle of the pendulum, $\varphi$ is the angle of the arm and $u$ is the motor torque on the arm. The states $\theta$, $\dot{\theta}$, $\varphi$ and $\dot{\varphi}$ will all be measured from the process and $u$ will be our control signal. The approximated coefficients are also taken from Lab2 and are given by:
+where $\theta$ is the angle of the pendulum, $\varphi$ is the angle of the arm and $u$ is the motor torque on the arm. The states $\theta$, $\dot{\theta}$, $\varphi$ and $\dot{\varphi}$ will all be measured from the process and $u$ will be the control signal. The approximated coefficients are also taken from Lab2 and are given by:
 $$l=0.413m \quad  r=0.235m$$
 $$M=0.01kg \quad J=0.05kgm^2$$
 $$J_p=0.0009kgm^2 \quad m=0.02kg$$
