@@ -311,42 +311,47 @@ See figure \ref{fig:gui} for an image of the GUI.
 \subsection{Limit cycles}
 The limit cycles of the system got significantly lower when adding the friction compensation using the estimated parameters of the friction. The behaviour of the arm angle and pendulum angle can be viewed in \ref{fig:onoffcompensation} where \ref{eq:regressorb} was used as a friction model.
 \begin{figure}[H]
-\begin{center}
+\centering
 \includegraphics[width=1\textwidth]{plots/onoffcompensation.jpg}
 \caption{Arm and pendulum angle behaviour in steady state and turning on friction compensation after 10 seconds. The parameter estimation, after manual excitation of the system, converged before being turned on.}
 \label{fig:onoffcompensation}
-\end{center}
 \end{figure}
 In \ref{fig:onoffcompensation} see that the amplitude of the limit cycles are lowered to about a third of the size. We can also see an offset from the zero angle.
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{plots/thetaphilimit.eps}
+\caption{Arm and pendulum angle behaviour in steady state with offset compensation and integrating part. The parameter estimation, after manual excitation of the system, converged before being turned on.}
+\label{fig:compintegrate}
+\end{figure}
 \subsection{Coloumb and viscous friction model}
 In \ref{fig:srvisc} we can see the behaviour of the angle and angular velocity for both the arm and the pendulum.
 \begin{figure}[H]
 \centering
 		\begin{subfigure}[t]{0.49\textwidth}
-			\includegraphics[scale=0.33]{plots/steprespviscphi.jpg}
+			\includegraphics[width=1\textwidth]{plots/srphiint.eps}
 			\centering
 			\caption{The step response for the angle of the arm.}
 			\label{subfigure:srviscphi}
 		\end{subfigure}
 		\begin{subfigure}[t]{0.49\textwidth}
-			\includegraphics[scale=0.33]{plots/steprespviscphidot.jpg}
+			\includegraphics[width=1\textwidth]{plots/srphidotint.eps}
 			\centering
 			\caption{The step response for the angular velocity of the arm.}
 			\label{subfigure:srviscphidot}
 		\end{subfigure}
 		\begin{subfigure}[t]{0.49\textwidth}
-			\includegraphics[scale=0.33]{plots/steprespvisctheta.jpg}
+			\includegraphics[width=1\textwidth]{plots/srthetaint.eps}
 			\centering
 			\caption{The step response for the angle of the arm.}			
 			\label{subfigure:srvisctheta}
 		\end{subfigure}
 		\begin{subfigure}[t]{0.49\textwidth}
-			\includegraphics[scale=0.33]{plots/steprespviscthetadot.jpg}
+			\includegraphics[width=1\textwidth]{plots/srthetadotint.eps}
 			\centering
 			\caption{The step response for the angular velocity of the pendulum.}						
 			\label{subfigure:srviscthetadot}
 		\end{subfigure}
-		\caption{Stepresonses for the pendulum and arm positions and velocities for the using the coloumb and viscouse friction model.}
+		\caption{Stepresonses for the pendulum and arm positions and velocities for the using the coloumb and viscouse friction model with offset compensation and integrating part.}
 		\label{fig:srvisc}
 \end{figure}
 \subsection{Friction estimation}
@@ -366,21 +371,27 @@ In figure \ref{subfigure:VLUFcol} and \ref{subfigure:VLUFvisc} the calculated fr
 \caption{Friction calculation and estimation}
 \label{fig:VLUF}
 \end{figure}
-\begin{figure}
+\begin{figure}[H]
 \centering
-%\includegraphics[width=1\textwidth]{plots/VLUFoffset.eps}
+\includegraphics[width=1\textwidth]{plots/vlufviscoffsetbest.eps}
 \caption{The calculated friction and the calculated compensation control signal for the coloumb and viscouse friction model with offset given in eq \ref{eq:regressorbo}}
 \label{fig:VLUFoffset}
 \end{figure}
 
 
 \subsection{RLS estimation}
-The convergence for the parameter estimation is presented in figure \ref{fig:rlsconv} both with and without external excitation.
+The convergence for the parameter estimation is presented in figure \ref{fig:rlsconv} both with and without external excitation. The convergence with an added offset compensation can be seen in figure \ref{fig:rlsconvoffset}
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{plots/rlsconvergence.jpg}
 \caption{The convergence of the friction parameters given in eq \ref{eq:regressorb}. At time t=5000 time units the estimation is reset and the system is subjected to external excitation.}
 \label{fig:rlsconv}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{plots/rlsconvoffset.eps}
+\caption{The convergence of the friction parameters with offset compensation given in eq \ref{eq:regressorbo}.}
+\label{fig:rlsconvoffset}
 \end{figure}
 %% Fler plots
 % RLS med offset
@@ -410,9 +421,9 @@ Since we observed that the friction is different depending on the sign of the ar
 
 
 \subsection{}
-Our initial thought was that this would be the reason for the offset we can see in \ref{fig:onoffcompensation} however after adding the offset we could still observe the same behaviour with only a small improvement, see \ref{fig:onoffcompoffset}. Instead we explored the option to add an integrative part in order to move the arm position so it would oscillate around the true zero position instead, the result of adding this integrative part was that the offset decreased and the result can be seen in \ref{fig:onoffcompintegrate}.
+Our initial thought was that this would be the reason for the offset we can see in \ref{fig:onoffcompensation} however after adding the offset we could still observe the same behaviour with no improvement. Instead we explored the option to add an integrative part in order to move the arm position so it would oscillate around the true zero position instead, the result of adding this integrative part was that the offset decreased and the result can be seen in figure \ref{fig:compintegrate}.
 
-$ $This resulted in an improved limit cycle behaviour and marginally better step responses$ $.
+
 
 \subsection{RLS}
 As expected the convergence for the RLS friction coefficients are a lot better with the external excitation compared to when there are no external excitation at all. Without the extra excitation the coefficients would sometimes not converge at all or even converge to negative values. With the external excitation we got a pretty fast convergence to values that would be considered reasonable for the coefficients. The external excitation was simply done by not using the compensation to begin with, resulting in the limit cycles exciting the the system enough to get a good convergence of the coefficients.\\
