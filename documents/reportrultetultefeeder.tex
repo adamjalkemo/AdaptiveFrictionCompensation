@@ -313,7 +313,7 @@ See figure \ref{fig:gui} for an image of the GUI.
 The limit cycles of the system got significantly lower when adding the friction compensation using the estimated parameters of the friction. The behaviour of the arm angle and pendulum angle can be viewed in \ref{fig:onoffcompensation} where \ref{eq:regressorb} was used as a friction model.
 \begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.6]{plots/onoffcompensation.jpg}
+\includegraphics[width=1\textwidth]{plots/onoffcompensation.jpg}
 \caption{Arm and pendulum angle behaviour in steady state and turning on friction compensation after 10 seconds. The parameter estimation, after manual excitation of the system, converged before being turned on.}
 \label{fig:onoffcompensation}
 \end{center}
@@ -355,24 +355,31 @@ In figure \ref{subfigure:VLUFcol} and \ref{subfigure:VLUFvisc} the calculated fr
 \begin{figure}[H]
 \centering
 	\begin{subfigure}[t]{0.49\textwidth}
-	\includegraphics[scale=0.33]{plots/VLUFcol.jpg}
+	\includegraphics[width=1\textwidth]{plots/VLUFcol.jpg}
 	\caption{The calculated friction and the calculated compensation control signal for the coloumb friction model given in eq \ref{eq:regressora}}
 	\label{subfigure:VLUFcol}
 	\end{subfigure}
 	\begin{subfigure}[t]{0.49\textwidth}
-	\includegraphics[scale=0.33]{plots/VLUFvisc.jpg}
+	\includegraphics[width=1\textwidth]{plots/VLUFvisc.jpg}
 	\caption{The calculated friction and the calculated compensation control signal for the coloumb+viscouse friction model given in eq \ref{eq:regressorb}}\
 	\label{subfigure:VLUFvisc}
 	\end{subfigure}
 \caption{Friction calculation and estimation}
 \label{fig:VLUF}
 \end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth]{plots/VLUFoffset.eps}
+\caption{The calculated friction and the calculated compensation control signal for the coloumb+viscouse friction model with offset given in eq \ref{eq:regressorbo}}
+\label{fig:VLUFoffset}
+\end{figure}
+
 
 \subsection{RLS estimation}
 The convergence for the parameter estimation is presented in figure \ref{fig:rlsconv} both with and without external excitation.
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.7]{plots/rlsconvergence.jpg}
+\includegraphics[width=1\textwidth]{plots/rlsconvergence.jpg}
 \caption{The convergence of the friction parameters given in eq \ref{eq:regressorb}. At time t=5000 time units the estimation is reset and the system is subjected to external excitation.}
 \label{fig:rlsconv}
 \end{figure}
@@ -398,6 +405,12 @@ The convergence for the parameter estimation is presented in figure \ref{fig:rls
 % Noise in thetadot and phidot due to integration
 % Testade Kalmanfilter
 % conclusion-can only supress limitcycles so far.
+\subsection{Friction model}
+A fundamental part of this project was to select a friction model for which a good compensation could be made. As stated we chose to try a coloumb friction model and and model with added viscouse part, the difference can be seen in figure \ref{fig:frictmodel}. After the results in \ref{fig:VLUF} we decided that since they were very similar we would focus on the coloumb+viscouse friction model which had a higher potential to be close to the real friction.
+Since we observed that the friction is different depending on the sign of the arm velocity in \ref{fig:fric} we added a constant offset to our regressormodels, the coloumb+viscouse friction regressors with and without offset can seen in equation \ref{eq:regressorb}  and \ref{eq:regressorbo} respectively. This leads to a better representation of the friction which can be seen in figure \ref{fig:VLUFoffset}.
+
+
+$ $This resulted in an improved limit cycle behavior and marginally better step responses$ $. 
 
 \subsection{RLS}
 As expected the convergence for the RLS friction coefficients are a lot better with the external excitation compared to when there are no external excitation at all. Without the extra excitation the coefficients would sometimes not converge at all or even converge to negative values. With the external excitation we got a pretty fast convergence to values that would be considered reasonable for the coefficients. The external excitation was simply done by not using the compensation to begin with, resulting in the limit cycles exciting the the system enough to get a good convergence of the coefficients.\\
@@ -419,8 +432,7 @@ As for the forgetting factor we tested some different values and found that usin
 % Bad disticntion between figure and equation, decide on norm?
 
 %\subsection{Friction model}
-%A fundamental part of this project was to select a friction model for which a good compensation could be made. As stated we chose to try a coloumb friction model and and model with added viscouse part, the difference can be seen in figure \ref{fig:frictmodel}. After the results in \ref{fig:VLUF} we decided that since they were very similar we would focus on the coloumb+viscouse friction model which had a higher potential to be close to the real friction.
-%Since we observed that the friction is different depending on the sign of the arm velocity in \ref{fig:fric} we added a constant offset to our regressormodels, the coloumb+viscouse friction regressors with and without offset can seen in \ref{eq:regressorb}  and \ref{eq:regressorbo} respectively. $ $This resulted in an improved limit cycle behavior and marginally better step responses$ $. 
+%
 
 % OTHER PART
 
