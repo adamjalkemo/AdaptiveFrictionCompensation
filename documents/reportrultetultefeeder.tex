@@ -111,8 +111,8 @@ $$ a = J_p + M l^2 \qquad b = J + M r^2 + m r^2 $$
 $$ c = M r l  \qquad d = l g (M + m/2) $$
 This corresponds to the arm fixed at an angle corresponding to zero and the pendulum fixed in the top position. It is in this position that the friction will create oscillations and where the adaptive friction compensation will be applied.
 \subsection{Discretization}
-The linearized model is then discretized using ZoH. A simplified ZoH method have been implemented in java which makes it possible to change the sample time online. For the most part a sample time of $h=0.01$ have been used since this suited the system best. With $h=0.01$ the ZoH discretization of the model yields in 
-
+The linearized model should preferably be discretized using ZoH. However, instead of ZoH a bilinear transformation is used in Java as an approximation of $\Phi$ since exponential matrix was not available in our matrix package. This allows the change of sampling time online. $ \Gamma $ is approximated using the approximation B*h, this is not a perfect approximation but we've not notices any major losses compared to using the ZoH discretized matrices. For the most part a sample time of $h=0.01$ have been used since this suited the system best. With $h=0.01$ the ZoH discretization of the model yields in 
+% adam todo Nämner vi analoga filter osv?
 % We would like to implement a way to change the sampling time online but this would require us to implement a function similar to $c2d$ in java. There are approximations that can be made so that we won't have to solve the integral over the matrix exponential but we need to be sure that the results are good enough. If we can't figure out a way to make a java implementation of $c2d$, we will discretize offline using matlab with the sample time $h=0.01$.
 %This yields
 \begin{equation}
@@ -125,6 +125,21 @@ x_{k+1} = A_dx_k + B_du_k =\begin{pmatrix}
 -0.0036\\
 -0.7127\\
  0.0096\\
+ 1.9125
+ \end{pmatrix}u_k
+\end{equation}
+
+And with the approximation described above
+\begin{equation}
+x_{k+1} = A_dx_k + B_du_k =\begin{pmatrix}
+1.0016 & 0.01 & 0 & 0 \\
+0.3134 & 1.0016 & 0 & 0 \\
+0 & 0 & 1 & 0.01 \\
+-0.0059 & 0 & 0 & 1
+\end{pmatrix}x_k + \begin{pmatrix}
+0\\
+-0.7123\\
+ 0\\
  1.9125
  \end{pmatrix}u_k
  \label{eq:discrete}
