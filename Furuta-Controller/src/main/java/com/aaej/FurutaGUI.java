@@ -108,7 +108,7 @@ public class FurutaGUI implements Observer {
 		rlsPanel.setUpdateFreq(10);
 
 		lowerRightPlotPanel = new BoxPanel(BoxPanel.VERTICAL);
-		lowerRightPlotPanel.add(new JLabel("<html><font color='red'>Coloumb</font>, <font color='black'>viscous</font>, <font color='lime'>offset</font></html>"));
+		lowerRightPlotPanel.add(new JLabel("<html><font color='red'>Coulomb</font>, <font color='black'>viscous</font>, <font color='lime'>offset</font></html>"));
 		lowerRightPlotPanel.add(rlsPanel);
 
 		lowerPlotPanels = new BoxPanel(BoxPanel.HORIZONTAL);
@@ -405,7 +405,7 @@ public class FurutaGUI implements Observer {
 
 		// -- Panel for the estimator parameters --
 
-		String[] regressorModels = {"Coloumb friction [ sign(v) ]", "+ Viscous friction [ sign(v), v ]", "+ V.f & offset[ sign(v), v, 1 ]"};
+		String[] regressorModels = {"Coulomb friction [ sign(v) ]", "+ Viscous friction [ sign(v), v ]", "+ V.f & offset[ sign(v), v, 1 ]"};
 		JComboBox regressorCombo = new JComboBox(regressorModels);
 		regressorCombo.setSelectedIndex(rlsPar.regressorModel);
 

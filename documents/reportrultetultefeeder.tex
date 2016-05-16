@@ -35,6 +35,10 @@ Supervisor: Gabriel Ingeson}
 
 \maketitle
 \pagebreak
+\begin{abstract}
+In this project a Furuta Pendulum has been controlled by a Java program running on a computer. The goal was to use adaptive friction compensation while balancing a pendulum in the inverted position. This was achieved by using two controllers - one Lyapunov based controller for swing up and an controller based on a Linear Quadratic Regulator, LQR, in the top position. The top controller also includes friction compensation by estimating the friction with the Recursive Least Squares, RLS, method and integral action. The results show that by adding friction compensation the limit cycles in the top position is greatly reduced.
+\end{abstract}
+\pagebreak
 \section{Introduction}
 In this project adaptive friction compensation of the Furuta pendulum process have been explored. The Furuta pendulum consists of a pendulum, which is free to rotate in the vertical plane, attached to the end of an horizontally rotating arm that can be controlled. The pendulum will be stabilized in the inverted position using a swing up controller and a top controller. When controlling the pendulum in the top position limit cycles will occur due to friction. By compensating for the friction the pendulum will be stabilized and the limit cycles reduced. The friction will be estimated using an adaptive method. To do this a Java controller and interface is implemented on a linux computer.
 %\begin{figure}[!htb]
@@ -389,7 +393,8 @@ The convergence for the parameter estimation is presented in fig. \ref{fig:rlsco
 % onoffcompensation med offset
 % onoffcompensation med offset och integrator
 % stepresp med offset med integrator
-
+\subsection{Noise}
+By analyzing the spectrum of the noise we could not find any disturbances affecting specific frequencies, the standard deviation $ \sigma $ of the signals are $ \sigma_{ \theta } =  0.209 \cdot 10^{-3} $, $ \sigma_{\dot{ \theta }}  = 3.847 \cdot 10^{-3} $, $  \sigma_{ \varphi } = 2.282 \cdot 10^{-3} $ and $ \sigma_{ \dot{ \varphi }} = 1.585 \cdot 10^{-3} $.
 
 
 
@@ -412,8 +417,8 @@ Since we observed that the friction is different depending on the sign of the ar
 
 
 \subsection{Offset in $ \varphi $}
-Our initial thought was that the different frictions depending on the sign of base angular velocity, this would be the reason for the offset we can see in fig. \ref{fig:onoffcompensation} however after adding the offset we could still observe the same behaviour. There was however a noticeable change in the movement of the arm which can be seen in figure \ref{fig:VLUFoffset} compared to the cycles in for instance \ref{subfigure:VLUFvisc}. The arm stayed close to the origin for a longer period of time before it drifts away as a result of a not perfect controller (as seen by the heavy switching of the sign of the friction compensation).
-Since we set out to decrease the offset in $ \phi $ we did our best to make sure that any offsets in the measurements are minimized and explored the option to add integral action on the state $ \phi $ in order to move the arm position so it would oscillate around the true zero position instead, the result of integral action was that the offset decreased and the result can be seen in fig. \ref{fig:compintegrate}.
+Our initial thought was that the different frictions depending on the sign of base angular velocity would be the reason for the offset we can see in fig. \ref{fig:onoffcompensation}. However after adding the offset we could still observe the same behaviour. There was a noticeable change in the movement of the arm which can be seen in figure \ref{fig:VLUFoffset} compared to the cycles in for instance \ref{subfigure:VLUFvisc}. The arm stayed close to the origin for a longer period of time before it drifted away as a result of a not perfect controller (as seen by the heavy switching of the sign of the friction compensation).
+Since we set out to decrease the offset in $ \varphi $ we did our best to make sure that any offsets in the measurements are minimized and explored the option to add integral action on the state $ \varphi $ in order to move the arm position so it would oscillate around the true zero position instead, the result of adding this integrative part was that the offset decreased and the result can be seen in fig. \ref{fig:compintegrate}.
 
 \subsection{RLS}
 As expected the convergence for the RLS friction coefficients are a lot better with the external excitation compared to when there are no external excitation at all. Without the extra excitation the coefficients would sometimes not converge at all or even converge to negative values. With the external excitation we got a pretty fast convergence to values that would be considered reasonable for the coefficients. The external excitation was simply done by not using the compensation to begin with, resulting in the limit cycles exciting the the system enough to get a good convergence of the coefficients.\\
@@ -423,7 +428,7 @@ As for the forgetting factor we tested some different values and found that usin
 \\
 As we can see the limit cycles does not disappear completely. This can depend on a number of different factors, one major factor is likely that the offset for the pendulum position in the top position is not perfect which would lead to over- and under correction i.e. the controller will operate on position values which are not true. Another thing is that the signals are quite noisy so it is hard for the controller to stabilize around the zero position since it keeps jumping from positive to negative due to the noise. To deal with the noisy signals trials with a implemented Kalman filter was done but the results were not very good since the true position of the arm around the zero is still not represented correctly. For when the arm gets stationary in a position there will also be stiction friction to consider, this will increase the oscillations since it friction will be larger in this situation.
 \subsection{Noise}
-By analyzing the spectrum of the noise we could not find any disturbances affecting specific frequencies, the standard deviation $ \sigma $ of the signals are $ \sigma_{ \theta } =  0.209*10^{-3} $, $ \sigma_{\dot{ \theta }}  = 3.847*10^{-3} $, $  \varphi = 2.282*10^{-3} $ and $ \sigma_{ \dot{ \varphi }} = 1.585*10^{-3} $. From this it is apparent that the standard deviation on especially $ \varphi $ affects how well both the LQR controller and the friction compensation will operate around the origin, since there is always a risk of generating a control signal in the wrong direction due to the noise. Another reason for why there might be an issue with trusting the velocities too much is that they are not directly measured by the process but instead probably calculated using the position.
+Looking at the measurement signals it is apparent that the standard deviation on especially $ \varphi $ affects how well both the LQR controller and the friction compensation will operate around the origin, since there is always a risk of generating a control signal in the wrong direction due to the noise. Another reason for why there might be an issue with trusting the velocities too much is that they are not directly measured by the process but instead calculated using the position.
 %deadzone
 To avoid generating a control signal in the wrong direction and also avoid a noisy control signal we experimented with deadzones around the origin.  This did however not increase the performance but instead increased the limit cycles. Our theory is that the somewhat noisy control signals aren't as bad as disabling the friction compensation and/or the LQR controller around a deadzone, partly due to the pendulum vibrating thus decreasing friction and our rather fast sampling time actively counteracting too much deviation.
 
@@ -433,11 +438,7 @@ Our implemented controllers work as expected in Java and threads shares resource
 % TODO DEEP CLONE
 
 \section{Conclusion}
-
-
-
-
-
+The project goal was to use adaptive friction compensation while balancing the Furuta Pendulum in an inverted position. This was successfully done by using two separate controllers - one for swing up and one for the top position. The top position controller has, in addition to being an LQR, adaptive friction compensation, which greatly reduces the limit cycles, and integral action which removes the stationary error. The resulting controller stabilizes the pendulum in the top position with very small limit cycles, responds quickly to step changes and can manage reasonable disturbances.
 
 \end{document}
 % Ändra alla figurer till eps??
