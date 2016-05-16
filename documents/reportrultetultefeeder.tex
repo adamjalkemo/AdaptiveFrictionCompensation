@@ -34,6 +34,10 @@ Supervisor: Gabriel Ingeson}
 
 \maketitle
 \pagebreak
+\begin{abstract}
+In this project a Furuta Pendulum has been controlled by a Java program running on a computer. The goal was to balance the pendulum in the inverted position. This was achieved by using two controllers - one Lyapunov based controller for swing up and an controller based on a Linear Quadratic Regulator, LQR, in the top position. The top controller also includes friction compensation by estimating the friction with the Recursive Least Squares, RLS, method and integral action. The results show that by adding friction compensation the limit cycles in the top position is greatly reduced.
+\end{abstract}
+\pagebreak
 \section{Introduction}
 In this project adaptive friction compensation of the Furuta pendulum process have been explored. The Furuta pendulum consists of a pendulum, that is free to rotate in the vertical plane, attached to the end of an horizontally rotating arm that can be controlled. The pendulum will be stabilized in the inverted position using a swing up controller and a top controller. When controlling the pendulum in the top position limit cycles will occur due to friction. By compensating for the friction the pendulum will be stabilized and the limit cycles reduced. The friction will be estimated using an adaptive method. To do this a Java controller and interface is implemented and ran on a linux computer.
 %\begin{figure}[!htb]
