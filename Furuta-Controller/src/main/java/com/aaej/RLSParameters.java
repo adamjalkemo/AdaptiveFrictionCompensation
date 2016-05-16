@@ -9,7 +9,7 @@ public class RLSParameters implements Cloneable {
 	public double p0 = 13.0;
 	public int regressorModel = 2; // TODO were not using this, right? LETs DO IT!!!!
 	// TODO and this? LETs DO IT!!!!
-	public double[][] theta0 = {{14.0,0,0},{15.0,16.0,0},{17,18,19}}; // Vectors because of the different models. Change if needed!
+	public double[][] theta0 = {{0,0,0},{0,0,0},{0,0,0}}; // Vectors because of the different models. Change if needed!
 
 	public double pam = 100;
 	public double pbm = 100;

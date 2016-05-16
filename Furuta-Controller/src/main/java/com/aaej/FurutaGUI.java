@@ -304,7 +304,7 @@ public class FurutaGUI implements Observer {
 		deadzoneBaseAngVelField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ctrlPar.deadzoneBaseAngVel = deadzoneBaseAngVelField.getValue();
-				saveEstimatorButton.setEnabled(true);
+				saveCtrlButton.setEnabled(true);
 			}
 		});
 
@@ -313,7 +313,7 @@ public class FurutaGUI implements Observer {
 		deadzonePendAngVelField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ctrlPar.deadzonePendAngVel = deadzonePendAngVelField.getValue();
-				saveEstimatorButton.setEnabled(true);
+				saveCtrlButton.setEnabled(true);
 			}
 		});
 
@@ -322,7 +322,7 @@ public class FurutaGUI implements Observer {
 		deadzoneBaseAngField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ctrlPar.deadzoneBaseAng = deadzoneBaseAngField.getValue();
-				saveEstimatorButton.setEnabled(true);
+				saveCtrlButton.setEnabled(true);
 			}
 		});
 
@@ -331,7 +331,7 @@ public class FurutaGUI implements Observer {
 		deadzonePendAngField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ctrlPar.deadzonePendAng = deadzonePendAngField.getValue();
-				saveEstimatorButton.setEnabled(true);
+				saveCtrlButton.setEnabled(true);
 			}
 		});
 

@@ -33,7 +33,7 @@ public class CommunicationManager {
     private long t;
     private long startTime;
 
-    private double offsetPendAng = 5.0673;
+    private double offsetPendAng = 5.081295807136961;
     private double scalingPendAng = 0.3091;
 
     private double offsetPendAngVel = -0.0350;
@@ -138,7 +138,7 @@ public class CommunicationManager {
     public void plotSignals() {
         double t = (double)this.t/1000;
 	    //1 black, 2 red, 3 green, 4 blue
-        gui.putMeasurementDataPoint(t,baseAng,baseAngVel,pendAng,pendAngVel);
+        gui.putMeasurementDataPoint(t,baseAngVel,pendAngVel,baseAng,pendAng);
         gui.putControlDataPoint(t,u);
     }
 
@@ -161,7 +161,7 @@ public class CommunicationManager {
      */
     public synchronized void resetOffsets() {
         try {
-            offsetPendAng = -(analogPendAng.get()*scalingPendAng - Math.PI)/scalingPendAng;
+            //offsetPendAng = -(analogPendAng.get()*scalingPendAng - Math.PI)/scalingPendAng;
     	    offsetPendAngVel = -analogPendAngVel.get();
             offsetBaseAng = -analogBaseAng.get();
     	    offsetBaseAngVel = -analogBaseAngVel.get();
