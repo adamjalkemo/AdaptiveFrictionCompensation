@@ -358,12 +358,12 @@ In fig. \ref{subfigure:VLUFcol} and \ref{subfigure:VLUFvisc} the calculated fric
 \begin{figure}[H]
 \centering
 	\begin{subfigure}[t]{0.49\textwidth}
-	\includegraphics[width=1\textwidth]{plots/VLUFcol.jpg}
+	\includegraphics[width=1\textwidth]{plots/vlufcolbest.eps}
 	\caption{The calculated friction and the calculated compensation control signal for the coloumb friction model given in eq. \ref{eq:regressora}}
 	\label{subfigure:VLUFcol}
 	\end{subfigure}
 	\begin{subfigure}[t]{0.49\textwidth}
-	\includegraphics[width=1\textwidth]{plots/VLUFvisc.jpg}
+	\includegraphics[width=1\textwidth]{plots/vlufviscbest.eps}
 	\caption{The calculated friction and the calculated compensation control signal for the coloumb and viscouse friction model given in eq. \ref{eq:regressorb}}\
 	\label{subfigure:VLUFvisc}
 	\end{subfigure}
@@ -419,10 +419,9 @@ A fundamental part of this project was to select a friction model for which a go
 Since we observed that the friction is different depending on the sign of the arm velocity in fig. \ref{fig:fric} we added a constant offset to our regressor models, the coulomb and viscous friction regressors with and without offset can seen in equation eq. \ref{eq:regressorb} and \ref{eq:regressorbo} respectively. This leads to a better representation of the friction which can be seen in fig. \ref{fig:VLUFoffset}. The discrepancy in the amplitude of the friction calculation is likely due to process changes, however fig. \ref{fig:VLUFoffset} still shows the better representation of the calculated friction.
 
 
-\subsection{}
-Our initial thought was that the different frictions depending on the sign of base angular velocity this would be the reason for the offset we can see in fig. \ref{fig:onoffcompensation} however after adding the offset we could still observe the same behaviour with no improvement. Instead we explored the option to add an integrative part in order to move the arm position so it would oscillate around the true zero position instead, the result of adding this integrative part was that the offset decreased and the result can be seen in fig. \ref{fig:compintegrate}.
-
-
+\subsection{Offset in $ \varphi $}
+Our initial thought was that the different frictions depending on the sign of base angular velocity this would be the reason for the offset we can see in fig. \ref{fig:onoffcompensation} however after adding the offset we could still observe the same behaviour. There was however a noticeable change in the movement of the arm which can be seen in figure \ref{fig:VLUFoffset} compared to the cycles in for instance \ref{subfigure:VLUFvisc}. The arm stayed close to the origin for a longer period of time before it drifts away as a result of a not perfect controller (as seen by the heavy switching of the sign of the friction compensation).
+Since we set out to decrease the offset in $ \phi $ we did our best to make sure that any offsets in the measurements are minimized and explored the option to add integral action on the state $ \phi $ in order to move the arm position so it would oscillate around the true zero position instead, the result of adding this integrative part was that the offset decreased and the result can be seen in fig. \ref{fig:compintegrate}.
 
 \subsection{RLS}
 As expected the convergence for the RLS friction coefficients are a lot better with the external excitation compared to when there are no external excitation at all. Without the extra excitation the coefficients would sometimes not converge at all or even converge to negative values. With the external excitation we got a pretty fast convergence to values that would be considered reasonable for the coefficients. The external excitation was simply done by not using the compensation to begin with, resulting in the limit cycles exciting the the system enough to get a good convergence of the coefficients.\\
@@ -431,8 +430,10 @@ As for the forgetting factor we tested some different values and found that usin
 %Forgetting factor
 \\
 As we can see the limit cycles does not disappear completely. This can depend on a number of different factors, one major factor is likely that the offset for the pendulum position in the top position is not perfect which would lead to over- and under correction i.e. the controller will operate on position values which are not true. Another thing is that the signals are quite noisy so it is hard for the controller to stabilize around the zero position since it keeps jumping from positive to negative due to the noise. To deal with the noisy signals trials with a implemented Kalman filter was done but the results were not very good since the true position of the arm around the zero is still not represented correctly. For when the arm gets stationary in a position there will also be stiction friction to consider, this will increase the oscillations since it friction will be larger in this situation.
-
-
+\subsection{Noise}
+By analyzing the spectrum of the noise we could not find any disturbances affecting specific frequencies, the standard deviation $ \sigma $ of the signals are $ \sigma_{ \theta } =  0.209*10^{-3} $, $ \sigma_{\dot{ \theta }}  = 3.847*10^{-3} $, $  \varphi = 2.282*10^{-3} $ and $ \sigma_{ \dot{ \varphi }} = 1.585*10^{-3} $. From this it is apparent that the standard deviation on especially $ \varphi $ affects how well both the LQR controller and the friction compensation will operate around the origin, since there is always a risk of generating a control signal in the wrong direction due to the noise. Another reason for why there might be an issue with trusting the velocities too much is that they are not directly measured by the process but instead probably calculated using the position.
+%deadzone
+To avoid generating a control signal in the wrong direction and also avoid a noisy control signal we experimented with deadzones around the origin.  This did however not increase the performance but instead increased the limit cycles. Our theory is that the somewhat noisy control signals aren't as bad as disabling the friction compensation and/or the LQR controller around a deadzone, partly due to the pendulum vibrating thus decreasing friction and our rather fast sampling time actively counteracting too much deviation.
 \section{Conclusion}
 
 
