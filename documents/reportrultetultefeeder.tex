@@ -11,7 +11,6 @@
 \usepackage{float}
 \usepackage{graphicx}
 \usepackage{parskip}
-\usepackage{gensymb}
 \makeatletter
 \newcommand*{\transpose}{%
   {\mathpalette\@transpose{}}%
@@ -45,7 +44,7 @@ In this project adaptive friction compensation of the Furuta pendulum process ha
 %\end{center}
 %\end{figure}
 \section{Program structure}
-For our suggested solution we will need one thread for the GUI and one for the controller. To communicate with the Furuta process we will use the analog box normally used during the control labs at LTH. The realtime package from Automatic Control at LTH will be used for communication in the GUI and controller implementation. It will be important to synchronize the controller calculations with the user inputs. A general overview can be seen in figure \ref{fig:uml}.
+For our suggested solution we will need one thread for the GUI and one for the controller. To communicate with the Furuta process we will use the analog box normally used during the control labs at LTH. The realtime package from Automatic Control at LTH will be used for communication in the GUI and controller implementation. It will be important to synchronize the controller calculations with the user inputs. A general overview can be seen in fig. \ref{fig:uml}.
 
 \begin{figure}[!htb]
 \centering
@@ -79,7 +78,7 @@ $$J_p=0.0009kgm^2 \quad m=0.02kg$$
 $$ g=9.8$$
 Where $l$ is the length of the pendulum, $r$ is the length of the arm, $M$ is the mass of the weight, $J$ is moment of inertia  for pendulum, $J_p$ is the moment of inertia for the arm, $m$ is the mass of the pendulum and $g$ is the gravity constant.
 \subsection{Linearization}
-The model in \ref{eq:model} is then linearized around
+The model in eq. \ref{eq:model} is then linearized around
 \begin{equation}
 x =
 \begin{pmatrix}
@@ -147,7 +146,7 @@ x_{k+1} = A_dx_k + B_du_k =\begin{pmatrix}
 \end{equation}
 
 \section{Controller}
-There are six measurement signal available for the controllers to use. Two for the position $ \theta $ and velocity $ \dot{\theta} $ of the pendulum each (one has higher resolution and can only  be used at the top position) and one for the arm position $ \varphi $ and velocity $ \dot{\varphi} $. Monitoring the signals there was no noticeable difference between the higher resolution and $ 360 \degree $-sensor and we therefore only used the two measurements from the $ 360 \degree $ sensor.
+There are six measurement signal available for the controllers to use. Two for the position $ \theta $ and velocity $ \dot{\theta} $ of the pendulum each (one has higher resolution and can only  be used at the top position) and one for the arm position $ \varphi $ and velocity $ \dot{\varphi} $. Monitoring the signals there was no noticeable difference between the higher resolution and $ 360{^\circ} $-sensor and we therefore only used the two measurements from the $ 360 {^\circ} $-sensor.
 \subsection{Swing up}
 For the swing up of the pendulum a Lyapunov based controller is used. For the Lyapunov candidate the total energy (kinetic and potential) of the pendulum will be considered and is given by 
 \begin{equation}
@@ -178,7 +177,7 @@ the pendulum needs to have both a low velocity and be close to the top for the t
 
 
 \section{Friction compensation}
-When controlling the pendulum in the top position there will be limit cycles due to the friction. To minimize these cycles RLS based friction compensation is added to the top controller. When the pendulum is close to the top position a dead-zone is added in order to keep the noise from the measurements from making the friction compensation add control signal in the wrong direction. There are a lot of different ways to model friction. Some really complicated and some pretty simple. In fig \ref{fig:fric} measured friction of the process can be seen for different velocities. The oscillating behaviour is believed to be due to different friction in different directions. Since the average friction for the different velocities did not vary that much and the measured signals are noisy the models of the frictions were kept simple. The models used can be seen in fig \ref{fig:frictmodel}. 
+When controlling the pendulum in the top position there will be limit cycles due to the friction. To minimize these cycles RLS based friction compensation is added to the top controller. When the pendulum is close to the top position a dead-zone is added in order to keep the noise from the measurements from making the friction compensation add control signal in the wrong direction. There are a lot of different ways to model friction. Some really complicated and some pretty simple. In fig. \ref{fig:fric} measured friction of the process can be seen for different velocities. The oscillating behaviour is believed to be due to different friction in different directions. Since the average friction for the different velocities did not vary that much and the measured signals are noisy the models of the frictions were kept simple. The models used can be seen in fig. \ref{fig:frictmodel}. 
 
 %When the This will only be used in the top controller since the swing up controller will always output maximal control signal. When the pendulum is close to the top position we will need to add a dead-zone in order to keep the noise from the measurements from making the friction compensation add control signal in the wrong direction.
 \begin{figure}[!htb]
@@ -195,7 +194,7 @@ When controlling the pendulum in the top position there will be limit cycles due
 \end{figure}
 \subsection{Friction estimation}
 \label{sec:fricEst}
-To manage the friction an estimate of a simple friction model is derived using RLS. The models in fig \ref{fig:frictmodel} will respectively give the following friction expressions 
+To manage the friction an estimate of a simple friction model is derived using RLS. The models in fig. \ref{fig:frictmodel} will respectively give the following friction expressions 
 \begin{equation}
  f=f_c\cdot sign(\dot{\varphi})
  \label{eq:f}
@@ -204,9 +203,9 @@ To manage the friction an estimate of a simple friction model is derived using R
  f=f_c\cdot sign(\dot{\varphi})+f_v\cdot \dot{\varphi}
  \label{eq:fv}
  \end{equation}
-where \ref{eq:f} is model a and only depends on the direction of the velocities and \ref{eq:fv} is the model in b where a viscous term that depends on the velocity is added.
+where eq. \ref{eq:f} is model a and only depends on the direction of the velocities and eq. \ref{eq:fv} is the model in b where a viscous term that depends on the velocity is added.
  
-The regression models for the two friction models will take the form of \ref{eq:regressora} and \ref{eq:regressorb} respectively.
+The regression models for the two friction models will take the form of eq. \ref{eq:regressora} and \ref{eq:regressorb} respectively.
 \begin{equation}
 \phi=sign(\dot{\varphi}), \beta = f_c
 \label{eq:regressora}
@@ -221,7 +220,7 @@ f_v
 \end{bmatrix}
 \label{eq:regressorb}
 \end{equation}
-Since the friction can be seen as a direct negative torque on the arm, it can be directly subtracted from the control signal which gives us the system in \ref{eq:discrete}
+Since the friction can be seen as a direct negative torque on the arm, it can be directly subtracted from the control signal which gives us the system in eq. \ref{eq:discrete}
 %$$x_{k+1} = A_dx_k + B_d(u_k - f)$$
 %To get the RLS to work we take all measurements one step back in time and try to estimate the parameters from \ref{eq:regressorb}. We also aim to use the measurement from the arm velocity where we get values from both the pendulum position and the arm velocity, see the state equation for $ \varphi $  in eq. \ref{eq:discrete}. After placing all known variables on the left hand side and we the following
 
@@ -229,7 +228,7 @@ Since the friction can be seen as a direct negative torque on the arm, it can be
  x_{k+1} = A_dx_k + B_d(u_k - f)
 \label{eq:modwf}
 \end{equation}
-To get the RLS to work all measurements are taken one step back in time to estimate the parameters from \ref{eq:regressora} or \ref{eq:regressorb}. After rearranging the equation in \ref{eq:modwf} we get
+To get the RLS to work all measurements are taken one step back in time to estimate the parameters from eq. \ref{eq:regressora} or \ref{eq:regressorb}. After rearranging the equation in eq. \ref{eq:modwf} we get
 \begin{equation}
  \dfrac{x_{k}-A_dx_{k-1}-B_d u_{k-1}}{-B_d} =   f
 \label{eq:estim}
@@ -241,7 +240,7 @@ To get the RLS to work all measurements are taken one step back in time to estim
 %sign(\dot{\varphi})
 %\end{pmatrix}
 
-where $f$ is one of the regressors in \ref{eq:regressora} or \ref{eq:regressorb}. By choosing one of the states in $x$ the normal RLS algorithm can be applied with some forgetting factor $\lambda$, the algorithm is given in \ref{subsec:rlsalg}.
+where $f$ is one of the regressors in eq. \ref{eq:regressora} or \ref{eq:regressorb}. By choosing one of the states in $x$ the normal RLS algorithm can be applied with some forgetting factor $\lambda$, the algorithm is given in \ref{subsec:rlsalg}.
 \\
 Since the friction of the process have different friction for different directions of the arm, some trials with an extra state in the regressors was also done. The extra state was added to the regressors as a constant to offset the imbalance of the friction compensation for the different directions. The regressors are then given by 
 \begin{equation}
@@ -297,7 +296,7 @@ In order to save data to file buttons have been added to start and stop this pro
 
 The GUI will plot the outputs from the Furuta pendulum, the friction estimation and the control signal.
 
-See figure \ref{fig:gui} for an image of the GUI.
+See fig. \ref{fig:gui} for an image of the GUI.
 
 % TODO UPDATE IMAGE
 \begin{figure}[!htb]
@@ -309,14 +308,14 @@ See figure \ref{fig:gui} for an image of the GUI.
 
 
 \subsection{Limit cycles}
-The limit cycles of the system got significantly lower when adding the friction compensation using the estimated parameters of the friction. The behaviour of the arm angle and pendulum angle can be viewed in \ref{fig:onoffcompensation} where \ref{eq:regressorb} was used as a friction model.
+The limit cycles of the system got significantly lower when adding the friction compensation using the estimated parameters of the friction. The behaviour of the arm angle and pendulum angle can be viewed in fig. \ref{fig:onoffcompensation} where eq. \ref{eq:regressorb} was used as a friction model.
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{plots/onoffcompensation.jpg}
 \caption{Arm and pendulum angle behaviour in steady state and turning on friction compensation after 10 seconds. The parameter estimation, after manual excitation of the system, converged before being turned on.}
 \label{fig:onoffcompensation}
 \end{figure}
-In \ref{fig:onoffcompensation} see that the amplitude of the limit cycles are lowered to about a third of the size. We can also see an offset from the zero angle.
+In fig. \ref{fig:onoffcompensation} see that the amplitude of the limit cycles are lowered to about a third of the size. We can also see an offset from the zero angle.
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{plots/thetaphilimit.eps}
@@ -324,7 +323,7 @@ In \ref{fig:onoffcompensation} see that the amplitude of the limit cycles are lo
 \label{fig:compintegrate}
 \end{figure}
 \subsection{Coloumb and viscous friction model}
-In \ref{fig:srvisc} we can see the behaviour of the angle and angular velocity for both the arm and the pendulum.
+In fig. \ref{fig:srvisc} we can see the behaviour of the angle and angular velocity for both the arm and the pendulum.
 \begin{figure}[H]
 \centering
 		\begin{subfigure}[t]{0.49\textwidth}
@@ -355,17 +354,17 @@ In \ref{fig:srvisc} we can see the behaviour of the angle and angular velocity f
 		\label{fig:srvisc}
 \end{figure}
 \subsection{Friction estimation}
-In figure \ref{subfigure:VLUFcol} and \ref{subfigure:VLUFvisc} the calculated fricion and the calculated compensation signal is presented for both the coloumb and the coloumb and viscouse friction models.
+In fig. \ref{subfigure:VLUFcol} and \ref{subfigure:VLUFvisc} the calculated fricion and the calculated compensation signal is presented for both the coloumb and the coloumb and viscouse friction models.
 \begin{figure}[H]
 \centering
 	\begin{subfigure}[t]{0.49\textwidth}
 	\includegraphics[width=1\textwidth]{plots/VLUFcol.jpg}
-	\caption{The calculated friction and the calculated compensation control signal for the coloumb friction model given in eq \ref{eq:regressora}}
+	\caption{The calculated friction and the calculated compensation control signal for the coloumb friction model given in eq. \ref{eq:regressora}}
 	\label{subfigure:VLUFcol}
 	\end{subfigure}
 	\begin{subfigure}[t]{0.49\textwidth}
 	\includegraphics[width=1\textwidth]{plots/VLUFvisc.jpg}
-	\caption{The calculated friction and the calculated compensation control signal for the coloumb and viscouse friction model given in eq \ref{eq:regressorb}}\
+	\caption{The calculated friction and the calculated compensation control signal for the coloumb and viscouse friction model given in eq. \ref{eq:regressorb}}\
 	\label{subfigure:VLUFvisc}
 	\end{subfigure}
 \caption{Friction calculation and estimation}
@@ -374,23 +373,23 @@ In figure \ref{subfigure:VLUFcol} and \ref{subfigure:VLUFvisc} the calculated fr
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{plots/vlufviscoffsetbest.eps}
-\caption{The calculated friction and the calculated compensation control signal for the coloumb and viscouse friction model with offset given in eq \ref{eq:regressorbo}}
+\caption{The calculated friction and the calculated compensation control signal for the coloumb and viscouse friction model with offset given in eq. \ref{eq:regressorbo}}
 \label{fig:VLUFoffset}
 \end{figure}
 
 
 \subsection{RLS estimation}
-The convergence for the parameter estimation is presented in figure \ref{fig:rlsconv} both with and without external excitation. The convergence with an added offset compensation can be seen in figure \ref{fig:rlsconvoffset}
+The convergence for the parameter estimation is presented in fig. \ref{fig:rlsconv} both with and without external excitation. The convergence with an added offset compensation can be seen in fig. \ref{fig:rlsconvoffset}
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{plots/rlsconvergence.jpg}
-\caption{The convergence of the friction parameters given in eq \ref{eq:regressorb}. At time t=5000 time units the estimation is reset and the system is subjected to external excitation.}
+\caption{The convergence of the friction parameters given in eq. \ref{eq:regressorb}. At time t=5000 time units the estimation is reset and the system is subjected to external excitation.}
 \label{fig:rlsconv}
 \end{figure}
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{plots/rlsconvoffset.eps}
-\caption{The convergence of the friction parameters with offset compensation given in eq \ref{eq:regressorbo}.}
+\caption{The convergence of the friction parameters with offset compensation given in eq. \ref{eq:regressorbo}.}
 \label{fig:rlsconvoffset}
 \end{figure}
 %% Fler plots
@@ -416,12 +415,12 @@ The convergence for the parameter estimation is presented in figure \ref{fig:rls
 % Testade Kalmanfilter
 % conclusion-can only supress limitcycles so far.
 \subsection{Friction model}
-A fundamental part of this project was to select a friction model for which a good compensation could be made. As stated we chose to try a coulomb friction model and and model with added viscous part, the difference can be seen in figure \ref{fig:frictmodel}. After the results in \ref{fig:VLUF} we decided that since they were very similar we would focus on the coulomb and viscous friction model which had a higher potential to be close to the real friction.
-Since we observed that the friction is different depending on the sign of the arm velocity in \ref{fig:fric} we added a constant offset to our regressor models, the coulomb and viscous friction regressors with and without offset can seen in equation \ref{eq:regressorb}  and \ref{eq:regressorbo} respectively. This leads to a better representation of the friction which can be seen in figure \ref{fig:VLUFoffset}. The discrepancy in the amplitude of the friction calculation is likely due to process changes, however \ref{fig:VLUFoffset} still shows the better representation of the calculated friction.
+A fundamental part of this project was to select a friction model for which a good compensation could be made. As stated we chose to try a coulomb friction model and and model with added viscous part, the difference can be seen in fig. \ref{fig:frictmodel}. After the results in fig. \ref{fig:VLUF} we decided that since they were very similar we would focus on the coulomb and viscous friction model which had a higher potential to be close to the real friction.
+Since we observed that the friction is different depending on the sign of the arm velocity in fig. \ref{fig:fric} we added a constant offset to our regressor models, the coulomb and viscous friction regressors with and without offset can seen in equation eq. \ref{eq:regressorb} and \ref{eq:regressorbo} respectively. This leads to a better representation of the friction which can be seen in fig. \ref{fig:VLUFoffset}. The discrepancy in the amplitude of the friction calculation is likely due to process changes, however fig. \ref{fig:VLUFoffset} still shows the better representation of the calculated friction.
 
 
 \subsection{}
-Our initial thought was that this would be the reason for the offset we can see in \ref{fig:onoffcompensation} however after adding the offset we could still observe the same behaviour with no improvement. Instead we explored the option to add an integrative part in order to move the arm position so it would oscillate around the true zero position instead, the result of adding this integrative part was that the offset decreased and the result can be seen in figure \ref{fig:compintegrate}.
+Our initial thought was that the different frictions depending on the sign of base angular velocity this would be the reason for the offset we can see in fig. \ref{fig:onoffcompensation} however after adding the offset we could still observe the same behaviour with no improvement. Instead we explored the option to add an integrative part in order to move the arm position so it would oscillate around the true zero position instead, the result of adding this integrative part was that the offset decreased and the result can be seen in fig. \ref{fig:compintegrate}.
 
 
 
