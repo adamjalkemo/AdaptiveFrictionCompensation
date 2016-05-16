@@ -130,6 +130,9 @@ class MainController extends Thread {
         frictionCompensator.rls(baseAng, baseAngVel);
         frictionCompensator.updateStates(baseAng, baseAngVel, pendAng, u);
 
+        if (activeController == Controller.TOP)
+            topController.updateStates(baseAng, r);
+
         // We need to tell the communication manager what Fv, Fc and Fo is
         communicationManager.plotRLSParameters(frictionCompensator.getFv(), frictionCompensator.getFc(), frictionCompensator.getFo());
    }

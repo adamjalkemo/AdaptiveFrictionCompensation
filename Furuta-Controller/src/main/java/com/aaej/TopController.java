@@ -7,6 +7,8 @@ import Jama.*;
  */
 class TopController {
 	private ControllerParameters controllerParameters;
+	double I = 0;
+
 	public TopController() {
 	}
 
@@ -19,7 +21,12 @@ class TopController {
 		double[] L = controllerParameters.L;
 		double lr = controllerParameters.lr;
 		double u = - (L[0] * pendAng + L[1] * pendAngVel + L[2] * baseAng + L[3] * baseAngVel) + lr * ref;
-		return u;
+		return u + I;
+	}
+
+
+	public synchronized void updateStates(double baseAng, double ref) {
+		I = controllerParameters.h/controllerParameters.Ti * (baseAng - ref) + I;
 	}
 
 	/**
@@ -48,6 +55,7 @@ class TopController {
 
 		synchronized (this) {
 			this.controllerParameters = controllerParameters;
+			this.I = 0;
 		}
 
 	}
