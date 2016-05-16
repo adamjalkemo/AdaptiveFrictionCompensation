@@ -109,15 +109,8 @@ public class CommunicationManager {
      */
     public double writeOutput(double u) {
         try {
-    	    if(u > 1) {
-    		    u = 1;
-    	    } else if(u < -1) {
-    		    u = -1;
-    	    }
-
             // If something goes wrong in the calculations, set u to 0.
-            u = Double.isNaN(u) ? 0 : u;
-
+            u = saturate(u);
             analogU.set(u * scalingOutput);
         } catch (IOChannelException e) {
             e.printStackTrace();
@@ -129,6 +122,16 @@ public class CommunicationManager {
             uArray.add(u);
         }
         plotSignals();
+        return u;
+    }
+
+    public static double saturate(double u) {
+        if(u > 1) {
+            u = 1;
+        } else if(u < -1) {
+            u = -1;
+        }
+        u = Double.isNaN(u) ? 0 : u; // If something was to go terribly wrong
         return u;
     }
 

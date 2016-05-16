@@ -122,16 +122,16 @@ class MainController extends Thread {
                 //Keep u as 0
             }
         }
-        u = communicationManager.writeOutput(u);
+        double u_sat = communicationManager.writeOutput(u);
         communicationManager.saveUF(uF);
         communicationManager.saveVL(vL);
 
 
         frictionCompensator.rls(baseAng, baseAngVel);
-        frictionCompensator.updateStates(baseAng, baseAngVel, pendAng, u);
+        frictionCompensator.updateStates(baseAng, baseAngVel, pendAng, u_sat);
 
         if (activeController == Controller.TOP)
-            topController.updateStates(baseAng, r);
+            topController.updateStates(baseAng, r, u);
 
         // We need to tell the communication manager what Fv, Fc and Fo is
         communicationManager.plotRLSParameters(frictionCompensator.getFv(), frictionCompensator.getFc(), frictionCompensator.getFo());
@@ -166,6 +166,7 @@ class MainController extends Thread {
         if (activeController != newController) {
             if (newController == Controller.TOP) {
                 communicationManager.resetOffsetBaseAng();
+                topController.resetIntegrator();
                 LOGGER.log(Level.INFO, "Switching to top controller");
 
             } else if (newController == Controller.SWINGUP) {

@@ -42,7 +42,8 @@ public class FurutaGUI implements Observer {
 	private JButton			frictionCompensatorOnButton, frictionCompensatorOffButton;
 	private JButton         rlsConvergeTestButton, stepResponseTestButton, saveTestDataButton, stopSaveTestDataButton;
 	private DoubleField 	omega0Field, hField, radius1Field, radius2Field, limitField, gainField, ellipseRotationField,
-							lambdaField, p0Field, theta00Field, theta01Field, theta02Field, deadzoneBaseAngVelField, deadzonePendAngVelField, deadzoneBaseAngField, deadzonePendAngField;
+							lambdaField, p0Field, theta00Field, theta01Field, theta02Field, deadzoneBaseAngVelField,
+							deadzonePendAngVelField, deadzoneBaseAngField, deadzonePendAngField, tiField;
 	private DoubleField[][] qArrayField, rArrayField;
 	private JLabel 			currentController;
 	private JScrollPane 	rightPanelWithScroll;
@@ -172,6 +173,16 @@ public class FurutaGUI implements Observer {
 			};
 		}
 
+		tiField = new DoubleField(10,6);
+		tiField.setValue(ctrlPar.ti);
+		tiField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ctrlPar.ti = tiField.getValue();
+				saveCtrlButton.setEnabled(true);
+			}
+		});
+
+
 		topCtrlPanel = new BoxPanel(BoxPanel.VERTICAL);
 		topCtrlPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		topCtrlPanel.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
@@ -179,6 +190,8 @@ public class FurutaGUI implements Observer {
 		topCtrlPanel.add(qFieldPanel);
 		topCtrlPanel.add(new JLabel("R matrix"));
 		topCtrlPanel.add(rFieldPanel);
+		topCtrlPanel.add(new JLabel("Integrator factor Ti"));
+		topCtrlPanel.add(tiField);
 		
 		// ---------------
 

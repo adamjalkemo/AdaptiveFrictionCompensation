@@ -25,8 +25,9 @@ class TopController {
 	}
 
 
-	public synchronized void updateStates(double baseAng, double ref) {
-		I = controllerParameters.h/controllerParameters.Ti * (baseAng - ref) + I;
+	public synchronized void updateStates(double baseAng, double ref, double u) {
+		I = controllerParameters.L[2] * ((double)controllerParameters.h/1000)/controllerParameters.ti * (ref - baseAng) + I;
+		//I = I - 0.01*(CommunicationManager.saturate(u) - u); // Anti-windup
 	}
 
 	/**
@@ -55,8 +56,12 @@ class TopController {
 
 		synchronized (this) {
 			this.controllerParameters = controllerParameters;
-			this.I = 0;
 		}
 
+		resetIntegrator();
+	}
+
+	public synchronized void resetIntegrator() {
+		this.I = 0;
 	}
 }
