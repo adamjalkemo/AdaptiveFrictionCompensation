@@ -411,7 +411,7 @@ Since we observed that the friction is different depending on the sign of the ar
 
 
 \subsection{}
-Our initial thought was that this would be the reason for the offset we can see in \ref{fig:onoffcompensation} however after adding the offset we could still observe the same behavior, see \ref{fig:onoffcompoffset}.
+Our initial thought was that this would be the reason for the offset we can see in \ref{fig:onoffcompensation} however after adding the offset we could still observe the same behaviour with only a small improvement, see \ref{fig:onoffcompoffset}. Instead we explored the option to add an integrative part in order to move the arm position so it would oscillate around the true zero position instead, the result of adding this integrative part was that the offset decreased and the result can be seen in \ref{fig:onoffcompintegrate}.
 
 $ $This resulted in an improved limit cycle behavior and marginally better step responses$ $.
 
@@ -441,7 +441,7 @@ As for the forgetting factor we tested some different values and found that usin
 
 %
 
-%This led us to add an integrative part in order to move the arm position so it would oscilata around the true zero position, the result of adding this integrative part can be seen in \ref{fig:onoffcompintegrate}.
+%
 
 %As we can see the limit cycles does not dissappear completely. This can depend on a number of different factors, one major factor is likely that the offset for the pendulum position in the top position is not perfect which would lead to over- and under correction i.e. the controller will operate on position values which are not true.
 
