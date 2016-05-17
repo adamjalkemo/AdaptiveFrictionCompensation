@@ -159,7 +159,7 @@ E= Mgl(cos\theta - 1)+\frac{J_p}{2}\dot\theta^2
 \end{equation}
 The Lyapunov candidate is then chosen as $V(x,a)=E^2$. By then taking the derivative of the candidate a controller $a=F(x)$ is derived which will make $\dot V \leq 0$ for all $x$. The controller will always output the maximal control signal possible in order to minimize the Lyapunov function. The resulting controller is:
 \begin{equation}
-u = \cos(\theta) \dot\theta (cos(\theta) - 1 + \dot{\theta}^2 / (2 \omega^2))
+u = sign( \cos(\theta) \dot\theta (cos(\theta) - 1 + \dot{\theta}^2 / (2 \omega^2)))
 \end{equation}
 \subsection{Top controller}
 In the top position LQR is used. For this the linearized model in equation \eqref{eq:linear} is used to calculate L. In order to change the cost of matrices Q and R online a way to calculate the state feedback gain vector L was implemented and given by
@@ -170,7 +170,7 @@ backwards in time with $P_N = Q$. This solution for the Riccati problem will not
 
 In addition to the state feedback, feedforward is used to follow a reference value. The reference in this case is desired arm position $\varphi$. The resulting the controller has the form
 \begin{equation}
-u = -Lx + l_rr.
+u_k = -Lx_k + l_rr_k.
 \end{equation}
 The factor $l_r$ is calculated to achieve static gain $1$ for reference to $\varphi$:
 \begin{equation}

@@ -24,6 +24,7 @@ legend('\phi','\Theta')
 axis([0 20 -0.4 0.4])
 xlabel('time (s)')
 ylabel('radians (rad)')
+set(gca,'fontsize',30)
 
 %% Convergence with and without excitation (manual)
 clear all
@@ -113,3 +114,36 @@ plot(times, uF);
 %xlabel('time units')
 %ylabel('parameters')
 %legend('f_c','f_v')
+
+%% Everything on
+clear all
+close all
+load('everything2')
+plot(double(t - t(1))/1000, [baseAng; pendAng])
+legend('\phi','\theta')
+axis([0 15 -0.4 0.4])
+xlabel('time (s)')
+ylabel('radians (rad)')
+set(gca,'fontsize',30)
+
+%% Everything on step
+clear all
+close all
+load('stepResponse-best-nointegral')
+plot(double(t - t(1))/1000, [baseAng; pendAng])
+legend('\phi','\theta')
+axis([0 14 -1 4])
+xlabel('time (s)')
+ylabel('radians (rad)')
+set(gca,'fontsize',30)
+
+%% Swingup
+clear all
+close all
+load('swingup_without_frictioncompensator')
+plot(double(t - t(1))/1000, [[baseAng(1:324)-baseAng(324) baseAng(325:end)]; [pendAng(1:293)-2*pi pendAng(295) pendAng(295:end)]])
+legend('\phi','\theta')
+axis([0 10 -6 1])
+xlabel('time (s)')
+ylabel('radians (rad)')
+set(gca,'fontsize',30)
