@@ -9,9 +9,9 @@ public class ControllerParameters implements Cloneable {
 
 	// Swing up controller parameters
 	public double ellipseRadius1 = 10;
-	public double ellipseRadius2 = 0.5014;
+	public double ellipseRadius2 = 0.7;
 	public double limit = 1.5;
-	public double gain = 0.6;
+	public double gain = 0.7;
 	public double ellipseRotationField = 1.5049;
 	public double omega0 = 6.5;
 
