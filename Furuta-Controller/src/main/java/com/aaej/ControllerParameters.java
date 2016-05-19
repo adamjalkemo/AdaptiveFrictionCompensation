@@ -16,7 +16,7 @@ public class ControllerParameters implements Cloneable {
 	public double omega0 = 6.5;
 
 	// Top controller parameters
-	public double[][] qMatrix = new double[][]{{100, 0, 0, 0},{0, 1, 0, 0},{0, 0, 1500, 0},{0, 0, 0, 10}};
+	public double[][] qMatrix = new double[][]{{100, 0, 0, 0},{0, 1, 0, 0},{0, 0, 1000, 0},{0, 0, 0, 10}};
 	public double[][] rMatrix = new double[][]{{100.0}};
 	public double ti = 10;
 

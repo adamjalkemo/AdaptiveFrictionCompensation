@@ -28,16 +28,16 @@ public class SpecificTests {
         First it moves 180 deg counter clockwise direction, then back.
      */
     public void stepResponse() {
-        communicationManager.startSaveArrays();
-        threadSleep(3000);
+        //communicationManager.startSaveArrays();
+        //threadSleep(3000);
         controller.setReference(Math.PI);
-        threadSleep(8000);
-        controller.setReference(0);
         threadSleep(3000);
+        controller.setReference(0);
+        //threadSleep(3000);
         
-        communicationManager.stopSaveArrays();
-        String fileName = new SimpleDateFormat("'stepResponse-'yyyyMMddhhmmss'.mat'").format(new Date());
-        saveData(fileName);
+        //communicationManager.stopSaveArrays();
+        //String fileName = new SimpleDateFormat("'stepResponse-'yyyyMMddhhmmss'.mat'").format(new Date());
+        //saveData(fileName);
     }
 
     /**

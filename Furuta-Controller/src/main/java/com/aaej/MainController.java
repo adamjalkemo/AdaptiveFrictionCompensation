@@ -54,7 +54,7 @@ class MainController extends Thread {
         observerList = new ArrayList<Observer>();
         on = false;
         shutDown = false;
-        enableFrictionCompensation = true;
+        //enableFrictionCompensation = true;
 	}
 
     /**
