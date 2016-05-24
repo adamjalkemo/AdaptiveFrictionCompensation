@@ -22,6 +22,7 @@
   \raisebox{\depth}{$\m@th#1\intercal$}%
 }
 
+
 \author{Adam Jalkemo \texttt{adam@jalkemo.se} \and
 Alexander Israelsson \texttt{israelsson.alexander@gmail.com} \and
 Emil Westenius \texttt{emil@westenius.se} \and
@@ -32,15 +33,20 @@ Supervisor: Gabriel Ingeson}
 \begin{document}
 
 \title{Adaptive Friction Compensation}
-
 \maketitle
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{fric.eps}
+\end{figure}
 \pagebreak
 \begin{abstract}
-In this project a Furuta Pendulum has been controlled by a Java program running on a computer. The goal was to use adaptive friction compensation while balancing a pendulum in the inverted position. This was achieved by using two controllers - one Lyapunov based controller for swing up and an controller based on a Linear Quadratic Regulator, LQR, in the top position. The top controller also includes friction compensation by estimating the friction with the Recursive Least Squares, RLS, method and integral action. The results show that by adding friction compensation the limit cycles in the top position is greatly reduced.
+In this project a Furuta Pendulum has been controlled by a Java program running on a computer. The goal was to use adaptive friction compensation while balancing a pendulum in the inverted position. This was achieved by using two controllers - one Lyapunov based controller for swing up and an controller based on a Linear Quadratic Regulator, LQR, in the top position. The top controller also includes friction compensation by estimating the friction with the Recursive Least Squares, RLS, method and integral action for one state. The results show that by adding friction compensation the limit cycles in the top position is greatly reduced.
 \end{abstract}
 \pagebreak
+\tableofcontents
+\pagebreak
 \section{Introduction}
-In this project adaptive friction compensation of the Furuta pendulum process have been explored. The Furuta pendulum consists of a pendulum, which is free to rotate in the vertical plane, attached to the end of an horizontally rotating arm that can be controlled. The pendulum will be stabilized in the inverted position using a swing up controller and a top controller. When controlling the pendulum in the top position limit cycles will occur due to friction. By compensating for the friction the pendulum will be stabilized and the limit cycles reduced. The friction will be estimated using an adaptive method. To do this a Java controller and interface is implemented on a linux computer.
+In this project adaptive friction compensation of the Furuta pendulum process has been explored. The Furuta pendulum consists of a pendulum, which is free to rotate in the vertical plane, attached to the end of an horizontally rotating arm that can be controlled. The pendulum was stabilized in the inverted position using a swing up controller and a top controller. When controlling the pendulum in the top position limit cycles occurred due to friction. By compensating for the friction the pendulum was stabilized and the limit cycles reduced. The friction was estimated using an adaptive method. To do this a Java controller and interface was implemented on a linux computer.
 %\begin{figure}[!htb]
 %\begin{center}
 %\includegraphics[width=1\textwidth]{process.png}
@@ -48,12 +54,15 @@ In this project adaptive friction compensation of the Furuta pendulum process ha
 %\label{fig:process}
 %\end{center}
 %\end{figure}
+\section{Overview}
+This report begins with an explanation of the program structure (which is implemented in java). After that the system model used in described and the choice of controllers presented. An explanation of the resulting graphical user interface follows.
 \section{Program structure}
-Except for the main app thread we use one thread for the GUI and one for the controller (and three additional for the plotters, but these are not implemented by us). It is important to synchronize the controller calculations with the user inputs, we do this by using synchronized methods and blocks that java provides. To communicate with the Furuta process we will use the analog box normally used during the control labs at LTH. The realtime package from Automatic Control at LTH is used for communication between the controller and the process. A general overview can be seen in fig. \ref{fig:uml}.
+To communicate with the Furuta process we use the analog box normally used during the control labs at LTH. The realtime package from Automatic Control at LTH is used for communication between the controller and the process. A general overview can be seen in fig. \ref{fig:uml}.
+Except for the main application thread we use one thread for the GUI and one for the controller (and three additional for the plotters, but these are not implemented by us). It was important to synchronize the controller calculations with the user inputs, we do this by using synchronized methods and blocks that java provides. 
 
 \begin{figure}[!htb]
 \centering
-\includegraphics[width=1\textwidth]{notUml.png}
+\includegraphics[width=1\textwidth]{notUml.jpg}
 \caption{Overview of the program structure}
 \label{fig:uml}
 \end{figure}
@@ -81,7 +90,7 @@ $$l=0.413m \quad  r=0.235m$$
 $$M=0.01kg \quad J=0.05kgm^2$$
 $$J_p=0.0009kgm^2 \quad m=0.02kg$$
 $$ g=9.8$$
-Where $l$ is the length of the pendulum, $r$ is the length of the arm, $M$ is the mass of the weight, $J$ is moment of inertia  for pendulum, $J_p$ is the moment of inertia for the arm, $m$ is the mass of the pendulum and $g$ is the gravity constant.
+Where $l$ is the length of the pendulum, $r$ is the length of the arm, $M$ is the mass of the weight, $J$ is moment of inerSystem.out.println(u);%tia  for pendulum, $J_p$ is the moment of inertia for the arm, $m$ is the mass of the pendulum and $g$ is the gravity constant.
 \subsection{Linearization}
 The model in eq. \ref{eq:model} is then linearized around
 \begin{equation}
@@ -117,10 +126,15 @@ $$ a = J_p + M l^2 \qquad b = J + M r^2 + m r^2 $$
 $$ c = M r l  \qquad d = l g (M + m/2) $$
 This corresponds to the arm fixed at an angle corresponding to zero and the pendulum fixed in the top position. It is in this position that the friction will create oscillations and where the adaptive friction compensation will be applied.
 \subsection{Discretization}
-The linearized model should preferably be discretized using zero order hold since this is how the process is sampled. However, instead of ZOH a bilinear transformation is used in Java as an approximation of $\Phi$ since a method for calculating exponential matrices is not available in our matrix package. $ \Gamma $ is approximated using the approximation $B \cdot h$, this is not a perfect approximation but no loss in controller performance has been noted compared to using the ZOH discretized matrices. Having methods for calculating the discrete approximation of the system allows the change of sampling time online. For the most part a sample time of $h=0.01$ have been used since this suited the system best. With $h=0.01$ the ZOH discretization of the model yields in 
+The linearized model should preferably be discretized using zero order hold since this is how the process is sampled. However, instead of ZOH a bilinear transformation is used in Java as an approximation of $\Phi$ since a method for calculating exponential matrices is not available in our matrix package, see equation \ref{eq:bil}. $ \Gamma $ is approximated using the approximation $B \cdot h$, this is not a perfect approximation but no loss in controller performance has been noted compared to using the ZOH discretized matrices. Having methods for calculating the discrete approximation of the system allows the change of sampling time online. For the most part a sample time of $h=0.01$ have been used since this suited the system best. With $h=0.01$ the ZOH discretization of the model yields in 
 % adam todo Nämner vi analoga filter osv?
 % We would like to implement a way to change the sampling time online but this would require us to implement a function similar to $c2d$ in java. There are approximations that can be made so that we won't have to solve the integral over the matrix exponential but we need to be sure that the results are good enough. If we can't figure out a way to make a java implementation of $c2d$, we will discretize offline using matlab with the sample time $h=0.01$.
 %This yields
+\begin{equation}
+e^{Ah} \approx (I + \frac{1}{2} A h) (I - \frac{1}{2} A h)^{-1}
+\label{eq:bil}
+\end{equation}
+
 \begin{equation}
 x_{k+1} = A_dx_k + B_du_k =\begin{pmatrix}
  1.0016 & 0.01 & 0 & 0 \\
@@ -159,7 +173,11 @@ For the swing up of the pendulum a Lyapunov based controller is used. For the Ly
 E= Mgl(cos\theta - 1)+\frac{J_p}{2}\dot\theta^2
 \label{eq:energy}
 \end{equation}
-The Lyapunov candidate was chosen as $V(x,a)=E^2$. By taking the derivative of the candidate a controller $a=F(x)$ is derived which makes $\dot V \leq 0$ for all $x$. The controller will always output the maximal control signal possible in order to minimize the Lyapunov function.
+The Lyapunov candidate was chosen as $V(x,a)=E^2$. By taking the derivative of the candidate a controller $a=F(x)$ is derived which makes $\dot V \leq 0$ for all $x$. The controller will always output the maximal control signal possible in order to minimize the Lyapunov function. The resulting controller is:
+\begin{equation}
+u = sign( \cos(\theta) \dot\theta (cos(\theta) - 1 + \dot{\theta}^2 / (2 \omega^2))),
+\end{equation}
+where $\omega$ is the natural frequency of the pendulum.
 \subsection{Top controller}
 In the top position LQR is used. For this the linearized model in equation \eqref{eq:linear} is used to calculate L. In order to change the cost of matrices Q and R online a way to calculate the state feedback gain vector L was implemented and given by
 $$ L = (R+B^TPB)^{-1}(B^TPA) $$
@@ -177,20 +195,24 @@ l_r = \frac{1}{C(I - \Phi + \Gamma L)^{-1}\Gamma},
 \end{equation}
 where $C$ is chosen so that only the state $\varphi$ is represented.
 
-To remove remaining error in $\phi$ integral action is introduced. The error is integrated and multiplied by an adjustable gain and then added to the control signal.
+To remove remaining error in $\varphi$ integral action is introduced. The error is integrated and multiplied by an adjustable gain and then added to the control signal. The update is as follows:
+\begin{equation}
+I_{k+1} = I_k + \frac{h}{T_i}e_k,
+\end{equation}
+where $T_i$ is a scaling factor and $e_k$ is the error.
 % todo write about integral action
 
 \subsection{Controller switch}
 In order to switch between the two controllers advantageous conditions is necessary to enable the pendulum to be in a good position for when the top controller takes over. Since the model is linearized around \ref{eq:linearization} the pendulum needs to have both a low velocity and be close to the top for the top controller to work properly. The switching conditions is chosen as an ellipse made from $\dot\theta$ and $\theta$ which gives good estimations of when to switch. Since $ \varphi $ might be far from zero one might run into troubles if this in punished heavily. We solve this by resetting $ \varphi $ when the top controller takes over.
 
 \section{Friction compensation}
-When controlling the pendulum in the top position there are limit cycles due to the friction. To minimize these cycles RLS based friction compensation is added to the top controller. There are a lot of different ways to model friction some more complicated than others. In fig. \ref{fig:fric} measured friction of the process can be seen for different velocities. The oscillating behaviour is believed to be due to different friction in different directions. Since the average friction for the different velocities did not vary that much and the measured signals are noisy the models of the frictions were kept simple. The models used can be seen in fig. \ref{fig:frictmodel}. 
+When controlling the pendulum in the top position there are limit cycles due to the friction. To minimize these cycles RLS based friction compensation is added to the top controller. There are a lot of different ways to model friction some more complicated than others. In fig. \ref{fig:fric} measured friction of the process can be seen for different velocities, where the measures friction is obtained by calculating the necessary control signal needed to keep the arm moving with a constant velocity. The oscillating behaviour is believed to be due to different friction in different directions. Since the average friction for the different velocities did not vary that much and the measured signals are noisy the models of the frictions were kept simple. The models used can be seen in fig. \ref{fig:frictmodel}. 
 
 %When the This will only be used in the top controller since the swing up controller will always output maximal control signal. When the pendulum is close to the top position we will need to add a dead-zone in order to keep the noise from the measurements from making the friction compensation add control signal in the wrong direction.
 \begin{figure}[!htb]
 \centering
-\includegraphics[width=1\textwidth]{fric.png}
-\caption{Measured friction of the process for different velocities}
+\includegraphics[width=1\textwidth]{fric.eps}
+\caption{Measured friction of the process for different velocities. The friction is measured by using a PI-controller to keep the velocity of the arm constant with the pendulum hanging down in a fixed position. The control signal necessary for the process to keep the velocity constant can be seen as measured friction.}
 \label{fig:fric}
 \end{figure}
 \begin{figure}[!htb]
@@ -212,6 +234,7 @@ To calculate the friction compensation the coefficients of a friction model is e
  \end{equation}
 where eq. \ref{eq:f} is the model in (a) and depends only on the direction of the velocity and eq. \ref{eq:fv} is the model in (b) where a viscous term that also depends on the velocity is added.
  
+ \label{eq:fv}
 The regression models for the two friction models will take the form
 \begin{equation}
 \phi=sign(\dot{\varphi}), \beta = f_c
@@ -282,22 +305,22 @@ f_o
 \label{subsec:rlsalg}
 To estimate the parameters throughout this project the standard recursive least squares algorithm with a added forgetting factor was used as stated below. 
 \begin{equation}
-\hat{\theta}_k = \hat{\theta}_{k-1}+P_k\phi_k\epsilon_k 
+\hat{\beta}_k = \hat{\beta}_{k-1}+P_k\phi_k\epsilon_k 
 \end{equation}
 \begin{equation}
-\epsilon_k=y_k-\phi_k^{T}\hat{\theta}_{k-1} 
+\epsilon_k=y_k-\phi_k^{T}\hat{\beta}_{k-1} 
 \end{equation}
 \begin{equation}
 P_k=\frac{1}{\lambda}(P_{k-1}-\frac{P_{k-1}\phi_k\phi_k^{T}P_{k-1}}{\lambda+\phi_k^{T}P_{k-1}\phi_k})
 \end{equation}
-Above $\hat{\theta}_k$ is the estimated parameters , $\phi_k$ is the regressor, $P_k$ is a matrix is the estimate of the parameter covariance and $\lambda$ is the forgetting factor.
+Above $\hat{\beta}_k$ is the estimated parameters , $\phi_k$ is the regressor, $P_k$ is a matrix is the estimate of the parameter covariance and $\lambda$ is the forgetting factor.
 
 \section{GUI}
 The operator is able to change parameters for both controllers and for the friction estimator.
 
-For the top controller, the $Q$ and $R$ matrices and the integral gain can be changed. For the swing up controller, the "switching area", natural frequency and gain can be changed. Other general parameters for the controller such as sampling time $h$ and deadzones can also be changed.
+For the top controller, the $Q$ and $R$ matrices and the integral gain can be changed. For the swing up controller, the "switching area", natural frequency, $\omega$, and gain can be changed. Other general parameters for the controller such as sampling time $h$ and deadzones can also be changed.
 
-For the friction estimation the forgetting factor $\lambda$ and the initial values of $\omega _0$ can be changed. One can also switch between the three available friction models (Coulomb friction, Coulomb with viscous friction and Coulomb with viscous friction and offset). At the top right of the GUI one can enable or disable the friction compensation.
+For the friction estimation the forgetting factor $\lambda$ and the initial values of $\theta _0$ can be changed. One can also switch between the three available friction models (Coulomb friction, Coulomb with viscous friction and Coulomb with viscous friction and offset). At the top right of the GUI one can enable or disable the friction compensation.
 
 Start and stop buttons have been added in order to record data and save to file (MATLAB .mat files are stored to the root folder of the java project). There are also tests for running step responses and for running an evaluation of the RLS convergence (without manual excitation). Both tests automatically stores the data. 
 
@@ -308,28 +331,12 @@ See fig. \ref{fig:gui} for an image of the GUI.
 % TODO UPDATE IMAGE
 \begin{figure}[H]
 \centerline{\includegraphics[width=1.4\textwidth]{gui.png}}
-\caption{Overview of the program structure}
+\caption{Overview of the program structure. There are three plotter panels in the GUI, one for the measured signals, one for the control signals and one for the RLS-parameters. There are options for changing controller parameters, friction model, RLS parameters, catching area, options to start tests and record data.}
 \label{fig:gui}
 \end{figure}
 \section{Results}
-
-
-\subsection{Limit cycles}
-The limit cycles of the system got significantly lower when adding the friction compensation using the estimated parameters of the friction. The behaviour of the arm angle and pendulum angle can be viewed in fig. \ref{fig:onoffcompensation} where eq. \ref{eq:regressorb} was used as a friction model. One can also see that the amplitude of the limit cycles are lowered to about a third of the size but that an offset in $ \varphi $ exists. In fig. \ref{fig:compintegrate} integral actions is used to counteract this offset.
-\begin{figure}[H]
-\centering
-\includegraphics[width=1\textwidth]{plots/onoffcompensation.jpg}
-\caption{Arm and pendulum angle behaviour in steady state and turning on friction compensation after 10 seconds. The parameter estimation, after manual excitation of the system, converged before being turned on.}
-\label{fig:onoffcompensation}
-\end{figure}
-\begin{figure}[H]
-\centering
-\includegraphics[width=1\textwidth]{plots/thetaphilimit.eps}
-\caption{Arm and pendulum angle behaviour in steady state with offset compensation and integral action. The parameter estimation, after manual excitation of the system, converged before being turned on.}
-\label{fig:compintegrate}
-\end{figure}
-\subsection{Coulomb and viscous friction model}
-In fig. \ref{fig:srvisc} we can see the behaviour of the angle and angular velocity for both the arm and the pendulum.
+\subsection{Controller performance}
+The $Q$ and $R$ matrices are chosen so that the error on the arm position is heavily weighted, factor $15$ over both control signal and pendulum position. The velocities are relatively free in order to be able to get quick responses. This leads to a fast system with small overshoots which can be seen in fig. \ref{fig:srvisc}.
 \begin{figure}[H]
 \centering
 		\begin{subfigure}[t]{0.49\textwidth}
@@ -356,21 +363,37 @@ In fig. \ref{fig:srvisc} we can see the behaviour of the angle and angular veloc
 			\caption{The step response for the angular velocity of the pendulum.}						
 			\label{subfigure:srviscthetadot}
 		\end{subfigure}
-		\caption{Step responses for the pendulum and arm positions and velocities for the using the Coulomb and viscous friction model with offset compensation and integral action.}
+		\caption{Step responses, $\pi$ radians for the arm position $\varphi$, for the pendulum and arm positions and velocities for the using the Coulomb and viscous friction model with offset compensation and integral action.}
 		\label{fig:srvisc}
 \end{figure}
+
+\subsection{Limit cycles}
+The limit cycles of the system got significantly lower when adding the friction compensation using the estimated parameters of the friction. The behaviour of the arm angle and pendulum angle can be viewed in fig. \ref{fig:onoffcompensation} where eq. \ref{eq:regressorb} was used as a friction model. One can also see that the amplitude of the limit cycles are lowered to about a third of the size but that an offset in $ \varphi $ exists. In fig. \ref{fig:compintegrate} integral actions is used to counteract this offset.
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{plots/onoffcompensation.jpg}
+\caption{Arm and pendulum angle behaviour in steady state and turning on friction compensation after 10 seconds. The parameter estimation, after manual excitation (by reference changes) of the system, converged before being turned on.}
+\label{fig:onoffcompensation}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{plots/thetaphilimit.eps}
+\caption{Arm and pendulum angle behaviour in steady state with friction offset compensation and integral action. The parameter estimation, after manual excitation (by reference changes) of the system, converged before being turned on.}
+\label{fig:compintegrate}
+\end{figure}
+
 \subsection{Friction estimation}
 In fig. \ref{subfigure:VLUFcol} and \ref{subfigure:VLUFvisc} the calculated friction and the calculated compensation signal is presented for both the Coulomb and the Coulomb and viscous friction models.
 \begin{figure}[H]
 \centering
 	\begin{subfigure}[t]{0.49\textwidth}
 	\includegraphics[width=1\textwidth]{plots/vlufcolbest.eps}
-	\caption{The calculated friction and the calculated compensation control signal for the Coulomb friction model given in eq. \ref{eq:regressora}}
+	\caption{The calculated friction, top, and the calculated compensation control signal, bottom, for the Coulomb friction model given in eq. \ref{eq:regressora}}
 	\label{subfigure:VLUFcol}
 	\end{subfigure}
 	\begin{subfigure}[t]{0.49\textwidth}
 	\includegraphics[width=1\textwidth]{plots/vlufviscbest.eps}
-	\caption{The calculated friction and the calculated compensation control signal for the Coulomb and viscous friction model given in eq. \ref{eq:regressorb}}\
+	\caption{The calculated friction, top, and the calculated compensation control signal, bottom, for the Coulomb and viscous friction model given in eq. \ref{eq:regressorb}. Note the similarities to \ref{subfigure:VLUFcol}, i.e. the viscous part of the friction is very small.}
 	\label{subfigure:VLUFvisc}
 	\end{subfigure}
 \caption{Friction calculation and estimation}
@@ -379,23 +402,23 @@ In fig. \ref{subfigure:VLUFcol} and \ref{subfigure:VLUFvisc} the calculated fric
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{plots/vlufviscoffsetbest.eps}
-\caption{The calculated friction and the calculated compensation control signal for the Coulomb and viscous friction model with offset given in eq. \ref{eq:regressorbo}}
+\caption{The calculated friction, top, and the calculated compensation control signal, bottom, for the Coulomb and viscous friction model with offset given in eq. \ref{eq:regressorbo}. Note the offset in the control signal.}
 \label{fig:VLUFoffset}
 \end{figure}
 
 
 \subsubsection{RLS convergence}
-The convergence for the parameter estimation is presented in fig. \ref{fig:rlsconv} both with and without external excitation. The convergence with an added offset compensation can be seen in fig. \ref{fig:rlsconvoffset}
+The convergence for the parameter estimation is presented in fig. \ref{fig:rlsconv} both with and without external excitation through reference changes. The convergence with an added offset compensation can be seen in fig. \ref{fig:rlsconvoffset}
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{plots/rlsconvergence.jpg}
-\caption{The convergence of the friction parameters given in eq. \ref{eq:regressorb}. At time t=5000 time units the estimation is reset and the system is subjected to external excitation.}
+\caption{The convergence of the friction parameters given in eq. \ref{eq:regressorb}. From start up to time t=5000 the estimation was done without excitation and after t=5000 the parameters were reset and estimation was done with external excitation in the form of reference changes. A large $\lambda=0.9999$ was used as the forgetting factor.}
 \label{fig:rlsconv}
 \end{figure}
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{plots/rlsconvoffset.eps}
-\caption{The convergence of the friction parameters with offset compensation given in eq. \ref{eq:regressorbo}.}
+\caption{The convergence of the friction parameters with offset compensation given in eq. \ref{eq:regressorbo}. The parameters converge after about 15 seconds but decent values are obtained after only about 6 seconds. The oscillating behaviour is due to multiple reference changes.}
 \label{fig:rlsconvoffset}
 \end{figure}
 %% Fler plots
@@ -443,7 +466,7 @@ Looking at the measurement signals it is apparent that the standard deviation on
 To avoid generating a control signal in the wrong direction and also avoid a noisy control signal we experimented with deadzones around the origin.  This did however not increase the performance but instead increased the limit cycles. Our theory is that the somewhat noisy control signals aren't as bad as disabling the friction compensation and/or the LQR controller around a deadzone, partly due to the pendulum vibrating thus decreasing friction and our rather fast sampling time actively counteracting too much deviation.
 
 \subsection{Real-time implementation in java}
-Our implemented controllers work as expected in Java and threads shares resources in without blocking being a factor. The controller works for a sample time down to 4ms but since the process most likely is designed with analog filters to avoid aliasing we stuck to using a sample time of 10ms (which is used in laboratory exercises) since we didn't notice any improvements when using a lower sampling time. The GUI thread does not block the controller yet the GUI is responsive. When we run the built in tests we don't allow user input and therefore it was easiest to implement it by putting the thread to sleep (which gives somewhat of a bad user experience) until the test is finnished.
+Our implemented controllers work as expected in Java and threads shares resources in without blocking being a factor. The controller works for a sample time down to 4ms but since the process most likely is designed with analog filters to avoid aliasing we stuck to using a sample time of 10ms (which is used in laboratory exercises) since we didn't notice any improvements when using a lower sampling time. The GUI thread does not block the controller yet the GUI is responsive. When we run the built in tests we don't allow user input and therefore it was easiest to implement it by putting the thread to sleep (which gives somewhat of a bad user experience) until the test is finished.
 
 % TODO DEEP CLONE
 
